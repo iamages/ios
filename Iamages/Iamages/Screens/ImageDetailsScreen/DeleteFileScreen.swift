@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DeleteFileScreen: View {
     @EnvironmentObject var dataCentralObservable: IamagesDataCentral
+    @Environment(\.presentationMode) var presentationMode
 
     @Binding var newFile: IamagesFileInformationResponse
     @Binding var isPopBackToRoot: Bool

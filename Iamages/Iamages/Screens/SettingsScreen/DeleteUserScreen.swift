@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DeleteUserScreen: View {
     @EnvironmentObject var dataCentralObservable: IamagesDataCentral
+    @Environment(\.presentationMode) var presentationMode
     
     @Binding var newLogin: IamagesUserAuth
     
