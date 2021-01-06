@@ -2,7 +2,6 @@ import SwiftUI
 
 struct DeleteFileScreen: View {
     @EnvironmentObject var dataCentralObservable: IamagesDataCentral
-    @Environment(\.presentationMode) var presentationMode
 
     @Binding var newFile: IamagesFileInformationResponse
     @Binding var isPopBackToRoot: Bool
@@ -24,12 +23,9 @@ struct DeleteFileScreen: View {
                     self.deleteFile()
                 }).buttonStyle(CustomConfirmButtonStyle())
                 .padding(.vertical)
-                Button("Cancel", action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                })
             }
         }.padding(.all)
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden(self.isBusy)
         .alert(item: self.$alertItem) { item in
             Alert(title: item.title, message: item.message, dismissButton: item.dismissButton)
         }

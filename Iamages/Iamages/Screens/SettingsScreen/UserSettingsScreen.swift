@@ -53,13 +53,10 @@ struct UserSettingsScreen: View {
                         }
                     }.foregroundColor(.red)
                     .disabled(self.isBusy)
-                    Button(action: {
-                        self.deleteUser()
-                    }) {
+                    NavigationLink(destination: DeleteUserScreen(newLogin: self.$newLogin)) {
                         HStack {
-                            Text("Delete user")
-                            Spacer()
                             Image(systemName: "person.crop.circle.badge.xmark")
+                            Text("Delete user")
                         }
                     }.foregroundColor(.red)
                     .disabled(self.isBusy)
@@ -170,18 +167,6 @@ struct UserSettingsScreen: View {
         } else {
             self.alertItem = AlertItem(title: Text("Sign up failed"), message: Text("Username or password too short!"), dismissButton: .default(Text("Okay")))
         }
-    }
-    
-    func deleteUser() {
-        self.isBusy = true
-        dataCentralObservable.deleteUser().done({ yes in
-            self.isBusy = false
-            self.newLogin = IamagesUserAuth(username: "", password: "")
-            self.alertItem = AlertItem(title: Text("User deleted"), message: nil, dismissButton: .default(Text("Okay")))
-        }).catch({ error in
-            self.isBusy = false
-            self.alertItem = AlertItem(title: Text("User deletion failed"), message: Text(verbatim: error.localizedDescription), dismissButton: .default(Text("Okay")))
-        })
     }
 }
 
