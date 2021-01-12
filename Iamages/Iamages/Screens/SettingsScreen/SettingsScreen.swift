@@ -54,13 +54,6 @@ struct SettingsScreen: View {
                             Image(systemName: "hand.raised")
                         }
                     }
-                    Link(destination: URL(string: "https://paypal.me/jkelol111")!) {
-                        HStack {
-                            Text("Donate to the project")
-                            Spacer()
-                            Image(systemName: "heart")
-                        }
-                    }
                     Link(destination: URL(string: "https://github.com/iamages")!) {
                         HStack {
                             Text("Open-source on GitHub")
