@@ -54,7 +54,7 @@ struct UserScreen: View {
             self.isBusy = false
         }).catch({ error in
             self.isBusy = false
-            self.alertItem = AlertItem(title: Text("Refresh failed"), message: Text(error.localizedDescription), dismissButton: .default(Text("Okay")))
+            self.alertItem = AlertItem(title: Text("Refresh failed"), message: Text(verbatim: error.localizedDescription), dismissButton: .default(Text("Okay")))
         })
     }
 }

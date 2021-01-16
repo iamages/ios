@@ -14,10 +14,10 @@ fileprivate class ImageSaver: NSObject {
         var alertMessage: String = ""
         if let error = error {
             alertTitle = NSLocalizedString("Save error", comment: "")
-            alertMessage = NSLocalizedString(error.localizedDescription, comment: "")
+            alertMessage = error.localizedDescription
         } else {
             alertTitle = NSLocalizedString("Saved file", comment: "")
-            alertMessage = NSLocalizedString("savedFile", comment: "")
+            alertMessage = NSLocalizedString("Saved the file to your photo library.", comment: "")
         }
         let ac = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
         ac.addAction(UIAlertAction(title: NSLocalizedString("Okay", comment: ""), style: .default))
@@ -124,10 +124,6 @@ struct ImageDetailsScreen: View {
                 self.imageSaver.saveUIImage(image: image)
             }
         }
-    }
-    
-    func deleteFile() {
-        print("Delete!")
     }
 }
 

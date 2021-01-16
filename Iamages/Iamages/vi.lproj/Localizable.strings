@@ -1,4 +1,100 @@
 "Latest" = "Mới";
-"Upload" = "Đăng";
+"Upload" = "Tải lên";
 "User" = "Bạn";
+"Settings" = "Cài đặt";
+
+"Loading data" = "Đang tải";
+"Refresh failed" = "Làm mới không thành công";
+"Okay" = "OK";
+
+"NSFW disabled, this file won't be visible." = "NSFW bị vô hiệu hóa, tệp này sẽ không hiển thị.";
+"Nothing found here..." = "Không tìm thấy gì ở đây ...";
+"Check your internet connection, or your login. Maybe you don't have files?" = "Kiểm tra kết nối internet hoặc thông tin đăng nhập của bạn. Có thể bạn không có tệp?";
+"No description yet." = "Chưa có mô tả.";
+
+"Saved file" = "Tệp đã lưu";
+"Saved the file to your photo library." = "Đã lưu tệp vào thư viện ảnh của bạn.";
+"Save error" = "Lỗi khi lưu tệp";
+
+"File information" = "Thông tin tệp";
+"Edit file information" = "Chỉnh sửa thông tin tệp";
+"Description" = "Miêu tả";
+"Options" = "Tùy chọn";
+"NSFW" = "NSFW";
+"Private" = "Riêng tư";
+"Meta" = "Thông tin thêm";
+"Width" = "Chiều rộng";
+"Height" = "Chiều cao";
+"MIME type" = "Loại MIME";
+"Creation date" = "Ngày thành lập";
+
+"Share" = "Chia sẻ";
+"Save to library" = "Lưu vào thư viện";
+"Edit file" = "Chỉnh sửa tệp";
+"Delete file" = "Xoá tệp";
+
+"Modification failed" = "Sửa đổi không thành công";
+"Modification successful" = "Sửa đổi thành công";
+
+"Delete file %@" = "Xóa tệp '%@'?";
+"Delete user %@" = "Xóa người dùng '%@'?";
+"This is not reversible." = "Điều này không thể đảo ngược.";
+"Delete forever" = "Xóa vĩnh viễn";
+"Deleting file" = "Đang xóa tệp";
+"Deleting user" = "Đang xóa người dùng";
+"Delete failed" = "Xóa không thành công";
+
+"Private file toggle will only apply if you are logged in." = "Chuyển đổi tệp riêng tư sẽ chỉ áp dụng nếu bạn đã đăng nhập.";
+"Uploaded files" = "Tệp đã tải lên";
+"Upload failed" = "Tải tệp lên thất bại";
+
+"Name" = "Tên";
+"Biography" = "Tiểu sử";
+"User settings" = "Thiết lập người dùng";
+"App settings" = "Cài đặt ứng dụng";
+"About" = "Thông tin";
+"Terms of Service" = "Điều khoản dịch vụ (English)";
+"Privacy Policy" = "Chính sách bảo mật (English)";
+"Open-source on GitHub" = "Mã nguồn mở trên GitHub";
+"Join our Discord" = "Tham gia Discord của chúng tôi";
+
+"Update biography" = "Cập nhật tiểu sử";
+"Password" = "Mật khẩu";
+"Current password" = "Mật khẩu hiện tại";
+"New password" = "Mật khẩu mới";
+"New password, again" = "Mật khẩu mới, một lần nữa";
+"Update password" = "Cập nhật mật khẩu";
+"Authentication" = "Xác thực";
+"Log out" = "Đăng xuất";
+"Delete user" = "Xóa người dùng";
+"Username" = "Tên tài khoản";
+"Log in" = "Đăng nhập";
+"Sign up" = "Đăng ký";
+
+"Biography has been changed!" = "Tiểu sử đã được thay đổi!";
+"Couldn't modify your biography." = "Không thể sửa đổi tiểu sử của bạn.";
+"Password has been changed!" = "Mật khẩu đã được thay đổi!";
+"Couldn't modify your password." = "Không thể sửa đổi mật khẩu của bạn.";
+"Password too short" = "Mật khẩu quá ngắn";
+"The new password is too short!" = "Mật khẩu mới quá ngắn!";
+"Password mismatch" = "Mật khẩu không khớp";
+"The new passwords don't match." = "Mật khẩu mới không khớp.";
+"The current password doesn't match." = "Mật khẩu hiện tại không khớp.";
+
+"Log in failed" = "Đăng nhập thất bại";
+"Log out failed" = "Đăng xuất không thành công";
+
+"Sign up successful" = "Đăng ký thành công";
+"You can now log in." = "Bây giờ bạn có thể đăng nhập.";
+"Sign up failed" = "Đăng ký thât bại";
+"Username or password too short!" = "Tên người dùng hoặc mật khẩu quá ngắn!";
+
+"File lists" = "Danh sách tệp";
+"Show NSFW files" = "Hiển thị các tệp NSFW";
+"Preferred upload format" = "Định dạng tải lên ưu tiên";
+"PNG has higher quality at the expense of time. JPEG produces acceptable quality with faster speeds." = "PNG có chất lượng cao hơn với thời gian. JPEG tạo ra chất lượng chấp nhận được với tốc độ nhanh hơn.";
+"Maintainance" = "Bảo trì";
+"Clear cache" = "Xóa bộ nhớ cache";
+"Image cache cleared" = "Đã xóa bộ nhớ cache hình ảnh";
+
 

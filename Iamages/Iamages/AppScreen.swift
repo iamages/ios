@@ -37,7 +37,5 @@ struct AppScreen: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         AppScreen()
-            .preferredColorScheme(.dark)
-            .environment(\.locale, .init(identifier: "vi"))
     }
 }

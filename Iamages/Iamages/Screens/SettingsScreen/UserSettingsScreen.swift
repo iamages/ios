@@ -136,7 +136,7 @@ struct UserSettingsScreen: View {
             self.isBusy = false
         }).catch({ error in
             self.isBusy = false
-            self.alertItem = AlertItem(title: Text("Log in failed"), message: Text("loginFailed"), dismissButton: .default(Text("Okay")))
+            self.alertItem = AlertItem(title: Text("Log out failed"), message: Text(verbatim: error.localizedDescription), dismissButton: .default(Text("Okay")))
         })
     }
     
@@ -147,10 +147,10 @@ struct UserSettingsScreen: View {
                 self.isBusy = false
             }).catch({ error in
                 self.isBusy = false
-                self.alertItem = AlertItem(title: Text("Log in failed"), message: Text("loginFailed"), dismissButton: .default(Text("Okay")))
+                self.alertItem = AlertItem(title: Text("Log in failed"), message: Text(verbatim: error.localizedDescription), dismissButton: .default(Text("Okay")))
             })
         } else {
-            self.alertItem = AlertItem(title: Text("Log in failed"), message: Text("loginFailed"), dismissButton: .default(Text("Okay")))
+            self.alertItem = AlertItem(title: Text("Log in failed"), message: Text("Username or password too short!"), dismissButton: .default(Text("Okay")))
         }
     }
     
@@ -162,7 +162,7 @@ struct UserSettingsScreen: View {
                 self.alertItem = AlertItem(title: Text("Sign up successful"), message: Text("You can now log in."), dismissButton: .default(Text("Okay")))
             }).catch({ error in
                 self.isBusy = false
-                self.alertItem = AlertItem(title: Text("Sign up failed"), message: Text("signUpFailed \(error.localizedDescription)"), dismissButton: .default(Text("Okay")))
+                self.alertItem = AlertItem(title: Text("Sign up failed"), message: Text(verbatim: error.localizedDescription), dismissButton: .default(Text("Okay")))
             })
         } else {
             self.alertItem = AlertItem(title: Text("Sign up failed"), message: Text("Username or password too short!"), dismissButton: .default(Text("Okay")))

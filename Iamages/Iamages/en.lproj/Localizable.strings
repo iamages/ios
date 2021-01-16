@@ -1,15 +1,98 @@
 "Latest" = "Latest";
 "Upload" = "Upload";
 "User" = "User";
+"Settings" = "Settings";
+
+"Loading data" = "Loading data";
 "Refresh failed" = "Refresh failed";
 "Okay" = "Okay";
+
+"NSFW disabled, this file won't be visible." = "NSFW disabled, this file won't be visible.";
+"Nothing found here..." = "Nothing found here...";
+"Check your internet connection, or your login. Maybe you don't have files?" = "Check your internet connection, or your login. Maybe you don't have files?";
+"No description yet." = "No description yet.";
+
 "Saved file" = "Saved file";
-"savedFile" = "Saved the file to your photo library.";
+"Saved the file to your photo library." = "Saved the file to your photo library.";
 "Save error" = "Save error";
-"Log in failed" = "Log in failed";
-"loginFailed" = "Log in failed. Check your internet connection or user login.";
-"Sign up failed" = "Sign up failed";
-"signupFailed" = "Sign up failed. Check your internet connection or user login.";
-"deleteFile %@" = "Delete file '%@'?";
+
+"File information" = "File information";
+"Edit file information" = "Edit file information";
+"Description" = "Description";
+"Options" = "Options";
+"NSFW" = "NSFW";
+"Private" = "Private";
+"Meta" = "Meta";
+"Width" = "Width";
+"Height" = "Height";
+"MIME type" = "MIME type";
+"Creation date" = "Creation date";
+
+"Share" = "Share";
+"Save to library" = "Save to library";
+"Edit file" = "Edit file";
+"Delete file" = "Delete file";
+
+"Modification failed" = "Modification failed";
+"Modification successful" = "Modification successful";
+
+"Delete file %@" = "Delete file '%@'?";
+"Delete user %@" = "Delete user '%@'?";
 "This is not reversible." = "This is not reversible.";
-"deleteUser %@" = "Delete user '%@'?";
+"Delete forever" = "Delete forever";
+"Deleting file" = "Deleting file";
+"Deleting user" = "Deleting user";
+"Delete failed" = "Delete failed";
+
+"Private file toggle will only apply if you are logged in." = "Private file toggle will only apply if you are logged in.";
+"Uploaded files" = "Uploaded files";
+"Upload failed" = "Upload failed";
+
+"Name" = "Name";
+"Biography" = "Biography";
+"User settings" = "User settings";
+"App settings" = "App settings";
+"About" = "About";
+"Terms of Service" = "Terms of Service";
+"Privacy Policy" = "Privacy Policy";
+"Open-source on GitHub" = "Open-source on GitHub";
+"Join our Discord" = "Join our Discord";
+
+"Update biography" = "Update biography";
+"Password" = "Password";
+"Current password" = "Current password";
+"New password" = "New password";
+"New password, again" = "New password, again";
+"Update password" = "Update password";
+"Authentication" = "Authentication";
+"Log out" = "Log out";
+"Delete user" = "Delete user";
+"Username" = "Username";
+"Log in" = "Log in";
+"Sign up" = "Sign up";
+
+"Biography has been changed!" = "Biography has been changed!";
+"Couldn't modify your biography." = "Couldn't modify your biography.";
+"Password has been changed!" = "Password has been changed!";
+"Couldn't modify your password." = "Couldn't modify your password.";
+"Password too short" = "Password too short";
+"The new password is too short!" = "The new password is too short!";
+"Password mismatch" = "Password mismatch";
+"The new passwords don't match." = "The new passwords don't match.";
+"The current password doesn't match." = "The current password doesn't match.";
+
+"Log in failed" = "Log in failed";
+"Log out failed" = "Log out failed";
+
+"Sign up successful" = "Sign up successful";
+"You can now log in." = "You can now log in.";
+"Sign up failed" = "Sign up failed";
+"Username or password too short!" = "Username or password too short!";
+
+"File lists" = "File lists";
+"Show NSFW files" = "Show NSFW files";
+"Preferred upload format" = "Preferred upload format";
+"PNG has higher quality at the expense of time. JPEG produces acceptable quality with faster speeds." = "PNG has higher quality at the expense of time. JPEG produces acceptable quality with faster speeds.";
+"Maintainance" = "Maintainance";
+"Clear cache" = "Clear cache";
+"Image cache cleared" = "Image cache cleared";

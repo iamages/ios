@@ -15,7 +15,7 @@ struct DeleteFileScreen: View {
             if self.isBusy {
                 ProgressView("Deleting file").progressViewStyle(CircularProgressViewStyle())
             } else {
-                Text("deleteFile \(newFile.description)")
+                Text("Delete file \(newFile.description)")
                     .bold()
                     .multilineTextAlignment(.center)
                 Text("This is not reversible.")

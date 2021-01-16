@@ -20,7 +20,7 @@ struct AppSettingsScreen: View {
                 }.pickerStyle(SegmentedPickerStyle())
             }
 
-            Section(header: Text("Maintainance"), footer: Text("These options are for ADVANCED users only. You're on your own using these!")) {
+            Section(header: Text("Maintainance")) {
                 Button(action: {
                     clearCache()
                 }) {

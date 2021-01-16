@@ -14,7 +14,7 @@ struct DeleteUserScreen: View {
             if self.isBusy {
                 ProgressView("Deleting user").progressViewStyle(CircularProgressViewStyle())
             } else {
-                Text("deleteUser \(dataCentralObservable.userInformation.auth.username)")
+                Text("Delete user \(dataCentralObservable.userInformation.auth.username)")
                     .bold()
                     .multilineTextAlignment(.center)
                 Text("This is not reversible.")
@@ -38,7 +38,7 @@ struct DeleteUserScreen: View {
             self.presentationMode.wrappedValue.dismiss()
         }).catch({ error in
             self.isBusy = false
-            self.alertItem = AlertItem(title: Text("User deletion failed"), message: Text(verbatim: error.localizedDescription), dismissButton: .default(Text("Okay")))
+            self.alertItem = AlertItem(title: Text("Delete failed"), message: Text(verbatim: error.localizedDescription), dismissButton: .default(Text("Okay")))
         })
     }
 }

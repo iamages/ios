@@ -13,7 +13,7 @@ struct SettingsScreen: View {
                             .bold()
                     }
                     HStack {
-                        Text("Created date")
+                        Text("Creation date")
                         Spacer()
                         Text(dataCentralObservable.userInformation.createdDate)
                             .bold()
@@ -39,7 +39,7 @@ struct SettingsScreen: View {
                         Text("App settings")
                     })
                 }
-                Section(header: Text("About"), footer: Text("Iamages iOS app 1.0.0")) {
+                Section(header: Text("About"), footer: Text("Iamages iOS 1.0.0")) {
                     Link(destination: URL(string: api.IAMAGES_APIROOT + "private/tos")!) {
                         HStack {
                             Text("Terms of Service")
@@ -59,6 +59,13 @@ struct SettingsScreen: View {
                             Text("Open-source on GitHub")
                             Spacer()
                             Image(systemName: "chevron.left.slash.chevron.right")
+                        }
+                    }
+                    Link(destination: URL(string: "https://discord.gg/Gf3JEftFqr")!) {
+                        HStack {
+                            Text("Join our Discord")
+                            Spacer()
+                            Image(systemName: "ellipsis.bubble")
                         }
                     }
                  }
