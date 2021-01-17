@@ -1,5 +1,5 @@
 import SwiftUI
-import KingfisherSwiftUI
+import Kingfisher
 
 struct UploadedFilesSheet: View {
     @EnvironmentObject var dataCentralObservable: IamagesDataCentral
@@ -14,7 +14,8 @@ struct UploadedFilesSheet: View {
                 ForEach(self.uploadedFiles, id: \.self) { uploadedFile in
                     Link(destination: api.get_root_embed(id: uploadedFile.id)) {
                         HStack(alignment: .center) {
-                            KFImage(api.get_root_img(id: uploadedFile.id), options: [.requestModifier(dataCentralObservable.userRequestModifier)])
+                            KFImage(api.get_root_img(id: uploadedFile.id))
+                                .requestModifier(dataCentralObservable.userRequestModifier)
                                 .resizable()
                                 .cancelOnDisappear(true)
                                 .placeholder {

@@ -1,6 +1,5 @@
 import SwiftUI
-import KingfisherSwiftUI
-import struct Kingfisher.AnyModifier
+import Kingfisher
 
 struct NavigableImageComponent: View {
     let file: IamagesFileInformationResponse
@@ -10,7 +9,8 @@ struct NavigableImageComponent: View {
         if isNSFWEnabled || !file.isNSFW {
             NavigationLink(destination: ImageDetailsScreen(file: file, requestModifier: requestModifier), label: {
                 GroupBox(label: Text(verbatim: file.description), content: {
-                    KFImage(api.get_root_img(id: file.id), options: [.requestModifier(requestModifier)])
+                    KFImage(api.get_root_img(id: file.id))
+                        .requestModifier(requestModifier)
                         .resizable()
                         .cancelOnDisappear(true)
                         .placeholder {

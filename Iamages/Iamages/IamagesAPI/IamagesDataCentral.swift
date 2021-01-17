@@ -61,7 +61,7 @@ class IamagesDataCentral: ObservableObject {
                     }).catch({ error in
                         seal.reject(error)
                     })
-                    api.get_root_user_info(userAuth: self.userInformation.auth).done({ userInformationResponse in
+                    api.post_root_user_info(userAuth: self.userInformation.auth).done({ userInformationResponse in
                         self.userInformation.biography = userInformationResponse.biography ?? "No biography found."
                         self.userInformation.createdDate = userInformationResponse.createdDate
                     }).catch({ error in

@@ -201,9 +201,9 @@ class IamagesAPI {
         }
     }
     
-    func get_root_user_info(userAuth: IamagesUserAuth) -> Promise<IamagesUserInformationResponse> {
+    func post_root_user_info(userAuth: IamagesUserAuth) -> Promise<IamagesUserInformationResponse> {
         return Promise<IamagesUserInformationResponse> { seal in
-            makeRequest(method: "GET", endpoint: "user/info/" + userAuth.username, body: nil, encodedUserAuth: nil).done({ response in
+            makeRequest(method: "POST", endpoint: "user/info", body: ["UserName": userAuth.username, "UserPassword": userAuth.password], encodedUserAuth: nil).done({ response in
                 guard let conformedResponse: IamagesUserInformationResponse = IamagesUserInformationResponse(JSONString: response) else {
                     seal.reject(IamagesInvalidResponseError("Could not conform response for /info/" + userAuth.username + " !"))
                     return

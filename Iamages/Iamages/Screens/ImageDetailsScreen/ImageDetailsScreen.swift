@@ -1,7 +1,5 @@
 import SwiftUI
-import KingfisherSwiftUI
-import class Kingfisher.KingfisherManager
-import struct Kingfisher.AnyModifier
+import Kingfisher
 
 // Thanks to Hacking with Swift and Stack Overflow
 fileprivate class ImageSaver: NSObject {
@@ -45,7 +43,8 @@ struct ImageDetailsScreen: View {
 
     var body: some View {
         ZoomableScrollComponent {
-            KFImage(api.get_root_img(id: file.id), options: [.requestModifier(requestModifier)])
+            KFImage(api.get_root_img(id: file.id))
+                .requestModifier(requestModifier)
                 .resizable()
                 .scaledToFit()
         }.toolbar {

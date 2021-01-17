@@ -54,10 +54,7 @@ struct UserSettingsScreen: View {
                     }.foregroundColor(.red)
                     .disabled(self.isBusy)
                     NavigationLink(destination: DeleteUserScreen(newLogin: self.$newLogin)) {
-                        HStack {
-                            Image(systemName: "person.crop.circle.badge.xmark")
-                            Text("Delete user")
-                        }
+                        Text("Delete user")
                     }.foregroundColor(.red)
                     .disabled(self.isBusy)
                 } else {
