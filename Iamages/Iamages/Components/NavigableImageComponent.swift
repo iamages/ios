@@ -9,7 +9,7 @@ struct NavigableImageComponent: View {
         if isNSFWEnabled || !file.isNSFW {
             NavigationLink(destination: ImageDetailsScreen(file: file, requestModifier: requestModifier), label: {
                 GroupBox(label: Text(verbatim: file.description), content: {
-                    KFImage(api.get_root_img(id: file.id))
+                    KFImage(api.get_root_thumb(id: file.id))
                         .requestModifier(requestModifier)
                         .resizable()
                         .cancelOnDisappear(true)

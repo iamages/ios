@@ -3,6 +3,7 @@ import SwiftUI
 enum ScrollableListTypes {
     case latest
     case user
+    case random
 }
 
 struct ScrollableFilesListComponent: View {
@@ -18,6 +19,10 @@ struct ScrollableFilesListComponent: View {
                     }
                 case .user:
                     ForEach(dataCentralObservable.userFiles, id: \.id) { file in
+                        NavigableImageComponent(file: file, requestModifier: dataCentralObservable.userRequestModifier)
+                    }
+                case .random:
+                    ForEach(dataCentralObservable.randomFiles, id: \.id) { file in
                         NavigableImageComponent(file: file, requestModifier: dataCentralObservable.userRequestModifier)
                     }
                 }

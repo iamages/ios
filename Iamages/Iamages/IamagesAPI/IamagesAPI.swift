@@ -99,12 +99,30 @@ class IamagesAPI {
         }
     }
     
+    func get_root_random() -> Promise<IamagesFileInformationResponse> {
+        return Promise<IamagesFileInformationResponse> { seal in
+            makeRequest(method: "GET", endpoint: "random/", body: nil, encodedUserAuth: nil).done({ response in
+                guard let conformedResponse: IamagesFileInformationResponse = IamagesFileInformationResponse(JSONString: response) else {
+                    seal.reject(IamagesInvalidResponseError("Could not conform response for /random/!"))
+                    return
+                }
+                seal.fulfill(conformedResponse)
+            }).catch({ error in
+                seal.reject(error)
+            })
+        }
+    }
+    
     func get_root_embed(id: Int) -> URL {
         return URL(string: self.IAMAGES_APIROOT + "embed/" + String(id))!
     }
     
     func get_root_img(id: Int) -> URL {
         return URL(string: self.IAMAGES_APIROOT + "img/" + String(id))!
+    }
+    
+    func get_root_thumb(id: Int) -> URL {
+        return URL(string: self.IAMAGES_APIROOT + "thumb/" + String(id))!
     }
     
     func put_root_upload(information: IamagesUploadRequest, preferredUploadFormat: IamagesUploadableFormats, userAuth: IamagesUserAuth?) -> Promise<IamagesUploadResponse> {

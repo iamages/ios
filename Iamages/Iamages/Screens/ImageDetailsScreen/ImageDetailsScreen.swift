@@ -46,6 +46,11 @@ struct ImageDetailsScreen: View {
             KFImage(api.get_root_img(id: file.id))
                 .requestModifier(requestModifier)
                 .resizable()
+                .placeholder {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.largeTitle)
+                        .opacity(0.3)
+                }
                 .scaledToFit()
         }.toolbar {
             ToolbarItem(placement: .principal) {

@@ -28,6 +28,11 @@ struct InitialRefreshCover: View {
             print("Failed to refresh latest user data.")
             self.isInitialRefreshCoverPresented = false
         })
+        dataCentralObservable.fetchRandom().done({ yes in
+            print("Successfully refreshed initial random data.")
+        }).catch({ error in
+            print("Failed to refresh initial random mdata.")
+        })
     }
 }
 

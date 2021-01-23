@@ -17,6 +17,10 @@ struct AppScreen: View {
                 Image(systemName: "clock.fill")
                 Text("Latest")
             }
+            RandomScreen().tabItem {
+                Image(systemName: "photo.fill.on.rectangle.fill")
+                Text("Random")
+            }
             UploadScreen().tabItem {
                 Image(systemName: "square.and.arrow.up.fill")
                 Text("Upload")

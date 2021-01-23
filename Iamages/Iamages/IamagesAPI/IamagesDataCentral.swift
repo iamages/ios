@@ -16,6 +16,8 @@ class IamagesDataCentral: ObservableObject {
     
     @Published var userFiles: [IamagesFileInformationResponse] = []
     
+    @Published var randomFiles: [IamagesFileInformationResponse] = []
+    
     func fetchLatest() -> Promise<Bool> {
         self.latestFiles = []
 
@@ -75,6 +77,19 @@ class IamagesDataCentral: ObservableObject {
             } else {
                 seal.reject(IamagesUnauthenticatedUserError("User is not logged in!"))
             }
+        }
+    }
+    
+    func fetchRandom() -> Promise<Bool> {
+        self.randomFiles = []
+
+        return Promise<Bool> { seal in
+            api.get_root_random().done({ information in
+                self.randomFiles.append(information)
+                seal.fulfill(true)
+            }).catch({ error in
+                seal.reject(error)
+            })
         }
     }
     
@@ -222,5 +237,10 @@ class IamagesDataCentral: ObservableObject {
         let cache = ImageCache.default
         cache.clearMemoryCache()
         cache.clearDiskCache()
+    }
+    
+    init() {
+        ImageCache.default.diskStorage.config.sizeLimit = 1024 * 1024 * 1024
+        ImageCache.default.diskStorage.config.expiration = .seconds(600)
     }
 }
