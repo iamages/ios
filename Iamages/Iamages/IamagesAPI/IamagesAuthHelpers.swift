@@ -50,7 +50,7 @@ class IamagesUserAuthHelpers {
     }
 
     func getUserAuthFromKeychain() -> IamagesUserAuth {
-        return IamagesUserAuth(username: keychain.get("username") ?? "No username", password: keychain.get("password") ?? "")
+        return IamagesUserAuth(username: keychain.get("username") ?? NSLocalizedString("No username", comment: ""), password: keychain.get("password") ?? "")
     }
 
     func saveUserAuthToKeychain(userAuth: IamagesUserAuth) throws {

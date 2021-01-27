@@ -7,7 +7,7 @@ struct SettingsScreen: View {
             Form {
                 Section(header: Text("User")) {
                     HStack {
-                        Text("Name")
+                        Text("Username")
                         Spacer()
                         Text(dataCentralObservable.userInformation.auth.username)
                             .bold()
@@ -61,7 +61,7 @@ struct SettingsScreen: View {
                             Image(systemName: "chevron.left.slash.chevron.right")
                         }
                     }
-                    Link(destination: URL(string: "https://discord.gg/Gf3JEftFqr")!) {
+                    Link(destination: URL(string: "https://discord.gg/hGwGkZsuXB")!) {
                         HStack {
                             Text("Join our Discord")
                             Spacer()

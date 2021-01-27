@@ -8,7 +8,7 @@ class IamagesDataCentral: ObservableObject {
     @Published var latestFiles: [IamagesFileInformationResponse] = []
     
     @Published var isUserLoggedIn: Bool = false
-    @Published var userInformation: IamagesUserInformation = IamagesUserInformation(auth: IamagesUserAuth(username: "No username", password: ""), biography: "No biography found.", createdDate: "No created date found.")
+    @Published var userInformation: IamagesUserInformation = IamagesUserInformation(auth: IamagesUserAuth(username: NSLocalizedString("No username", comment: ""), password: ""), biography: NSLocalizedString("No biography found.", comment: ""), createdDate: NSLocalizedString("No created date found.", comment: ""))
     @Published var encodedUserAuth: String = ""
     @Published var userRequestModifier: AnyModifier = AnyModifier(modify: { request in
         return request
@@ -43,13 +43,13 @@ class IamagesDataCentral: ObservableObject {
         self.encodedUserAuth = auth.getEncodedUserAuth(userAuth: self.userInformation.auth)
         self.userRequestModifier = auth.getRequestModifier(encodedUserAuth: self.encodedUserAuth)
         
-        self.userInformation.biography = "No biography found."
-        self.userInformation.createdDate = "No created date found."
+        self.userInformation.biography = NSLocalizedString("No biography found.", comment: "")
+        self.userInformation.createdDate = NSLocalizedString("No created date found.", comment: "")
 
         self.userFiles = []
 
         return Promise<Bool> { seal in
-            if userInformation.auth.username != "No username" && userInformation.auth.password != "" {
+            if userInformation.auth.username != NSLocalizedString("No username", comment: "") && userInformation.auth.password != "" {
                 api.post_root_user_check(userAuth: self.userInformation.auth).done({ yes in
                     self.isUserLoggedIn = yes
                     api.post_root_user_files(userAuth: self.userInformation.auth).done({ userFiles in
@@ -64,14 +64,14 @@ class IamagesDataCentral: ObservableObject {
                         seal.reject(error)
                     })
                     api.post_root_user_info(userAuth: self.userInformation.auth).done({ userInformationResponse in
-                        self.userInformation.biography = userInformationResponse.biography ?? "No biography found."
+                        self.userInformation.biography = userInformationResponse.biography ?? NSLocalizedString("No biography found.", comment: "")
                         self.userInformation.createdDate = userInformationResponse.createdDate
                     }).catch({ error in
                         print(error)
                     })
                     seal.fulfill(true)
                 }).catch({ error in
-                    self.userInformation = IamagesUserInformation(auth: IamagesUserAuth(username: "No username", password: ""), biography: "No biography found.", createdDate: "No created date found.")
+                    self.userInformation = IamagesUserInformation(auth: IamagesUserAuth(username: NSLocalizedString("No username", comment: ""), password: ""), biography: NSLocalizedString("No biography found.", comment: ""), createdDate: NSLocalizedString("No created date found.", comment: ""))
                     seal.reject(error)
                 })
             } else {
@@ -211,7 +211,7 @@ class IamagesDataCentral: ObservableObject {
     
     func uploadFile(information: IamagesUploadRequest, preferredUploadFormat: IamagesUploadableFormats) -> Promise<IamagesUploadResponse> {
         var userAuth: IamagesUserAuth?
-        if userInformation.auth.username != "No username" && userInformation.auth.password != "" {
+        if userInformation.auth.username != NSLocalizedString("No username", comment: "") && userInformation.auth.password != "" {
             userAuth = self.userInformation.auth
         }
         return Promise<IamagesUploadResponse> { seal in
