@@ -47,9 +47,7 @@ struct ImageDetailsScreen: View {
                 .requestModifier(requestModifier)
                 .resizable()
                 .placeholder {
-                    Image(systemName: "arrow.triangle.2.circlepath")
-                        .font(.largeTitle)
-                        .opacity(0.3)
+                    ProgressView().progressViewStyle(CircularProgressViewStyle())
                 }
                 .scaledToFit()
         }.toolbar {

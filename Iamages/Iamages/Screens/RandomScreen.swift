@@ -17,29 +17,24 @@ struct RandomScreen: View {
                                 Image(systemName: "arrow.triangle.2.circlepath")
                             }.disabled(self.isBusy)
                         }
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            if self.isBusy {
-                                ProgressView().progressViewStyle(CircularProgressViewStyle())
-                            }
-                        }
                     }
             } else {
-                EmptyHereComponent()
-                    .navigationBarTitle("Random")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button(action: {
-                                self.refreshRandom()
-                            }) {
-                                Image(systemName: "arrow.triangle.2.circlepath")
-                            }.disabled(self.isBusy)
-                        }
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            if self.isBusy {
-                                ProgressView().progressViewStyle(CircularProgressViewStyle())
+                if self.isBusy {
+                    ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
+                        .navigationBarTitle("Latest")
+                } else {
+                    EmptyHereComponent()
+                        .navigationBarTitle("Random")
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button(action: {
+                                    self.refreshRandom()
+                                }) {
+                                    Image(systemName: "arrow.triangle.2.circlepath")
+                                }.disabled(self.isBusy)
                             }
                         }
-                    }
+                }
             }
         }.alert(item: self.$alertItem) { item in
             Alert(title: item.title, message: item.message, dismissButton: item.dismissButton)

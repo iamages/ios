@@ -20,29 +20,24 @@ struct LatestScreen: View {
                                 Image(systemName: "arrow.triangle.2.circlepath")
                             }.disabled(self.isBusy)
                         }
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            if self.isBusy {
-                                ProgressView().progressViewStyle(CircularProgressViewStyle())
-                            }
-                        }
                     }
             } else {
-                EmptyHereComponent()
-                    .navigationBarTitle("Latest")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button(action: {
-                                self.refreshLatest()
-                            }) {
-                                Image(systemName: "arrow.triangle.2.circlepath")
-                            }.disabled(self.isBusy)
-                        }
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            if self.isBusy {
-                                ProgressView().progressViewStyle(CircularProgressViewStyle())
+                if self.isBusy {
+                    ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
+                        .navigationBarTitle("Latest")
+                } else {
+                    EmptyHereComponent()
+                        .navigationBarTitle("Latest")
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button(action: {
+                                    self.refreshLatest()
+                                }) {
+                                    Image(systemName: "arrow.triangle.2.circlepath")
+                                }.disabled(self.isBusy)
                             }
                         }
-                    }
+                }
             }
         }.onAppear() {
             if !self.isFirstRefreshCompleted {

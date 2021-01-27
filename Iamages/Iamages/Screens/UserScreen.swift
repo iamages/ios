@@ -17,31 +17,24 @@ struct UserScreen: View {
                                 Image(systemName: "arrow.triangle.2.circlepath")
                             }.disabled(self.isBusy)
                         }
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            if self.isBusy {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle())
-                            }
-                        }
                     }
             } else {
-                EmptyHereComponent()
-                    .navigationBarTitle(dataCentralObservable.userInformation.auth.username)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button(action: {
-                                self.refreshUser()
-                            }) {
-                                Image(systemName: "arrow.triangle.2.circlepath")
-                            }.disabled(self.isBusy)
-                        }
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            if self.isBusy {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle())
+                if self.isBusy {
+                    ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
+                        .navigationBarTitle("Latest")
+                } else {
+                    EmptyHereComponent()
+                        .navigationBarTitle(dataCentralObservable.userInformation.auth.username)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button(action: {
+                                    self.refreshUser()
+                                }) {
+                                    Image(systemName: "arrow.triangle.2.circlepath")
+                                }.disabled(self.isBusy)
                             }
                         }
-                    }
+                }
             }
         }.alert(item: self.$alertItem) { item in
             Alert(title: item.title, message: item.message, dismissButton: item.dismissButton)

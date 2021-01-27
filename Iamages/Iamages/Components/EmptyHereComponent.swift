@@ -5,7 +5,6 @@ struct EmptyHereComponent: View {
         VStack(alignment: .center) {
             Image(systemName: "cube.transparent")
                 .font(.largeTitle)
-                .padding(.vertical)
             Text("Nothing found here...")
                 .font(.title2)
                 .bold()

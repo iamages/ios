@@ -14,9 +14,7 @@ struct NavigableImageComponent: View {
                         .resizable()
                         .cancelOnDisappear(true)
                         .placeholder {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                                .font(.largeTitle)
-                                .opacity(0.3)
+                            ProgressView().progressViewStyle(CircularProgressViewStyle())
                         }
                         .cornerRadius(4)
                         .scaledToFit()
