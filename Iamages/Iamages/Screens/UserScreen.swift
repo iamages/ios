@@ -21,7 +21,7 @@ struct UserScreen: View {
             } else {
                 if self.isBusy {
                     ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
-                        .navigationBarTitle("Latest")
+                        .navigationBarTitle(dataCentralObservable.userInformation.auth.username)
                 } else {
                     EmptyHereComponent()
                         .navigationBarTitle(dataCentralObservable.userInformation.auth.username)

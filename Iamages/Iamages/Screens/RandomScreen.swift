@@ -21,7 +21,7 @@ struct RandomScreen: View {
             } else {
                 if self.isBusy {
                     ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
-                        .navigationBarTitle("Latest")
+                        .navigationBarTitle("Random")
                 } else {
                     EmptyHereComponent()
                         .navigationBarTitle("Random")
