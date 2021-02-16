@@ -29,10 +29,7 @@ struct UploadEditInformationScreen: View {
                 Button(action: {
                     customBackHandler()
                 }) {
-                    HStack {
-                        Image(systemName: "square.and.arrow.down")
-                        Text("Save")
-                    }
+                    Text("Save")
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
