@@ -40,6 +40,7 @@ enum IamagesUserModifiable: String {
 enum IamagesFileModifiable: String {
     case description = "FileDescription"
     case isNSFW = "FileNSFW"
+    case isExcludeSearch = "FileExcludeSearch"
     case isPrivate = "FilePrivate"
     case deleteFile = "DeleteFile"
 }
@@ -130,6 +131,7 @@ class IamagesAPI {
             var requestBody: [String: AnyHashable] = [
                 "FileDescription": information.description,
                 "FileNSFW": information.isNSFW,
+                "FileExcludeSearch": information.isExcludeSearch
             ]
             
             let b64Data: String?

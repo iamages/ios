@@ -20,6 +20,9 @@ struct ImageDetailsEditInformationScreen: View {
                 Toggle(isOn: $newFile.isNSFW, label: {
                     Text("NSFW")
                 })
+                Toggle(isOn: $newFile.isExcludeSearch) {
+                    Text("Exclude from search")
+                }
                 Toggle(isOn: $newFile.isPrivate, label: {
                     Text("Private")
                 })
@@ -29,16 +32,12 @@ struct ImageDetailsEditInformationScreen: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    self.resetNewFile()
-                }) {
-                    Image(systemName: "pencil.slash")
-                }.disabled(self.isBusy)
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
                     self.saveNewFile()
                 }) {
-                    Image(systemName: "square.and.arrow.down")
+                    HStack {
+                        Text("Save")
+                        Image(systemName: "square.and.arrow.down")
+                    }
                 }.disabled(self.isBusy)
             }
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -60,6 +59,9 @@ struct ImageDetailsEditInformationScreen: View {
         if self.file.isNSFW != self.newFile.isNSFW {
             modifications[.isNSFW] = self.newFile.description
         }
+        if self.file.isExcludeSearch != self.newFile.isExcludeSearch {
+            modifications[.isExcludeSearch] = self.newFile.isExcludeSearch
+        }
         if self.file.isPrivate != self.newFile.isPrivate {
             modifications[.isPrivate] = self.newFile.isPrivate
         }
@@ -77,10 +79,6 @@ struct ImageDetailsEditInformationScreen: View {
             self.isBusy = false
             self.presentationMode.wrappedValue.dismiss()
         }
-    }
-    
-    func resetNewFile() {
-        self.newFile = file
     }
 }
 

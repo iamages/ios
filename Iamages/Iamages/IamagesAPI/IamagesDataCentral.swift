@@ -106,6 +106,7 @@ class IamagesDataCentral: ObservableObject {
             api.patch_root_modify(modifyRequest: IamagesFileModifyRequest(id: id, modifications: modifications), userAuth: self.userInformation.auth).done({ yes in
                 let userFileIndex: Int = self.userFiles.firstIndex(where: {$0.id == id})!
                 let latestFileIndex: Int? = self.latestFiles.firstIndex(where: {$0.id == id})
+                var deleteFromPublic: Bool = false
                 for (modification, value) in modifications {
                     switch modification {
                     case .description:
@@ -118,6 +119,11 @@ class IamagesDataCentral: ObservableObject {
                         if latestFileIndex != nil {
                             self.latestFiles[latestFileIndex!].isNSFW = value as! Bool
                         }
+                    case .isExcludeSearch:
+                        self.userFiles[userFileIndex].isExcludeSearch = value as! Bool
+                        if latestFileIndex != nil {
+                            deleteFromPublic = true
+                        }
                     case .isPrivate:
                         self.userFiles[userFileIndex].isPrivate = value as! Bool
                         if latestFileIndex != nil {
@@ -126,9 +132,12 @@ class IamagesDataCentral: ObservableObject {
                     case .deleteFile:
                         self.userFiles.remove(at: userFileIndex)
                         if latestFileIndex != nil {
-                            self.latestFiles.remove(at: latestFileIndex!)
+                            deleteFromPublic = true
                         }
                     }
+                }
+                if deleteFromPublic {
+                    self.latestFiles.remove(at: latestFileIndex!)
                 }
                 seal.fulfill(yes)
             }).catch({ error in
@@ -217,7 +226,7 @@ class IamagesDataCentral: ObservableObject {
         return Promise<IamagesUploadResponse> { seal in
             api.put_root_upload(information: information, preferredUploadFormat: preferredUploadFormat, userAuth: userAuth).done({ response in
                 api.get_root_info(id: response.id, encodedUserAuth: self.encodedUserAuth).done({ fileInformation in
-                    if !self.isUserLoggedIn || !information.isPrivate {
+                    if !self.isUserLoggedIn || !information.isPrivate && !information.isExcludeSearch {
                         self.latestFiles.insert(fileInformation, at: 0)
                     }
                     if self.isUserLoggedIn {

@@ -39,7 +39,7 @@ struct SettingsScreen: View {
                         Text("App settings")
                     })
                 }
-                Section(header: Text("About"), footer: Text("Iamages iOS 1.0.0")) {
+                Section(header: Text("About"), footer: Text("Iamages iOS 2.1.0 (1)")) {
                     Link(destination: URL(string: api.IAMAGES_APIROOT + "private/tos")!) {
                         HStack {
                             Text("Terms of Service")

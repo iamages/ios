@@ -14,6 +14,7 @@ struct IamagesUploadRequest: Identifiable, Equatable, Hashable {
     let id: UUID = UUID()
     var description: String
     var isNSFW: Bool
+    var isExcludeSearch: Bool
     var isPrivate: Bool
     var img: UIImage
 }

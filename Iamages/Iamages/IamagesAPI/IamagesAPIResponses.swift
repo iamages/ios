@@ -27,6 +27,7 @@ struct IamagesFileInformationResponse: Identifiable, Equatable, Mappable {
     var width: Int
     var height: Int
     var createdDate: String
+    var isExcludeSearch: Bool
     
     init?(map: Map) {
         guard let id: Int = map["FileID"].value(),
@@ -36,7 +37,8 @@ struct IamagesFileInformationResponse: Identifiable, Equatable, Mappable {
               let mime: String = map["FileMime"].value(),
               let width: Int = map["FileWidth"].value(),
               let height: Int = map["FileHeight"].value(),
-              let createdDate: String = map["FileCreatedDate"].value() else {
+              let createdDate: String = map["FileCreatedDate"].value(),
+              let isExcludeSearch: Bool = map["FileExcludeSearch"].value() else {
             print("Missing file information attribute!")
             return nil
         }
@@ -49,6 +51,7 @@ struct IamagesFileInformationResponse: Identifiable, Equatable, Mappable {
         self.width = width
         self.height = height
         self.createdDate = createdDate
+        self.isExcludeSearch = isExcludeSearch
     }
     
     mutating func mapping(map: Map) {
@@ -60,6 +63,7 @@ struct IamagesFileInformationResponse: Identifiable, Equatable, Mappable {
         width <- map["FileWidth"]
         height <- map["FileHeight"]
         createdDate <- map["FileCreatedDate"]
+        isExcludeSearch <- map["FileExcludeSearch"]
     }
 }
 

@@ -4,7 +4,7 @@ struct UploadEditInformationScreen: View {
     @Environment(\.presentationMode) var presentationMode
     let file: IamagesUploadRequest
     @Binding var pickedFileInformation: [IamagesUploadRequest]
-    @State var newFile: IamagesUploadRequest = IamagesUploadRequest(description: "", isNSFW: false, isPrivate: false, img: UIImage())
+    @State var newFile: IamagesUploadRequest = IamagesUploadRequest(description: "", isNSFW: false, isExcludeSearch: false, isPrivate: false, img: UIImage())
 
     var body: some View {
         Form {
@@ -15,6 +15,9 @@ struct UploadEditInformationScreen: View {
                 Toggle(isOn: $newFile.isNSFW, label: {
                     Text("NSFW")
                 })
+                Toggle(isOn: $newFile.isExcludeSearch) {
+                    Text("Exclude from search")
+                }
                 Toggle(isOn: $newFile.isPrivate, label: {
                     Text("Private")
                 })
@@ -26,7 +29,10 @@ struct UploadEditInformationScreen: View {
                 Button(action: {
                     customBackHandler()
                 }) {
-                    Image(systemName: "chevron.backward")
+                    HStack {
+                        Image(systemName: "square.and.arrow.down")
+                        Text("Save")
+                    }
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -53,7 +59,7 @@ struct UploadEditInformationScreen: View {
 }
 
 struct EditInformationScreen_Previews: PreviewProvider {
-    static var file: IamagesUploadRequest = IamagesUploadRequest(description: "No description yet", isNSFW: false, isPrivate: false, img: UIImage())
+    static var file: IamagesUploadRequest = IamagesUploadRequest(description: "No description yet", isNSFW: false, isExcludeSearch: false, isPrivate: false, img: UIImage())
     @State static var pickedFileInformation: [IamagesUploadRequest] = []
     static var previews: some View {
         UploadEditInformationScreen(file: self.file, pickedFileInformation: self.$pickedFileInformation)

@@ -23,11 +23,13 @@
 "Options" = "Options";
 "NSFW" = "NSFW";
 "Private" = "Private";
+"Exclude from search" = "Exclude from search";
 "Meta" = "Meta";
 "Width" = "Width";
 "Height" = "Height";
 "MIME type" = "MIME type";
 "Creation date" = "Creation date";
+"Save" = "Save";
 
 "Share" = "Share";
 "Save to library" = "Save to library";
@@ -45,6 +47,7 @@
 "Deleting user" = "Deleting user";
 "Delete failed" = "Delete failed";
 
+"Select" = "Select";
 "Private file toggle will only apply if you are logged in." = "Private file toggle will only apply if you are logged in.";
 "Uploaded files" = "Uploaded files";
 "Upload failed" = "Upload failed";

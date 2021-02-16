@@ -11,6 +11,9 @@ struct FullInformationScreen: View {
                 Toggle(isOn: $newFile.isNSFW) {
                     Text("NSFW")
                 }.disabled(true)
+                Toggle(isOn: $newFile.isExcludeSearch) {
+                    Text("Exclude from search")
+                }.disabled(true)
                 Toggle(isOn: $newFile.isPrivate) {
                     Text("Private")
                 }.disabled(true)

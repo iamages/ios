@@ -31,7 +31,7 @@ struct ImageDetailsScreen: View {
     let file: IamagesFileInformationResponse
     let requestModifier: AnyModifier
     
-    @State var newFile: IamagesFileInformationResponse = IamagesFileInformationResponse(JSON: ["FileID": 0, "FileDescription": "", "FileNSFW": false, "FilePrivate": false, "FileMime": "", "FileWidth": 0, "FileHeight": 0, "FileCreatedDate": ""])!
+    @State var newFile: IamagesFileInformationResponse = IamagesFileInformationResponse(JSON: ["FileID": 0, "FileDescription": "", "FileNSFW": false, "FilePrivate": false, "FileMime": "", "FileWidth": 0, "FileHeight": 0, "FileCreatedDate": "", "FileExcludeSearch": false])!
     
     @State var isInfoScreenLinkActive: Bool = false
     @State var isEditScreenLinkActive: Bool = false

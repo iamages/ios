@@ -32,7 +32,7 @@ struct PhotoPickerComponent: UIViewControllerRepresentable {
                             print("Could not add photo, error: " + error.localizedDescription)
                         } else {
                             if let newImage = object as? UIImage {
-                                self.parent.pickerResultInformation.append(IamagesUploadRequest(description: NSLocalizedString("No description yet.", comment: ""), isNSFW: false, isPrivate: false, img: newImage))
+                                self.parent.pickerResultInformation.append(IamagesUploadRequest(description: NSLocalizedString("No description yet.", comment: ""), isNSFW: false, isExcludeSearch: false, isPrivate: false, img: newImage))
                             } else {
                                 print("Could not convert an image into UIImage.")
                             }
