@@ -107,6 +107,7 @@ class IamagesDataCentral: ObservableObject {
                 let userFileIndex: Int = self.userFiles.firstIndex(where: {$0.id == id})!
                 let latestFileIndex: Int? = self.latestFiles.firstIndex(where: {$0.id == id})
                 var deleteFromPublic: Bool = false
+                var insertIntoPublic: Bool = false
                 for (modification, value) in modifications {
                     switch modification {
                     case .description:
@@ -121,8 +122,14 @@ class IamagesDataCentral: ObservableObject {
                         }
                     case .isExcludeSearch:
                         self.userFiles[userFileIndex].isExcludeSearch = value as! Bool
-                        if latestFileIndex != nil {
-                            deleteFromPublic = true
+                        if value as! Bool {
+                            if latestFileIndex != nil {
+                                deleteFromPublic = true
+                            }
+                        } else {
+                            if latestFileIndex == nil {
+                                insertIntoPublic = true
+                            }
                         }
                     case .isPrivate:
                         self.userFiles[userFileIndex].isPrivate = value as! Bool
@@ -138,6 +145,9 @@ class IamagesDataCentral: ObservableObject {
                 }
                 if deleteFromPublic {
                     self.latestFiles.remove(at: latestFileIndex!)
+                }
+                if insertIntoPublic {
+                    self.latestFiles.insert(self.userFiles[userFileIndex], at: 0)
                 }
                 seal.fulfill(yes)
             }).catch({ error in
