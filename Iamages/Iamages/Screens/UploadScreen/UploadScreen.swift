@@ -35,11 +35,7 @@ struct UploadScreen: View {
                     Button(action: {
                         self.isPhotosPickerPresented = true
                     }) {
-                        HStack {
-                            Image(systemName: "rectangle.stack.badge.plus")
-                            Text("Select")
-                        }
-                        
+                        Image(systemName: "plus")
                     }.sheet(isPresented: self.$isPhotosPickerPresented) {
                         PhotoPickerComponent(configuration: self.pickerConfig,
                                              pickerResultInformation: self.$pickedFileInformation,
@@ -50,10 +46,7 @@ struct UploadScreen: View {
                     Button(action: {
                         self.isUploadedFilesSheetPresented = true
                     }) {
-                        HStack {
-                            Text("Upload")
-                            Image(systemName: "square.and.arrow.up.on.square")
-                        }
+                        Image(systemName: "arrow.up")
                         
                     }.sheet(isPresented: self.$isUploadedFilesSheetPresented) {
                         UploadedFilesSheet(pickedFileInformation: self.$pickedFileInformation)

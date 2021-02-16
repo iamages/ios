@@ -61,7 +61,7 @@ class IamagesAPI {
             request.httpMethod = method
             AF.request(request)
                 .validate()
-                .responseString(completionHandler: { response in
+                .responseString(encoding: .utf8, completionHandler: { response in
                     switch (response.result) {
                     case .success:
                         seal.fulfill(response.value!)

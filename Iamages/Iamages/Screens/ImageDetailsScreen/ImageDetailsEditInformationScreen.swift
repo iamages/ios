@@ -34,10 +34,7 @@ struct ImageDetailsEditInformationScreen: View {
                 Button(action: {
                     self.saveNewFile()
                 }) {
-                    HStack {
-                        Text("Save")
-                        Image(systemName: "square.and.arrow.down")
-                    }
+                    Text("Save")
                 }.disabled(self.isBusy)
             }
             ToolbarItem(placement: .navigationBarTrailing) {
