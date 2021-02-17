@@ -37,12 +37,20 @@ enum IamagesUserModifiable: String {
     case deleteAccount = "DeleteUser"
 }
 
-enum IamagesFileModifiable: String {
+enum IamagesFileModifiable: String, Equatable, Comparable {
     case description = "FileDescription"
     case isNSFW = "FileNSFW"
     case isExcludeSearch = "FileExcludeSearch"
     case isPrivate = "FilePrivate"
     case deleteFile = "DeleteFile"
+    
+    static func <(lhs: IamagesFileModifiable, rhs: IamagesFileModifiable) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+    
+    static func ==(lhs: IamagesFileModifiable, rhs: IamagesFileModifiable) -> Bool {
+        return lhs.rawValue == rhs.rawValue
+    }
 }
 
 class IamagesAPI {
@@ -192,7 +200,7 @@ class IamagesAPI {
                 for modification in conformedResponse.modifications {
                     appliedModifications.append(IamagesFileModifiable(rawValue: modification)!)
                 }
-                if requestedModifications == appliedModifications {
+                if requestedModifications.count == appliedModifications.count && requestedModifications.sorted() == appliedModifications.sorted() {
                     seal.fulfill(true)
                 } else {
                     seal.reject(IamagesInvalidResponseError("Request modifications not found in response!"))

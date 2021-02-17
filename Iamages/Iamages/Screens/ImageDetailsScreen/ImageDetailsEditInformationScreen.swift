@@ -54,7 +54,7 @@ struct ImageDetailsEditInformationScreen: View {
             modifications[.description] = self.newFile.description
         }
         if self.file.isNSFW != self.newFile.isNSFW {
-            modifications[.isNSFW] = self.newFile.description
+            modifications[.isNSFW] = self.newFile.isNSFW
         }
         if self.file.isExcludeSearch != self.newFile.isExcludeSearch {
             modifications[.isExcludeSearch] = self.newFile.isExcludeSearch
