@@ -93,12 +93,14 @@ struct ImageDetailsScreen: View {
                         .imageScale(.large)
                 }
             }
-        }.onAppear() {
+        }.onAppear {
             if self.isPopBackToRoot {
                 self.presentationMode.wrappedValue.dismiss()
+            } else {
+                self.newFile = file
             }
-            self.newFile = self.file
-        }.background(
+        }
+        .background(
             NavigationLink(destination: FullInformationScreen(newFile: self.$newFile), isActive: self.$isInfoScreenLinkActive) {
                 EmptyView()
             }
@@ -114,13 +116,27 @@ struct ImageDetailsScreen: View {
         )
     }
     
+    // Thanks to Roland Lariotte on Stack Overflow for this smart solution! Apple,
+    // we need a simpler way to open your share menu!
     func openShareSheet() {
-        let av = UIActivityViewController(activityItems: [api.get_root_embed(id: self.file.id)], applicationActivities: nil)
-        UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
+        guard let source = UIApplication.shared.windows.last?.rootViewController else {
+            return
+        }
+
+        let activityVC = UIActivityViewController(activityItems: [api.get_root_embed(id: self.file.id)], applicationActivities: nil)
+
+        if let popoverController = activityVC.popoverPresentationController {
+          popoverController.sourceView = source.view
+          popoverController.sourceRect = CGRect(x: source.view.bounds.midX,
+                                                y: source.view.bounds.midY,
+                                                width: .zero, height: .zero)
+          popoverController.permittedArrowDirections = []
+        }
+        source.present(activityVC, animated: true)
     }
     
     func saveImageToPhotoLibrary() {
-        KingfisherManager.shared.retrieveImage(with: api.get_root_img(id: file.id)) { result in
+        KingfisherManager.shared.retrieveImage(with: api.get_root_img(id: self.file.id)) { result in
             let image = try? result.get().image
             if let image = image {
                 self.imageSaver.saveUIImage(image: image)

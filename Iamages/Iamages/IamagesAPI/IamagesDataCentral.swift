@@ -16,21 +16,19 @@ class IamagesDataCentral: ObservableObject {
     
     @Published var userFiles: [IamagesFileInformationResponse] = []
     
-    @Published var randomFiles: [IamagesFileInformationResponse] = []
+    @Published var searchFiles: [IamagesFileInformationResponse] = []
     
     func fetchLatest() -> Promise<Bool> {
         self.latestFiles = []
-
+        
         return Promise<Bool> { seal in
             api.get_root_latest().done({ latest in
-                for id in latest.ids {
-                    api.get_root_info(id: id, encodedUserAuth: nil).done({ information in
-                        self.latestFiles.append(information)
-                    }).catch({ error in
-                        print("Couldn't get information for file: " + String(id) + ", error: " + error.localizedDescription)
-                    })
-                }
-                seal.fulfill(true)
+                api.get_root_infos(ids: latest, userAuth: nil).done({ informations in
+                    self.latestFiles = informations
+                    seal.fulfill(true)
+                }).catch({ error in
+                    seal.reject(error)
+                })
             }).catch({ error in
                 seal.reject(error)
             })
@@ -77,19 +75,6 @@ class IamagesDataCentral: ObservableObject {
             } else {
                 seal.reject(IamagesUnauthenticatedUserError("User is not logged in!"))
             }
-        }
-    }
-    
-    func fetchRandom() -> Promise<Bool> {
-        self.randomFiles = []
-
-        return Promise<Bool> { seal in
-            api.get_root_random().done({ information in
-                self.randomFiles.append(information)
-                seal.fulfill(true)
-            }).catch({ error in
-                seal.reject(error)
-            })
         }
     }
     

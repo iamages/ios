@@ -31,10 +31,18 @@ enum IamagesUploadableFormats: String {
     case jpeg = "jpeg"
 }
 
-enum IamagesUserModifiable: String {
+enum IamagesUserModifiable: String, Equatable, Comparable {
     case biography = "UserBiography"
     case password = "UserPassword"
     case deleteAccount = "DeleteUser"
+    
+    static func <(lhs: IamagesUserModifiable, rhs: IamagesUserModifiable) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+    
+    static func ==(lhs: IamagesUserModifiable, rhs: IamagesUserModifiable) -> Bool {
+        return lhs.rawValue == rhs.rawValue
+    }
 }
 
 enum IamagesFileModifiable: String, Equatable, Comparable {
@@ -102,6 +110,39 @@ class IamagesAPI {
                     return
                 }
                 seal.fulfill(conformedResponse)
+            }).catch({ error in
+                seal.reject(error)
+            })
+        }
+    }
+    
+    func get_root_infos(ids: IamagesFileIDsResponse, userAuth: IamagesUserAuth?) -> Promise<[IamagesFileInformationResponse]> {
+        return Promise<[IamagesFileInformationResponse]> { seal in
+            var requestBody: [String: AnyHashable] = [
+                "FileIDs": ids.ids
+            ]
+            
+            if userAuth != nil {
+                requestBody["UserName"] = userAuth?.username
+                requestBody["UserPassword"] = userAuth?.password
+            }
+            
+            makeRequest(method: "POST", endpoint: "infos", body: requestBody, encodedUserAuth: nil).done({ response in
+                var parsedResponse: [[String: Any]] = []
+                do {
+                    parsedResponse = try JSONSerialization.jsonObject(with: response.data(using: .utf8)!) as! [[String: Any]]
+                } catch {
+                    seal.reject(error)
+                }
+                var conformedResponses: [IamagesFileInformationResponse] = []
+                for file in parsedResponse {
+                    guard let conformedResponse: IamagesFileInformationResponse = IamagesFileInformationResponse(JSON: file) else {
+                        seal.reject(IamagesInvalidResponseError("Could not conform response for /infos/ !"))
+                        return
+                    }
+                    conformedResponses.append(conformedResponse)
+                }
+                seal.fulfill(conformedResponses)
             }).catch({ error in
                 seal.reject(error)
             })
@@ -231,7 +272,7 @@ class IamagesAPI {
     
     func post_root_user_info(userAuth: IamagesUserAuth) -> Promise<IamagesUserInformationResponse> {
         return Promise<IamagesUserInformationResponse> { seal in
-            makeRequest(method: "POST", endpoint: "user/info", body: ["UserName": userAuth.username, "UserPassword": userAuth.password], encodedUserAuth: nil).done({ response in
+            makeRequest(method: "POST", endpoint: "user/info", body: ["UserName": userAuth.username], encodedUserAuth: nil).done({ response in
                 guard let conformedResponse: IamagesUserInformationResponse = IamagesUserInformationResponse(JSONString: response) else {
                     seal.reject(IamagesInvalidResponseError("Could not conform response for /info/" + userAuth.username + " !"))
                     return

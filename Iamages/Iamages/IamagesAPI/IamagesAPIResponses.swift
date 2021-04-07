@@ -84,10 +84,10 @@ struct IamagesUploadResponse: Identifiable, Mappable, Hashable {
     }
 }
 
-struct IamagesUsernameOnlyResponse: Equatable, Mappable {
+class IamagesUsernameOnlyResponse: Mappable, Equatable {
     var username: String
     
-    init?(map: Map) {
+    required init?(map: Map) {
         guard let username: String = map["UserName"].value() else{
             print("Missing username attribute!")
             return nil
@@ -96,49 +96,76 @@ struct IamagesUsernameOnlyResponse: Equatable, Mappable {
         self.username = username
     }
     
-    mutating func mapping(map: Map) {
+    func mapping(map: Map) {
         username <- map["UserName"]
+    }
+    
+    static func ==(lhs: IamagesUsernameOnlyResponse, rhs: IamagesUsernameOnlyResponse) -> Bool {
+        return lhs.username == rhs.username
     }
 }
 
-struct IamagesUserInformationResponse: Equatable, Mappable {
-    var username: String
+class IamagesUserInformationResponse: IamagesUsernameOnlyResponse {
     var biography: String?
-    var createdDate: String
-    
-    init?(map: Map) {
-        guard let username: String = map["UserName"].value(),
-              let createdDate: String = map["UserInfo.UserCreatedDate"].value() else {
+    var createdDate: String = NSLocalizedString("No created date found.", comment: "")
+
+    required init?(map: Map) {
+        super.init(map: map)
+
+        guard let createdDate: String = map["UserInfo.UserCreatedDate"].value() else {
             print("Missing user information attribute!")
-            return nil
+            return
         }
         
-        self.username = username
         self.createdDate = createdDate
+        self.biography = map["UserInfo.UserBiography"].value()
     }
     
-    mutating func mapping(map: Map) {
-        username <- map["UserName"]
+    override func mapping(map: Map) {
+        super.mapping(map: map)
         biography <- map["UserInfo.UserBiography"]
         createdDate <- map["UserInfo.UserCreatedDate"]
     }
 }
 
+//class IamagesUserModifyResponse: IamagesUsernameOnlyResponse {
+//    var modifications: [IamagesUserModifiable]
+//
+//    required init?(map: Map) {
+//        super.init(map: map)
+//
+//        guard let modifications: [String] = map["Modifications"].value() else {
+//            print("Missing modification information attribute!")
+//            return
+//        }
+//
+//        for modification in modifications {
+//
+//        }
+//    }
+//
+//    override func mapping(map: Map) {
+//        super.mapping(map: map)
+//
+//        modifications <- map["Modifications"]
+//    }
+//}
+
 struct IamagesUserModifyResponse: Mappable {
     var username: String
     var modifications: [String]
-    
+
     init?(map: Map) {
         guard let username: String = map["UserName"].value(),
               let modifications: [String] = map["Modifications"].value() else {
             print("Missing modification information attribute!")
             return nil
         }
-        
+
         self.username = username
         self.modifications = modifications
     }
-    
+
     mutating func mapping(map: Map) {
         username <- map["UserName"]
         modifications <- map["Modifications"]

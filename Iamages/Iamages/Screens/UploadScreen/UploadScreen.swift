@@ -6,6 +6,7 @@ struct UploadScreen: View {
     @State var isUploadedFilesSheetPresented: Bool = false
 
     @State var pickedFileInformation: [IamagesUploadRequest] = []
+    @State var uploadedFilesInformation: [IamagesUploadRequest] = []
 
     var pickerConfig: PHPickerConfiguration {
        var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
@@ -29,13 +30,14 @@ struct UploadScreen: View {
                         })
                     }
                 }.padding(.horizontal)
+                .padding(.vertical)
             }.navigationBarTitle("Upload")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         self.isPhotosPickerPresented = true
                     }) {
-                        Image(systemName: "plus")
+                        Image(systemName: "plus.rectangle.on.rectangle")
                     }.sheet(isPresented: self.$isPhotosPickerPresented) {
                         PhotoPickerComponent(configuration: self.pickerConfig,
                                              pickerResultInformation: self.$pickedFileInformation,
@@ -46,10 +48,15 @@ struct UploadScreen: View {
                     Button(action: {
                         self.isUploadedFilesSheetPresented = true
                     }) {
-                        Image(systemName: "arrow.up")
-                        
-                    }.sheet(isPresented: self.$isUploadedFilesSheetPresented) {
-                        UploadedFilesSheet(pickedFileInformation: self.$pickedFileInformation)
+                        Image(systemName: "square.and.arrow.up.on.square")
+                    }.fullScreenCover(isPresented: self.$isUploadedFilesSheetPresented, onDismiss: {
+                        if self.uploadedFilesInformation.count > 0 {
+                            for uploadedFileInformation in self.uploadedFilesInformation {
+                                self.pickedFileInformation.remove(at: self.pickedFileInformation.firstIndex(of: uploadedFileInformation)!)
+                            }
+                        }
+                    }) {
+                        UploadedFilesCover(pickedFileInformation: self.$pickedFileInformation, uploadedFilesInformation: self.$uploadedFilesInformation, isUploadedFilesCoverPresented: self.$isUploadedFilesSheetPresented)
                     }
                 }
             }

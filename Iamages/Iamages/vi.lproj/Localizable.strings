@@ -1,5 +1,5 @@
 "Latest" = "Mới nhất";
-"Random" = "Ngẫu nhiên";
+"Search" = "Tìm kiếm";
 "Upload" = "Tải lên";
 "User" = "Bạn";
 "Settings" = "Cài đặt";
@@ -93,8 +93,13 @@
 
 "File lists" = "Danh sách ảnh";
 "Show NSFW files" = "Hiển thị các ảnh NSFW";
+"List display layout" = "Bố cục hiển thị danh sách";
+"Card" = "Thẻ";
+"Grid" = "Lưới";
 "Preferred upload format" = "Định dạng tải lên ưu tiên";
 "PNG has higher quality at the expense of time. JPEG produces acceptable quality with faster speeds." = "Ảnh định dạng PNG có chất lượng cao hơn nhưng sẽ mất thời gian tải lên và xuống. Ảnh định dạng JPEG chất lượng thấp hơn nhưng tốc độ tải lên và xuống nhanh hơn.";
+"App appearance" = "Giao diện ứng dụng";
+"Hide bottom tab labels" = "Giấu nhãn tab dưới cùng";
 "Maintainance" = "Bảo trì";
 "Clear cache" = "Xóa bộ nhớ đệm";
 "Image cache cleared" = "Đã xóa bộ nhớ đệm hình ảnh";

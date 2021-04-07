@@ -1,10 +1,12 @@
 import SwiftUI
 import Kingfisher
 
-struct UploadedFilesSheet: View {
+struct UploadedFilesCover: View {
     @EnvironmentObject var dataCentralObservable: IamagesDataCentral
     @AppStorage("PreferredUploadFormat") var preferredUploadFormat: String = "png"
     @Binding var pickedFileInformation: [IamagesUploadRequest]
+    @Binding var uploadedFilesInformation: [IamagesUploadRequest]
+    @Binding var isUploadedFilesCoverPresented: Bool
     @State var uploadedFiles: [IamagesUploadResponse] = []
     @State private var isBusy: Bool = false
     @State var alertItem: AlertItem?
@@ -31,11 +33,19 @@ struct UploadedFilesSheet: View {
                     }
                 }
             }.navigationBarTitle("Uploaded files")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     if self.isBusy {
                         ProgressView().progressViewStyle(CircularProgressViewStyle())
                     }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        self.isUploadedFilesCoverPresented = false
+                    }) {
+                        Image(systemName: "xmark")
+                    }.disabled(self.isBusy)
                 }
             }
             .alert(item: self.$alertItem) { item in
@@ -50,6 +60,7 @@ struct UploadedFilesSheet: View {
                             self.dataCentralObservable.uploadFile(information: file, preferredUploadFormat: IamagesUploadableFormats(rawValue: self.preferredUploadFormat) ?? .png).done({ response in
                                 print("Uploaded: \(file.description)")
                                 uploadedFiles.append(response)
+                                uploadedFilesInformation.append(file)
                                 self.isBusy = false
                             }).catch({ error in
                                 self.isBusy = false
@@ -65,7 +76,9 @@ struct UploadedFilesSheet: View {
 
 struct UploadedFilesCover_Previews: PreviewProvider {
     @State static var pickedFileInformation: [IamagesUploadRequest] = []
+    @State static var uploadedFilesInformation: [IamagesUploadRequest] = []
+    @State static var isUploadedFilesCoverPresented: Bool = false
     static var previews: some View {
-        UploadedFilesSheet(pickedFileInformation: self.$pickedFileInformation)
+        UploadedFilesCover(pickedFileInformation: self.$pickedFileInformation, uploadedFilesInformation: self.$uploadedFilesInformation, isUploadedFilesCoverPresented: self.$isUploadedFilesCoverPresented)
     }
 }

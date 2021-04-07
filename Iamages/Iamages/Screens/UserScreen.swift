@@ -6,22 +6,22 @@ struct UserScreen: View {
     @State var alertItem: AlertItem?
     var body: some View {
         NavigationView {
-            if dataCentralObservable.userFiles.count >= 1 {
-                ScrollableFilesListComponent(list: .user)
+            if self.isBusy {
+                ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
                     .navigationBarTitle(dataCentralObservable.userInformation.auth.username)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button(action: {
-                                self.refreshUser()
-                            }) {
-                                Image(systemName: "arrow.triangle.2.circlepath")
-                            }.disabled(self.isBusy)
-                        }
-                    }
             } else {
-                if self.isBusy {
-                    ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
+                if dataCentralObservable.userFiles.count >= 1 {
+                    GenericFilesListComponent(type: .user)
                         .navigationBarTitle(dataCentralObservable.userInformation.auth.username)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button(action: {
+                                    self.refreshUser()
+                                }) {
+                                    Image(systemName: "arrow.triangle.2.circlepath")
+                                }.disabled(self.isBusy)
+                            }
+                        }
                 } else {
                     EmptyHereComponent()
                         .navigationBarTitle(dataCentralObservable.userInformation.auth.username)

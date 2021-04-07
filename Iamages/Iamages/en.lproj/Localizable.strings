@@ -1,5 +1,5 @@
 "Latest" = "Latest";
-"Random" = "Random";
+"Search" = "Search";
 "Upload" = "Upload";
 "User" = "User";
 "Settings" = "Settings";
@@ -94,8 +94,13 @@
 
 "File lists" = "File lists";
 "Show NSFW files" = "Show NSFW files";
+"List display layout" = "List display layout";
+"Card" = "Card";
+"Grid" = "Grid";
 "Preferred upload format" = "Preferred upload format";
 "PNG has higher quality at the expense of time. JPEG produces acceptable quality with faster speeds." = "PNG has higher quality at the expense of time. JPEG produces acceptable quality with faster speeds.";
+"App appearance" = "App appearance";
+"Hide bottom tab labels" = "Hide bottom tab labels";
 "Maintainance" = "Maintainance";
 "Clear cache" = "Clear cache";
 "Image cache cleared" = "Image cache cleared";

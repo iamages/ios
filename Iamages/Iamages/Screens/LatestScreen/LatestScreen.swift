@@ -9,22 +9,22 @@ struct LatestScreen: View {
 
     var body: some View {
         NavigationView {
-            if dataCentralObservable.latestFiles.count >= 1 {
-                ScrollableFilesListComponent(list: .latest)
+            if self.isBusy {
+                ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
                     .navigationBarTitle("Latest")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button(action: {
-                                self.refreshLatest()
-                            }) {
-                                Image(systemName: "arrow.triangle.2.circlepath")
-                            }.disabled(self.isBusy)
-                        }
-                    }
             } else {
-                if self.isBusy {
-                    ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
+                if dataCentralObservable.latestFiles.count >= 1 {
+                    GenericFilesListComponent(type: .latest)
                         .navigationBarTitle("Latest")
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button(action: {
+                                    self.refreshLatest()
+                                }) {
+                                    Image(systemName: "arrow.triangle.2.circlepath")
+                                }.disabled(self.isBusy)
+                            }
+                        }
                 } else {
                     EmptyHereComponent()
                         .navigationBarTitle("Latest")
