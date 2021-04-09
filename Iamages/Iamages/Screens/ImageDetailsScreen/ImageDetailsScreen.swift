@@ -42,78 +42,101 @@ struct ImageDetailsScreen: View {
     private let imageSaver = ImageSaver()
 
     var body: some View {
-        ZoomableScrollComponent {
-            KFImage(api.get_root_img(id: file.id))
-                .requestModifier(requestModifier)
-                .resizable()
-                .placeholder {
-                    ProgressView().progressViewStyle(CircularProgressViewStyle())
+        if self.isPopBackToRoot {
+            VStack(alignment: .center) {
+                Image(systemName: "pencil")
+                    .font(.largeTitle)
+                    .padding(.vertical)
+                Text("File edited/deleted")
+                    .font(.title2)
+                    .bold()
+                    .padding(.bottom)
+                Text("Tap another file on the side to view it.")
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+            }.padding(.all)
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    EmptyView()
                 }
-                .scaledToFit()
-        }.toolbar {
-            ToolbarItem(placement: .principal) {
-                Button(action: {
-                    self.isInfoScreenLinkActive = true
-                }) {
-                    Image(systemName: "info.circle")
-                        .imageScale(.large)
-                }
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Menu {
-                    Section {
-                        Button(action: {
-                            self.openShareSheet()
-                        }) {
-                            Label("Share", systemImage: "square.and.arrow.up")
-                        }
-                        Button(action: {
-                            self.saveImageToPhotoLibrary()
-                        }) {
-                            Label("Save to library", systemImage: "square.and.arrow.down")
-                        }
-                    }
-                    Section {
-                        if dataCentralObservable.checkEditable(id: file.id) {
-                            Button(action: {
-                                self.isEditScreenLinkActive = true
-                            }) {
-                                Label("Edit file", systemImage: "pencil")
-                            }
-                            Button(action: {
-                                self.isDeleteScreenLinkPresented = true
-                            }) {
-                                Label("Delete file", systemImage: "trash")
-                            }
-                        }
-                    }
-                }
-                label: {
-                    Image(systemName: "ellipsis.circle")
-                        .imageScale(.large)
-                }
-            }
-        }.onAppear {
-            if self.isPopBackToRoot {
+            }.onAppear {
                 self.presentationMode.wrappedValue.dismiss()
-            } else {
+            }
+        } else {
+            ZoomableScrollComponent {
+                KFImage(api.get_root_img(id: file.id))
+                    .requestModifier(requestModifier)
+                    .resizable()
+                    .placeholder {
+                        ProgressView().progressViewStyle(CircularProgressViewStyle())
+                    }
+                    .scaledToFit()
+            }.toolbar {
+                ToolbarItem(placement: .principal) {
+                    Button(action: {
+                        self.isInfoScreenLinkActive = true
+                    }) {
+                        Image(systemName: "info.circle")
+                            .imageScale(.large)
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Section {
+                            Button(action: {
+                                self.openShareSheet()
+                            }) {
+                                Label("Share", systemImage: "square.and.arrow.up")
+                            }
+                            Button(action: {
+                                self.saveImageToPhotoLibrary()
+                            }) {
+                                Label("Save to library", systemImage: "square.and.arrow.down")
+                            }
+                            Button(action: {
+                                self.openMailReportContent()
+                            }) {
+                                Label("Report file", systemImage: "exclamationmark.bubble")
+                            }
+                        }
+                        Section {
+                            if dataCentralObservable.checkEditable(id: file.id) {
+                                Button(action: {
+                                    self.isEditScreenLinkActive = true
+                                }) {
+                                    Label("Edit file", systemImage: "pencil")
+                                }
+                                Button(action: {
+                                    self.isDeleteScreenLinkPresented = true
+                                }) {
+                                    Label("Delete file", systemImage: "trash")
+                                }
+                            }
+                        }
+                    }
+                    label: {
+                        Image(systemName: "ellipsis.circle")
+                            .imageScale(.large)
+                    }
+                }
+            }.onAppear {
                 self.newFile = file
             }
+            .background(
+                NavigationLink(destination: FullInformationScreen(newFile: self.$newFile), isActive: self.$isInfoScreenLinkActive) {
+                    EmptyView()
+                }
+            ).background(
+                NavigationLink(destination: ImageDetailsEditInformationScreen(file: self.file, newFile: self.$newFile, isPopBackToRoot: self.$isPopBackToRoot), isActive: self.$isEditScreenLinkActive) {
+                    EmptyView()
+                }
+            )
+            .background(
+                NavigationLink(destination: DeleteFileScreen(newFile: self.$newFile, isPopBackToRoot: self.$isPopBackToRoot), isActive: self.$isDeleteScreenLinkPresented) {
+                    EmptyView()
+                }
+            )
         }
-        .background(
-            NavigationLink(destination: FullInformationScreen(newFile: self.$newFile), isActive: self.$isInfoScreenLinkActive) {
-                EmptyView()
-            }
-        ).background(
-            NavigationLink(destination: ImageDetailsEditInformationScreen(file: self.file, newFile: self.$newFile, isPopBackToRoot: self.$isPopBackToRoot), isActive: self.$isEditScreenLinkActive) {
-                EmptyView()
-            }
-        )
-        .background(
-            NavigationLink(destination: DeleteFileScreen(newFile: self.$newFile, isPopBackToRoot: self.$isPopBackToRoot), isActive: self.$isDeleteScreenLinkPresented) {
-                EmptyView()
-            }
-        )
     }
     
     // Thanks to Roland Lariotte on Stack Overflow for this smart solution! Apple,
@@ -142,6 +165,10 @@ struct ImageDetailsScreen: View {
                 self.imageSaver.saveUIImage(image: image)
             }
         }
+    }
+    
+    func openMailReportContent() {
+        UIApplication.shared.open(URL(string: "mailto:iamages@uber.space?subject=Report%20Content%20on%20Iamages&body=FileID%3A%20\(self.file.id)%0AReason%3A%20Input%20report%20reason%20here.")!)
     }
 }
 

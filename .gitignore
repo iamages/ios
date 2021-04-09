@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/xcode,swift,swiftpackagemanager,macos
-# Edit at https://www.toptal.com/developers/gitignore?templates=xcode,swift,swiftpackagemanager,macos
+# Created by https://www.toptal.com/developers/gitignore/api/macos,swift
+# Edit at https://www.toptal.com/developers/gitignore?templates=macos,swift
 
 ### macOS ###
 # General
@@ -70,13 +70,13 @@ playground.xcworkspace
 
 # Swift Package Manager
 # Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
-# Packages/
-# Package.pins
-# Package.resolved
+Packages/
+Package.pins
+Package.resolved
 # *.xcodeproj
 # Xcode automatically generates this directory with a .xcworkspacedata file and xcuserdata
 # hence it is not needed unless you have added a package configuration file to your project
-# .swiftpm
+.swiftpm
 
 .build/
 
@@ -86,17 +86,17 @@ playground.xcworkspace
 # https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
 # Pods/
 # Add this line if you want to avoid checking in source code from the Xcode workspace
-# *.xcworkspace
+*.xcworkspace
 
 # Carthage
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
-# Carthage/Checkouts
+Carthage/Checkouts
 
 Carthage/Build/
 
-# Accio dependency management
-Dependencies/
-.accio/
+# Add this lines if you are using Accio dependency management (Deprecated since Xcode 12)
+# Dependencies/
+# .accio/
 
 # fastlane
 # It is recommended to not store the screenshots in the git repo.
@@ -115,28 +115,4 @@ fastlane/test_output
 
 iOSInjectionProject/
 
-### SwiftPackageManager ###
-Packages
-xcuserdata
-*.xcodeproj
-
-
-### Xcode ###
-# Xcode
-# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
-
-
-
-
-## Gcc Patch
-/*.gcno
-
-### Xcode Patch ###
-*.xcodeproj/*
-!*.xcodeproj/project.pbxproj
-!*.xcodeproj/xcshareddata/
-!*.xcworkspace/contents.xcworkspacedata
-**/xcshareddata/WorkspaceSettings.xcsettings
-
-# End of https://www.toptal.com/developers/gitignore/api/xcode,swift,swiftpackagemanager,macos
-
+# End of https://www.toptal.com/developers/gitignore/api/macos,swift

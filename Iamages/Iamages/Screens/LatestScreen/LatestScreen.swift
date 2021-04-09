@@ -13,31 +13,17 @@ struct LatestScreen: View {
                 ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
                     .navigationBarTitle("Latest")
             } else {
-                if dataCentralObservable.latestFiles.count >= 1 {
-                    GenericFilesListComponent(type: .latest)
-                        .navigationBarTitle("Latest")
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarLeading) {
-                                Button(action: {
-                                    self.refreshLatest()
-                                }) {
-                                    Image(systemName: "arrow.triangle.2.circlepath")
-                                }.disabled(self.isBusy)
-                            }
+                FilesListComponent(type: .latest)
+                    .navigationBarTitle("Latest")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {
+                                self.refreshLatest()
+                            }) {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                            }.disabled(self.isBusy)
                         }
-                } else {
-                    EmptyHereComponent()
-                        .navigationBarTitle("Latest")
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarLeading) {
-                                Button(action: {
-                                    self.refreshLatest()
-                                }) {
-                                    Image(systemName: "arrow.triangle.2.circlepath")
-                                }.disabled(self.isBusy)
-                            }
-                        }
-                }
+                    }
             }
         }.onAppear() {
             if !self.isFirstRefreshCompleted {
@@ -48,7 +34,7 @@ struct LatestScreen: View {
             InitialRefreshCover(isInitialRefreshCoverPresented: self.$isInitialRefreshCoverPresented)
         }.alert(item: self.$alertItem) { item in
             Alert(title: item.title, message: item.message, dismissButton: item.dismissButton)
-        }.navigationViewStyle(StackNavigationViewStyle())
+        }
     }
     
     func refreshLatest() {

@@ -5,17 +5,12 @@ struct AppSettingsScreen: View {
     @AppStorage("NSFWEnabled") var isNSFWEnabled: Bool = false
     @AppStorage("PreferredUploadFormat") var preferredUploadFormat: String = "png"
     @AppStorage("HideBottomTabLabelsEnabled") var isHiddenBottomTabLabels: Bool = false
-    @AppStorage("FilesListDisplayLayout") var filesListDisplayLayout: String = "card"
     @State var alertItem: AlertItem?
     var body: some View {
         Form {
             Section(header: Text("File lists")) {
                 Toggle(isOn: self.$isNSFWEnabled) {
                     Text("Show NSFW files")
-                }
-                Picker("List display layout", selection: self.$filesListDisplayLayout) {
-                    Text("Card").tag("card")
-                    Text("Grid").tag("grid")
                 }
             }
 

@@ -10,35 +10,21 @@ struct UserScreen: View {
                 ProgressView("Loading data").progressViewStyle(CircularProgressViewStyle())
                     .navigationBarTitle(dataCentralObservable.userInformation.auth.username)
             } else {
-                if dataCentralObservable.userFiles.count >= 1 {
-                    GenericFilesListComponent(type: .user)
-                        .navigationBarTitle(dataCentralObservable.userInformation.auth.username)
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarLeading) {
-                                Button(action: {
-                                    self.refreshUser()
-                                }) {
-                                    Image(systemName: "arrow.triangle.2.circlepath")
-                                }.disabled(self.isBusy)
-                            }
+                FilesListComponent(type: .user)
+                    .navigationBarTitle(dataCentralObservable.userInformation.auth.username)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {
+                                self.refreshUser()
+                            }) {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                            }.disabled(self.isBusy)
                         }
-                } else {
-                    EmptyHereComponent()
-                        .navigationBarTitle(dataCentralObservable.userInformation.auth.username)
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarLeading) {
-                                Button(action: {
-                                    self.refreshUser()
-                                }) {
-                                    Image(systemName: "arrow.triangle.2.circlepath")
-                                }.disabled(self.isBusy)
-                            }
-                        }
-                }
+                    }
             }
         }.alert(item: self.$alertItem) { item in
             Alert(title: item.title, message: item.message, dismissButton: item.dismissButton)
-        }.navigationViewStyle(StackNavigationViewStyle())
+        }
     }
     
     func refreshUser() {

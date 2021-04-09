@@ -325,7 +325,7 @@ class IamagesAPI {
                 for modification in conformedResponse.modifications {
                     appliedModifications.append(IamagesUserModifiable(rawValue: modification)!)
                 }
-                if requestedModifications == appliedModifications {
+                if requestedModifications.count == appliedModifications.count && requestedModifications.sorted() == appliedModifications.sorted() {
                     seal.fulfill(true)
                 } else {
                     seal.reject(IamagesInvalidResponseError("Request modifications not found in response!"))
