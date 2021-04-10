@@ -1,10 +1,10 @@
 import Foundation
 import ObjectMapper
 
-struct IamagesFileIDsResponse: Equatable, Mappable {
+class IamagesFileIDsResponse: Mappable {
     var ids: [Int]
     
-    init?(map: Map) {
+    required init?(map: Map) {
         guard let ids: [Int] = map["FileIDs"].value() else {
             print("FileID not found in response!")
             return nil
@@ -13,8 +13,28 @@ struct IamagesFileIDsResponse: Equatable, Mappable {
         self.ids = ids
     }
     
-    mutating func mapping(map: Map) {
+    func mapping(map: Map) {
         ids <- map["FileIDs"]
+    }
+}
+
+class IamagesSearchResponse: IamagesFileIDsResponse {
+    var description: String = ""
+    
+    required init?(map: Map) {
+        super.init(map: map)
+        
+        guard let description: String = map["FileDescription"].value() else {
+            print("Missing description attribute!")
+            return
+        }
+        
+        self.description = description
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        description <- map["FileDescription"]
     }
 }
 
@@ -128,46 +148,23 @@ class IamagesUserInformationResponse: IamagesUsernameOnlyResponse {
     }
 }
 
-//class IamagesUserModifyResponse: IamagesUsernameOnlyResponse {
-//    var modifications: [IamagesUserModifiable]
-//
-//    required init?(map: Map) {
-//        super.init(map: map)
-//
-//        guard let modifications: [String] = map["Modifications"].value() else {
-//            print("Missing modification information attribute!")
-//            return
-//        }
-//
-//        for modification in modifications {
-//
-//        }
-//    }
-//
-//    override func mapping(map: Map) {
-//        super.mapping(map: map)
-//
-//        modifications <- map["Modifications"]
-//    }
-//}
+class IamagesUserModifyResponse: IamagesUsernameOnlyResponse {
+    var modifications: [String] = []
 
-struct IamagesUserModifyResponse: Mappable {
-    var username: String
-    var modifications: [String]
+    required init?(map: Map) {
+        super.init(map: map)
 
-    init?(map: Map) {
-        guard let username: String = map["UserName"].value(),
-              let modifications: [String] = map["Modifications"].value() else {
+        guard let modifications: [String] = map["Modifications"].value() else {
             print("Missing modification information attribute!")
-            return nil
+            return
         }
 
-        self.username = username
         self.modifications = modifications
     }
 
-    mutating func mapping(map: Map) {
-        username <- map["UserName"]
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+
         modifications <- map["Modifications"]
     }
 }

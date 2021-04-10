@@ -6,6 +6,7 @@
 
 "Loading data" = "Đang tải";
 "Refresh failed" = "Làm mới không thành công";
+"Search failed" = "Tìm kiếm không thành công";
 "Okay" = "OK";
 
 "NSFW disabled, this file won't be visible." = "NSFW bị vô hiệu hóa, ảnh này sẽ không hiển thị.";
@@ -93,6 +94,7 @@
 
 "File lists" = "Danh sách ảnh";
 "Show NSFW files" = "Hiển thị các ảnh NSFW";
+"Blur NSFW files" = "Làm mờ các ảnh NSFW";
 "List display layout" = "Bố cục hiển thị danh sách";
 "Card" = "Thẻ";
 "Grid" = "Lưới";
@@ -112,3 +114,8 @@
 "Tap another file on the side to view it." = "Nhấn vào một ảnh khác ở bên cạnh để xem nó.";
 
 "Report file" = "Báo cáo ảnh";
+
+"Clear" = "Xóa";
+"Start searching" = "Bắt đầu tìm kiếm";
+"Enter your description above and tap Search on your keyboard to start searching." = "Nhập mô tả của bạn ở trên và nhấn Tìm kiếm trên bàn phím của bạn để bắt đầu tìm kiếm.";
+

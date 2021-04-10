@@ -3,6 +3,7 @@ import class Kingfisher.ImageCache
 
 struct AppSettingsScreen: View {
     @AppStorage("NSFWEnabled") var isNSFWEnabled: Bool = false
+    @AppStorage("NSFWBlurred") var isNSFWBlurred: Bool = true
     @AppStorage("PreferredUploadFormat") var preferredUploadFormat: String = "png"
     @AppStorage("HideBottomTabLabelsEnabled") var isHiddenBottomTabLabels: Bool = false
     @State var alertItem: AlertItem?
@@ -12,6 +13,9 @@ struct AppSettingsScreen: View {
                 Toggle(isOn: self.$isNSFWEnabled) {
                     Text("Show NSFW files")
                 }
+                Toggle(isOn: self.$isNSFWBlurred) {
+                    Text("Blur NSFW files")
+                }.disabled(!self.isNSFWEnabled)
             }
 
             Section(header: Text("Preferred upload format"), footer: Text("PNG has higher quality at the expense of time. JPEG produces acceptable quality with faster speeds.")) {
@@ -34,7 +38,7 @@ struct AppSettingsScreen: View {
                     HStack {
                         Text("Clear cache")
                         Spacer()
-                        Image(systemName: "trash.slash")
+                        Image(systemName: "trash")
                     }
                 }.foregroundColor(.red)
             }

@@ -28,7 +28,7 @@ struct ImageDetailsEditInformationScreen: View {
                 })
             }
         }.navigationBarTitle("Edit file information")
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden(self.isBusy)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {

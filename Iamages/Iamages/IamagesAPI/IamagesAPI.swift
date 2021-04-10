@@ -353,4 +353,22 @@ class IamagesAPI {
             })
         }
     }
+    
+    func post_search(description: String, userAuth: IamagesUserAuth) -> Promise<IamagesSearchResponse> {
+        return Promise<IamagesSearchResponse> { seal in
+            makeRequest(method: "POST", endpoint: "search", body: ["FileDescription": description, "UserName": userAuth.username, "UserPassword": userAuth.password], encodedUserAuth: nil).done({ response in
+                guard let conformedResponse: IamagesSearchResponse = IamagesSearchResponse(JSONString: response) else {
+                    seal.reject(IamagesInvalidResponseError("Could not conform response for /search !"))
+                    return
+                }
+                if conformedResponse.description == description {
+                    seal.fulfill(conformedResponse)
+                } else {
+                    seal.reject(IamagesInvalidResponseError("Description doesn't match"))
+                }
+            }).catch({ error in
+                seal.reject(error)
+            })
+        }
+    }
 }
