@@ -51,7 +51,7 @@ struct SearchScreen: View {
         NavigationView {
             VStack {
                 VStack(alignment: .center, spacing: 0) {
-                    HStack {
+                    HStack(alignment: .center) {
                         SearchBar(text: self.$description, search: self.search)
                             .navigationBarTitle("Search")
                             .alert(item: self.$alertItem) { item in
@@ -84,7 +84,6 @@ struct SearchScreen: View {
     }
     
     func cancel() {
-        self.dataCentralObservable.cancelSearch = true
         self.dataCentralObservable.searchFiles = []
         self.description = ""
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)

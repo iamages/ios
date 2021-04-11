@@ -18,6 +18,7 @@ struct DeleteUserScreen: View {
                     .bold()
                     .multilineTextAlignment(.center)
                 Text("This is not reversible.")
+                    .multilineTextAlignment(.center)
                 Divider()
                 Button("Delete forever", action: {
                     self.deleteUser()

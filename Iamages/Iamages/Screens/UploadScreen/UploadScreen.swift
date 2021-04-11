@@ -2,6 +2,8 @@ import SwiftUI
 import PhotosUI
 
 struct UploadScreen: View {
+    @EnvironmentObject var dataCentralObservable: IamagesDataCentral
+
     @State var isPhotosPickerPresented: Bool = false
     @State var isUploadedFilesSheetPresented: Bool = false
 
@@ -30,7 +32,7 @@ struct UploadScreen: View {
                         })
                     }
                 }.padding(.horizontal)
-                .padding(.vertical)
+                .padding(.bottom)
             }.navigationBarTitle("Upload")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -49,18 +51,21 @@ struct UploadScreen: View {
                         self.isUploadedFilesSheetPresented = true
                     }) {
                         Image(systemName: "square.and.arrow.up.on.square")
-                    }.fullScreenCover(isPresented: self.$isUploadedFilesSheetPresented, onDismiss: {
-                        if self.uploadedFilesInformation.count > 0 {
-                            for uploadedFileInformation in self.uploadedFilesInformation {
-                                self.pickedFileInformation.remove(at: self.pickedFileInformation.firstIndex(of: uploadedFileInformation)!)
-                            }
-                        }
-                    }) {
-                        UploadedFilesCover(pickedFileInformation: self.$pickedFileInformation, uploadedFilesInformation: self.$uploadedFilesInformation, isUploadedFilesCoverPresented: self.$isUploadedFilesSheetPresented)
                     }
                 }
             }
         }.navigationViewStyle(StackNavigationViewStyle())
+        .fullScreenCover(isPresented: self.$isUploadedFilesSheetPresented, onDismiss: {
+            for uploadedFileInformation in self.uploadedFilesInformation {
+                guard let pickedFileInformationIndex: Int = self.pickedFileInformation.firstIndex(of: uploadedFileInformation) else {
+                    continue
+                }
+                self.pickedFileInformation.remove(at: pickedFileInformationIndex)
+            }
+        }) {
+            UploadedFilesCover(pickedFileInformation: self.$pickedFileInformation, uploadedFilesInformation: self.$uploadedFilesInformation, isUploadedFilesCoverPresented: self.$isUploadedFilesSheetPresented)
+                .environmentObject(self.dataCentralObservable)
+        }
     }
 }
 

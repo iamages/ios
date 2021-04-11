@@ -19,6 +19,7 @@ struct DeleteFileScreen: View {
                     .bold()
                     .multilineTextAlignment(.center)
                 Text("This is not reversible.")
+                    .multilineTextAlignment(.center)
                 Divider()
                 Button("Delete forever", action: {
                     self.deleteFile()
@@ -39,6 +40,7 @@ struct DeleteFileScreen: View {
             self.presentationMode.wrappedValue.dismiss()
         }).catch({ error in
             self.alertItem = AlertItem(title: Text("Delete failed"), message: Text(verbatim: error.localizedDescription), dismissButton: .default(Text("Okay")))
+            self.isBusy = false
         })
     }
 }

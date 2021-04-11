@@ -17,7 +17,8 @@ class IamagesDataCentral: ObservableObject {
     @Published var userFiles: [IamagesFileInformationResponse] = []
     
     @Published var searchFiles: [IamagesFileInformationResponse] = []
-    @Published var cancelSearch: Bool = false
+    
+    let cache = ImageCache.default
     
     func fetchLatest() -> Promise<Bool> {
         self.latestFiles = []
@@ -39,21 +40,15 @@ class IamagesDataCentral: ObservableObject {
     func fetchSearch(description: String) -> Promise<Bool> {
         return Promise<Bool> { seal in
             api.post_search(description: description, userAuth: self.userInformation.auth).done({ searchFiles in
-                if self.cancelSearch {
-                    self.searchFiles = []
-                    self.cancelSearch = false
-                } else {
-                    for id in searchFiles.ids {
-                        api.get_root_info(id: id, encodedUserAuth: self.encodedUserAuth).done({ information in
-                            self.searchFiles.append(information)
-                        }).catch({ error in
-                            print("Couldn't get information for file: " + String(id) + ", error: " + error.localizedDescription)
-                        })
-                    }
+                for id in searchFiles.ids {
+                    api.get_root_info(id: id, encodedUserAuth: self.encodedUserAuth).done({ information in
+                        self.searchFiles.append(information)
+                    }).catch({ error in
+                        print("Couldn't get information for file: " + String(id) + ", error: " + error.localizedDescription)
+                    })
                 }
                 seal.fulfill(true)
             }).catch({ error in
-                self.cancelSearch = false
                 seal.reject(error)
             })
         }
@@ -147,6 +142,8 @@ class IamagesDataCentral: ObservableObject {
                         }
                     case .deleteFile:
                         self.userFiles.remove(at: userFileIndex)
+                        self.cache.removeImage(forKey: api.get_root_embed(id: id).absoluteString)
+                        self.cache.removeImage(forKey: api.get_root_img(id: id).absoluteString)
                         if latestFileIndex != nil {
                             deleteFromPublic = true
                         }
@@ -262,9 +259,8 @@ class IamagesDataCentral: ObservableObject {
     }
     
     func clearImageCache() {
-        let cache = ImageCache.default
-        cache.clearMemoryCache()
-        cache.clearDiskCache()
+        self.cache.clearMemoryCache()
+        self.cache.clearDiskCache()
     }
     
     init() {
