@@ -36,6 +36,7 @@
 "Save to library" = "Lưu vào thư viện";
 "Edit file" = "Chỉnh sửa ảnh";
 "Delete file" = "Xoá ảnh";
+"Report file" = "Báo cáo ảnh";
 
 "Modification failed" = "Sửa đổi không thành công";
 "Modification successful" = "Sửa đổi thành công";
@@ -105,6 +106,9 @@
 "Maintainance" = "Bảo trì";
 "Clear cache" = "Xóa bộ nhớ đệm";
 "Image cache cleared" = "Đã xóa bộ nhớ đệm hình ảnh";
+"Iamages server URL" = "Địa chỉ máy chủ Iamages";
+"Do not modify this option if unsure." = "Không sửa đổi tùy chọn này nếu không chắc chắn.";
+"Reset URL" = "Đặt lại mặc định";
 
 "No username" = "Chưa thiết lập";
 "No created date found." = "Chưa có ngày đăng ký";
@@ -112,8 +116,6 @@
 
 "File edited/deleted" = "Đã sửa / xóa ảnh";
 "Tap another file on the side to view it." = "Nhấn vào một ảnh khác ở bên cạnh để xem nó.";
-
-"Report file" = "Báo cáo ảnh";
 
 "Clear" = "Xóa";
 "Start searching" = "Bắt đầu tìm kiếm";

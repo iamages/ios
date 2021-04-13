@@ -78,6 +78,7 @@ struct SearchScreen: View {
     func search() {
         self.dataCentralObservable.fetchSearch(description: self.description).done({ yes in
             print("Search for '\(self.description)' complete.")
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }).catch({ error in
             self.alertItem = AlertItem(title: Text("Search failed"), message: Text(verbatim: error.localizedDescription), dismissButton: .default(Text("Okay")))
         })

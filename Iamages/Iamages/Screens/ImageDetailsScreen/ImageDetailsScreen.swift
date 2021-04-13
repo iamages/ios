@@ -67,6 +67,7 @@ struct ImageDetailsScreen: View {
                 KFImage(api.get_root_img(id: file.id))
                     .requestModifier(requestModifier)
                     .resizable()
+                    .loadImmediately()
                     .placeholder {
                         ProgressView().progressViewStyle(CircularProgressViewStyle())
                     }

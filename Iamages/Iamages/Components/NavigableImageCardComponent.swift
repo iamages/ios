@@ -9,6 +9,7 @@ struct InternalImageComponent: View {
             .requestModifier(requestModifier)
             .resizable()
             .cancelOnDisappear(true)
+            .loadImmediately()
             .placeholder {
                 ProgressView().progressViewStyle(CircularProgressViewStyle())
             }

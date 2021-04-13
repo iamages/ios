@@ -1,6 +1,7 @@
 import Foundation
 import Alamofire
 import PromiseKit
+import SwiftUI
 
 struct IamagesInvalidResponseError: Error {
     let message: String
@@ -62,7 +63,7 @@ enum IamagesFileModifiable: String, Equatable, Comparable {
 }
 
 class IamagesAPI {
-    let IAMAGES_APIROOT: String = "https://iamages.uber.space/iamages/api/"
+    @AppStorage("APIRootURL") var IAMAGES_APIROOT: String = "https://iamages.uber.space/iamages/api/"
 
     private func makeRequest(method: String, endpoint: String, body: [String: Any]?, encodedUserAuth: String?) -> Promise<String> {
         return Promise<String> { seal in

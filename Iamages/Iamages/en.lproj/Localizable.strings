@@ -36,6 +36,7 @@
 "Save to library" = "Save to library";
 "Edit file" = "Edit file";
 "Delete file" = "Delete file";
+"Report file" = "Report file";
 
 "Modification failed" = "Modification failed";
 "Modification successful" = "Modification successful";
@@ -106,6 +107,9 @@
 "Maintainance" = "Maintainance";
 "Clear cache" = "Clear cache";
 "Image cache cleared" = "Image cache cleared";
+"Iamages server URL" = "Iamages server URL";
+"Do not modify this option if unsure." = "Do not modify this option if unsure.";
+"Reset URL" = "Reset URL";
 
 "No username" = "No username";
 "No created date found." = "No created date found.";
@@ -113,8 +117,6 @@
 
 "File edited/deleted" = "File edited/deleted";
 "Tap another file on the side to view it." = "Tap another file on the side to view it.";
-
-"Report file" = "Report file";
 
 "Clear" = "Clear";
 "Start searching" = "Start searching";

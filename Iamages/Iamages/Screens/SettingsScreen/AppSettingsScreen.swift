@@ -4,8 +4,9 @@ import class Kingfisher.ImageCache
 struct AppSettingsScreen: View {
     @AppStorage("NSFWEnabled") var isNSFWEnabled: Bool = false
     @AppStorage("NSFWBlurred") var isNSFWBlurred: Bool = true
-    @AppStorage("PreferredUploadFormat") var preferredUploadFormat: String = "png"
+    @AppStorage("PreferredUploadFormat") var preferredUploadFormat: String = "jpeg"
     @AppStorage("HideBottomTabLabelsEnabled") var isHiddenBottomTabLabels: Bool = false
+    @AppStorage("APIRootURL") var apiRootURL: String = "https://iamages.uber.space/iamages/api/"
     @State var alertItem: AlertItem?
     var body: some View {
         Form {
@@ -17,6 +18,12 @@ struct AppSettingsScreen: View {
                     Text("Blur NSFW files")
                 }.disabled(!self.isNSFWEnabled)
             }
+            
+            Section(header: Text("App appearance")) {
+                Toggle(isOn: self.$isHiddenBottomTabLabels) {
+                    Text("Hide bottom tab labels")
+                }
+            }
 
             Section(header: Text("Preferred upload format"), footer: Text("PNG has higher quality at the expense of time. JPEG produces acceptable quality with faster speeds.")) {
                 Picker("Preferred upload format", selection: self.$preferredUploadFormat) {
@@ -25,9 +32,14 @@ struct AppSettingsScreen: View {
                 }
             }
             
-            Section(header: Text("App appearance")) {
-                Toggle(isOn: self.$isHiddenBottomTabLabels) {
-                    Text("Hide bottom tab labels")
+            Section(header: Text("Iamages server URL"), footer: Text("Do not modify this option if unsure.")) {
+                TextField("Iamages server URL", text: self.$apiRootURL)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.URL)
+                Button(action: {
+                    self.resetAPIUrl()
+                }) {
+                    Text("Reset URL")
                 }
             }
 
@@ -53,6 +65,10 @@ struct AppSettingsScreen: View {
         cache.clearMemoryCache()
         cache.clearDiskCache()
         self.alertItem = AlertItem(title: Text("Image cache cleared"), message: nil, dismissButton: .default(Text("Okay")))
+    }
+    
+    func resetAPIUrl() {
+        self.apiRootURL = "https://iamages.uber.space/iamages/api/"
     }
 }
 
