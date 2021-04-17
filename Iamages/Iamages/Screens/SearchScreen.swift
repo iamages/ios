@@ -16,6 +16,7 @@ struct SearchScreen: View {
                             self.cancel()
                         }
                 }.navigationSearchBarHiddenWhenScrolling(true)
+                .navigationBarTranslucent(false)
                 .navigationBarTitle("Search")
         }
     }
