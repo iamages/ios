@@ -18,6 +18,7 @@
 		2E2E6C27258FA7CD00E061C3 /* ObjectMapper in Frameworks */ = {isa = PBXBuildFile; productRef = 2E2E6C26258FA7CD00E061C3 /* ObjectMapper */; };
 		2E473C12259D637200E33952 /* InitialRefreshCover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E473C11259D637200E33952 /* InitialRefreshCover.swift */; };
 		2E473C17259DBF2600E33952 /* EmptyHereComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E473C16259DBF2600E33952 /* EmptyHereComponent.swift */; };
+		2E6F4DE3262B549A00C837AD /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = 2E6F4DE2262B549A00C837AD /* SwiftUIX */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2E8C255A25B3E79600E4345F /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8C255925B3E79600E4345F /* Kingfisher */; };
 		2EBD157A25A4027C00B41271 /* DeleteFileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EBD157925A4027C00B41271 /* DeleteFileScreen.swift */; };
 		2EBD157D25A54D1F00B41271 /* DeleteUserScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EBD157C25A54D1F00B41271 /* DeleteUserScreen.swift */; };
@@ -93,6 +94,7 @@
 				2E2E6C27258FA7CD00E061C3 /* ObjectMapper in Frameworks */,
 				2E2E6BFF258F9C3500E061C3 /* PromiseKit in Frameworks */,
 				2E2E6C1C258FA3FF00E061C3 /* Alamofire in Frameworks */,
+				2E6F4DE3262B549A00C837AD /* SwiftUIX in Frameworks */,
 				2EC31E69258D9D520042E9C8 /* KeychainSwift in Frameworks */,
 				2E8C255A25B3E79600E4345F /* Kingfisher in Frameworks */,
 			);
@@ -244,6 +246,7 @@
 				2E2E6C1B258FA3FF00E061C3 /* Alamofire */,
 				2E2E6C26258FA7CD00E061C3 /* ObjectMapper */,
 				2E8C255925B3E79600E4345F /* Kingfisher */,
+				2E6F4DE2262B549A00C837AD /* SwiftUIX */,
 			);
 			productName = Iamages;
 			productReference = 2EC31E3D258D98E30042E9C8 /* Iamages.app */;
@@ -278,6 +281,7 @@
 				2E2E6C1A258FA3FF00E061C3 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				2E2E6C25258FA7CD00E061C3 /* XCRemoteSwiftPackageReference "ObjectMapper" */,
 				2E8C255825B3E79600E4345F /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				2E6F4DE1262B549A00C837AD /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 			);
 			productRefGroup = 2EC31E3E258D98E30042E9C8 /* Products */;
 			projectDirPath = "";
@@ -478,7 +482,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Iamages/Iamages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"Iamages/Preview Content\"";
 				DEVELOPMENT_TEAM = 3N8FA5W78T;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
@@ -505,7 +509,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Iamages/Iamages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"Iamages/Preview Content\"";
 				DEVELOPMENT_TEAM = 3N8FA5W78T;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
@@ -573,6 +577,14 @@
 				minimumVersion = 4.2.0;
 			};
 		};
+		2E6F4DE1262B549A00C837AD /* XCRemoteSwiftPackageReference "SwiftUIX" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftUIX/SwiftUIX";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		2E8C255825B3E79600E4345F /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
@@ -606,6 +618,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2E2E6C25258FA7CD00E061C3 /* XCRemoteSwiftPackageReference "ObjectMapper" */;
 			productName = ObjectMapper;
+		};
+		2E6F4DE2262B549A00C837AD /* SwiftUIX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E6F4DE1262B549A00C837AD /* XCRemoteSwiftPackageReference "SwiftUIX" */;
+			productName = SwiftUIX;
 		};
 		2E8C255925B3E79600E4345F /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
