@@ -1,5 +1,6 @@
 import SwiftUI
 import Kingfisher
+import SwiftUIX
 
 // Thanks to Hacking with Swift and Stack Overflow
 fileprivate class ImageSaver: NSObject {
@@ -36,6 +37,8 @@ struct ImageDetailsScreen: View {
     @State var isInfoScreenLinkActive: Bool = false
     @State var isEditScreenLinkActive: Bool = false
     @State var isDeleteScreenLinkPresented: Bool = false
+    
+    @State var isShareSheetPresented: Bool = false
     
     @State var isPopBackToRoot: Bool = false
     
@@ -85,7 +88,7 @@ struct ImageDetailsScreen: View {
                     Menu {
                         Section {
                             Button(action: {
-                                self.openShareSheet()
+                                self.isShareSheetPresented = true
                             }) {
                                 Label("Share", systemImage: "square.and.arrow.up")
                             }
@@ -136,27 +139,10 @@ struct ImageDetailsScreen: View {
                 NavigationLink(destination: DeleteFileScreen(newFile: self.$newFile, isPopBackToRoot: self.$isPopBackToRoot), isActive: self.$isDeleteScreenLinkPresented) {
                     EmptyView()
                 }
-            )
+            ).sheet(isPresented: self.$isShareSheetPresented) {
+                AppActivityView(activityItems: [api.get_root_embed(id: self.file.id)])
+            }
         }
-    }
-    
-    // Thanks to Roland Lariotte on Stack Overflow for this smart solution! Apple,
-    // we need a simpler way to open your share menu!
-    func openShareSheet() {
-        guard let source = UIApplication.shared.windows.last?.rootViewController else {
-            return
-        }
-
-        let activityVC = UIActivityViewController(activityItems: [api.get_root_embed(id: self.file.id)], applicationActivities: nil)
-
-        if let popoverController = activityVC.popoverPresentationController {
-          popoverController.sourceView = source.view
-          popoverController.sourceRect = CGRect(x: source.view.bounds.midX,
-                                                y: source.view.bounds.midY,
-                                                width: .zero, height: .zero)
-          popoverController.permittedArrowDirections = []
-        }
-        source.present(activityVC, animated: true)
     }
     
     func saveImageToPhotoLibrary() {
