@@ -34,6 +34,7 @@ struct EmptyHereComponent: View {
                     .multilineTextAlignment(.center)
             }
         }.padding(.all)
+        .padding(.top)
         
     }
 }

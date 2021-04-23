@@ -10,13 +10,12 @@ struct SearchScreen: View {
         NavigationView {
             FilesListComponent(type: .search)
                 .navigationSearchBar {
-                    SearchBar("Description", text: self.$description, isEditing: self.$isEditing, onCommit: self.search)
+                    SearchBar(NSLocalizedString("Description", comment: ""), text: self.$description, isEditing: self.$isEditing, onCommit: self.search)
                         .showsCancelButton(self.isEditing)
                         .onCancel {
                             self.cancel()
                         }
                 }.navigationSearchBarHiddenWhenScrolling(true)
-                .navigationBarTranslucent(false)
                 .navigationBarTitle("Search")
         }
     }

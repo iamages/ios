@@ -39,6 +39,7 @@ class IamagesDataCentral: ObservableObject {
     
     func fetchSearch(description: String) -> Promise<Bool> {
         return Promise<Bool> { seal in
+            self.searchFiles = []
             api.post_search(description: description, userAuth: self.userInformation.auth).done({ searchFiles in
                 for id in searchFiles.ids {
                     api.get_root_info(id: id, encodedUserAuth: self.encodedUserAuth).done({ information in
