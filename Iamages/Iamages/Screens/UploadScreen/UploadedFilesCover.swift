@@ -16,7 +16,7 @@ struct UploadedFilesCover: View {
                 ForEach(self.uploadedFiles, id: \.self) { uploadedFile in
                     Link(destination: api.get_root_embed(id: uploadedFile.id)) {
                         HStack(alignment: .center) {
-                            KFImage(api.get_root_img(id: uploadedFile.id))
+                            KFImage(api.get_root_thumb(id: uploadedFile.id))
                                 .requestModifier(dataCentralObservable.userRequestModifier)
                                 .resizable()
                                 .cancelOnDisappear(true)
