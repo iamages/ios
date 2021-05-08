@@ -29,7 +29,7 @@ struct AppSettingsScreen: View {
                 Picker("Preferred upload format", selection: self.$preferredUploadFormat) {
                     Text("PNG").tag("png")
                     Text("JPEG").tag("jpeg")
-                }
+                }.pickerStyle(SegmentedPickerStyle())
             }
             
             Section(header: Text("Iamages server URL"), footer: Text("Do not modify this option if unsure.")) {
