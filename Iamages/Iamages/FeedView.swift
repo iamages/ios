@@ -9,9 +9,11 @@ enum Feeds {
 struct FeedView: View {
     @State var selectedFeed: Feeds = .latest
     
+    @State var textFile: FileModal = FileModal(id: "", description: "test description", isNSFW: false, isPrivate: false, isHidden: false, created: Date(), mime: "", width: 0, height: 0)
+    
     var main: some View {
         List {
-            
+            NavigableImageView(file: self.$textFile)
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {

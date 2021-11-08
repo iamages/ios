@@ -6,6 +6,8 @@ struct PreferencesView: View {
     @AppStorage("isNSFWEnabled") var isNSFWEnabled: Bool = true
     @AppStorage("isNSFWBlurred") var isNSFWBlurred: Bool = true
     
+    @State var isResetWarningAlertPresented: Bool = false
+    
     var appSettings: some View {
         Group {
             Toggle(isOn: self.$isNSFWEnabled) {
@@ -30,8 +32,15 @@ struct PreferencesView: View {
             Button(action: self.clearImageCache) {
                 Label("Clear image cache", systemImage: "trash")
             }
-            Button(role: .destructive, action: self.resetAppSettings) {
+            Button(role: .destructive, action: {
+                self.isResetWarningAlertPresented = true
+            }) {
                 Label("Reset app settings", systemImage: "arrow.uturn.backward")
+            }
+            .alert("This will reset all your settings to default. Continue?", isPresented: self.$isResetWarningAlertPresented) {
+                Button(role: .destructive, action: self.resetAppSettings) {
+                    Text("Reset all settings")
+                }
             }
         }
         #if targetEnvironment(macCatalyst)
@@ -97,7 +106,8 @@ struct PreferencesView: View {
     }
     
     func resetAppSettings() {
-        
+        self.isNSFWEnabled = true
+        self.isNSFWBlurred = true
     }
 }
 

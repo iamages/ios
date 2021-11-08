@@ -6,13 +6,15 @@ struct NavigableImageView: View {
     
     var body: some View {
         NavigationLink(destination: EmptyView()) {
-            ZStack {
+            VStack(alignment: .leading) {
                 HStack {
                     // Profile picture
                     Text(verbatim: file.owner ?? "Anonymous")
                 }
+                Divider()
                 // Main image
-                // Description
+                Divider()
+                Text(verbatim: file.description)
             }
         }
     }

@@ -32,8 +32,8 @@ struct RootNavigationView: View {
                 }
             }.listStyle(.sidebar)
             .navigationTitle("Iamages")
-            EmptyView()
-            EmptyView()
+            Text("Select a view from the sidebar.")
+            Text("Select something to view.")
         }
     }
     
@@ -41,7 +41,7 @@ struct RootNavigationView: View {
         TabView(selection: self.$selectedTabItem) {
             FeedView()
                 .tabItem {
-                    Label("Feed", systemImage: "newspaper")
+                    Label("Feed ", systemImage: "newspaper")
                 }.tag(NavigationViews.feed)
             SearchView()
                 .tabItem {
