@@ -1,0 +1,79 @@
+import SwiftUI
+import UniformTypeIdentifiers
+
+struct ImageDetailView: View {
+    @Binding var file: IamagesFile
+    @Binding var isDetailSheetPresented: Bool
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section("Description") {
+                    Text(verbatim: self.file.description)
+                }
+                Section("Options") {
+                    Group {
+                        Toggle(isOn: self.$file.isNSFW) {
+                            Text("NSFW")
+                        }
+                        Toggle(isOn: self.$file.isPrivate) {
+                            Text("Private")
+                        }
+                        Toggle(isOn: self.$file.isHidden) {
+                            Text("Hidden")
+                        }
+                    }
+                    .disabled(true)
+                }
+                if let relativeTimeString = Formatter.localRelativeTime.string(for: self.file.created) {
+                    Section("Created") {
+                        Text(relativeTimeString.capitalized)
+                    }
+                }
+                Section("Image") {
+                    HStack {
+                        Text("Resolution")
+                        Spacer()
+                        Text("\(self.file.width)x\(self.file.height)")
+                            .bold()
+                    }
+                    if let mimeDescription = UTType(mimeType: self.file.mime)?.localizedDescription {
+                        HStack {
+                            Text("Type")
+                            Spacer()
+                            Text(mimeDescription)
+                                .bold()
+                        }
+                    }
+                }
+                Section("Owner") {
+                    HStack {
+                        ProfileImageView(username: self.file.owner)
+                        Text(verbatim: self.file.owner ?? "Anonymous")
+                    }
+                }
+                if let views = self.file.views {
+                    Section("Views") {
+                        Text(String(views))
+                    }
+                }
+            }
+            .toolbar {
+                Button(action: {
+                    self.isDetailSheetPresented = false
+                }) {
+                    Label("Close", systemImage: "xmark")
+                }
+                .keyboardShortcut(.escape)
+            }
+            .navigationTitle("Details")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+struct ImageDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        ImageDetailView(file: .constant(IamagesFile(id: "", description: "", isNSFW: false, isPrivate: false, isHidden: false, created: Date(), mime: "", width: 0, height: 0, owner: nil, views: nil)), isDetailSheetPresented: .constant(false))
+    }
+}
