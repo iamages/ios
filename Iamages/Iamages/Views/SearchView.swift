@@ -71,39 +71,36 @@ struct SearchView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVStack {
-                    switch self.selectedFeed {
-                    case .files:
-                        ForEach(self.$feedFiles) { file in
-                            NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
-                                .task {
-                                    if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
-                                        await self.pageFeed()
-                                    }
+            List {
+                switch self.selectedFeed {
+                case .files:
+                    ForEach(self.$feedFiles) { file in
+                        NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
+                            .task {
+                                if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
+                                    await self.pageFeed()
                                 }
-                        }
-                    case .collections:
-                        ForEach(self.$feedCollections) { collection in
-                            NavigableCollectionView(collection: collection)
-                                .task {
-                                    if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
-                                        await self.pageFeed()
-                                    }
+                            }
+                    }
+                case .collections:
+                    ForEach(self.$feedCollections) { collection in
+                        NavigableCollectionView(collection: collection, feedCollections: self.$feedCollections, type: .publicFeed)
+                            .task {
+                                if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
+                                    await self.pageFeed()
                                 }
-                        }
-                    case .users:
-                        ForEach(self.feedUsers, id: \.self) { user in
-                            NavigableUserView(user: user)
-                                .task {
-                                    if !self.isBusy && !self.isEndOfFeed && self.feedUsers.last == user {
-                                        await self.pageFeed()
-                                    }
+                            }
+                    }
+                case .users:
+                    ForEach(self.feedUsers, id: \.self) { user in
+                        NavigableUserView(user: user)
+                            .task {
+                                if !self.isBusy && !self.isEndOfFeed && self.feedUsers.last == user {
+                                    await self.pageFeed()
                                 }
-                        }
+                            }
                     }
                 }
-                .padding()
             }
             .searchable(text: self.$searchString)
             .onSubmit(of: .search) {
@@ -135,7 +132,6 @@ struct SearchView: View {
                 }
             }
             .navigationTitle("Search")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

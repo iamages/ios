@@ -167,6 +167,39 @@ struct FileModifyRequest: Encodable {
     let data: String
 }
 
+enum CollectionModifiable {
+    case description(String)
+    case isHidden(Bool)
+    case isPrivate(Bool)
+    
+    var field: String {
+        switch self {
+        case .description(_):
+            return "description"
+        case .isPrivate(_):
+            return "private"
+        case .isHidden(_):
+            return "hidden"
+        }
+    }
+    
+    var data: String {
+        switch self {
+        case .description(let description):
+            return description
+        case .isPrivate(let isPrivate):
+            return isPrivate ? "1" : "0"
+        case .isHidden(let isHidden):
+            return isHidden ? "1" : "0"
+        }
+    }
+}
+
+struct CollectionModifyRequest: Encodable {
+    let field: String
+    let data: String
+}
+
 struct UploadFileInfoRequest: Encodable {
     var description: String
     var isNSFW: Bool

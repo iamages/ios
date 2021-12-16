@@ -46,10 +46,12 @@ struct ImageDetailView: View {
                         }
                     }
                 }
-                Section("Owner") {
-                    HStack {
-                        ProfileImageView(username: self.file.owner)
-                        Text(verbatim: self.file.owner ?? "Anonymous")
+                if let owner = self.file.owner {
+                    Section("Owner") {
+                        HStack {
+                            ProfileImageView(username: owner)
+                            Text(verbatim: owner)
+                        }
                     }
                 }
                 if let views = self.file.views {

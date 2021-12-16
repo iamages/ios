@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftUIPullToRefresh
 
 enum UserFeed: String, CaseIterable {
     case files = "Files"
@@ -75,36 +74,27 @@ struct YouView: View {
 
     var body: some View {
         NavigationView {
-            RefreshableScrollView(action: {
-                await self.startFeed()
-            }, progress: { state in
-                if state == .primed {
-                    Text("Release to refresh!")
-                }
-            }) {
-                LazyVStack {
-                    switch self.selectedFeed {
-                    case .files:
-                        ForEach(self.$feedFiles) { file in
-                            NavigableFileView(file: file, feed: self.$feedFiles, type: .privateFeed)
-                                .task {
-                                    if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
-                                        await self.pageFeed()
-                                    }
+            List {
+                switch self.selectedFeed {
+                case .files:
+                    ForEach(self.$feedFiles) { file in
+                        NavigableFileView(file: file, feed: self.$feedFiles, type: .privateFeed)
+                            .task {
+                                if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
+                                    await self.pageFeed()
                                 }
-                        }
-                    case .collections:
-                        ForEach(self.$feedCollections) { collection in
-                            NavigableCollectionView(collection: collection)
-                                .task {
-                                    if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
-                                        await self.pageFeed()
-                                    }
+                            }
+                    }
+                case .collections:
+                    ForEach(self.$feedCollections) { collection in
+                        NavigableCollectionView(collection: collection, feedCollections: self.$feedCollections, type: .privateFeed)
+                            .task {
+                                if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
+                                    await self.pageFeed()
                                 }
-                        }
+                            }
                     }
                 }
-                .padding()
             }
             .onAppear {
                 if !self.isFirstRefreshCompleted {
@@ -124,6 +114,7 @@ struct YouView: View {
                     self.feedCollections = []
                 }
             }
+            .searchable(text: self.$searchString)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Picker("List", selection: self.$selectedFeed) {
@@ -170,7 +161,6 @@ struct YouView: View {
                 Text(self.errorAlertText ?? "Unknown error")
             }
             .navigationTitle("You")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

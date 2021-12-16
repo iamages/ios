@@ -50,6 +50,7 @@ struct DetailedFileView: View {
     @State var fileNameToSave: String?
     @State var isSaveFileSheetPresented: Bool = false
     @State var isSaveFileSuccessAlertPresented: Bool = false
+    @State var saveFileFailMessage: String?
     @State var isSaveFileFailAlertPresented: Bool = false
     
     func setAsProfilePicture () async {
@@ -88,10 +89,11 @@ struct DetailedFileView: View {
                         let creationRequest = PHAssetCreationRequest.forAsset()
                         creationRequest.addResource(with: .photo, data: response.originalData, options: nil)
                     }, completionHandler: { success, error in
-                        if success {
-                            self.isSaveFileSuccessAlertPresented = true
-                        } else {
+                        if error != nil {
+                            self.saveFileFailMessage = error!.localizedDescription
                             self.isSaveFileFailAlertPresented = true
+                        } else {
+                            self.isSaveFileSuccessAlertPresented = true
                         }
                     })
                 case .toFileDocument:
@@ -101,7 +103,8 @@ struct DetailedFileView: View {
                         self.isSaveFileSheetPresented = true
                     }
                 }
-            case .failure(_):
+            case .failure(let error):
+                self.saveFileFailMessage = error.localizedDescription
                 self.isSaveFileFailAlertPresented = true
             }
             self.isBusy = false
@@ -115,15 +118,23 @@ struct DetailedFileView: View {
         )
     }
     
-    func reportContent () {
+    func report () {
         UIApplication.shared.open(URL(
             string: "mailto:iamages@uber.space?subject=\("Report file: \(self.file.id)".urlEncode())&body=\("Reason:".urlEncode())"
         )!)
     }
+    
+    func checkBelongsToUser () -> Bool {
+        return self.file.owner != nil && self.file.owner! == self.dataObservable.currentAppUser?.username
+    }
+    
+    func checkAlreadyProfilePicture () -> Bool {
+        return self.dataObservable.currentAppUserInformation?.pfp == self.file.id
+    }
 
     var body: some View {
         if self.isDeleted {
-            Label("File has been deleted. Pick something else on the side to view.", systemImage: "trash")
+            Label("File has been deleted. Pick something else on the sidebar.", systemImage: "trash")
         } else {
             ZoomableScrollComponent {
                 KFAnimatedImage(self.dataObservable.getFileImageURL(id: self.file.id))
@@ -170,8 +181,7 @@ struct DetailedFileView: View {
                         }) {
                             Label("Save", systemImage: "square.and.arrow.down")
                         }
-                        if self.file.owner != nil &&
-                           self.file.owner! == self.dataObservable.currentAppUser?.username {
+                        if self.checkBelongsToUser() {
                             Divider()
                             Button(action: {
                                 self.isModifyFileSheetPresented = true
@@ -183,22 +193,20 @@ struct DetailedFileView: View {
                             }) {
                                 Label("Delete", systemImage: "trash")
                             }
-                            .disabled(self.dataObservable.currentAppUserInformation?.pfp == self.file.id)
+                            .disabled(self.checkAlreadyProfilePicture())
                         }
-                        if self.file.owner != nil &&
-                           self.file.owner! == self.dataObservable.currentAppUser?.username &&
-                           !self.file.isPrivate
-                        {
+                        if self.checkBelongsToUser() && !self.file.isPrivate {
                             Divider()
                             Button(action: {
                                 self.isSetProfilePictureAlertPresented = true
                             }) {
                                 Label("Set as profile picture", systemImage: "person.crop.circle")
                             }
+                            .disabled(self.checkAlreadyProfilePicture())
                         }
                         Divider()
-                        Button(action: self.reportContent) {
-                            Label("Report content", systemImage: "exclamationmark.bubble")
+                        Button(action: self.report) {
+                            Label("Report file", systemImage: "exclamationmark.bubble")
                         }
                     }) {
                         Label("Actions", systemImage: "ellipsis.circle")
@@ -253,8 +261,13 @@ struct DetailedFileView: View {
                     self.isSaveFileFailAlertPresented = true
                 }
             }
-            .alert("File save successful", isPresented: self.$isSaveFileSuccessAlertPresented, actions: {}, message: "The file has been saved to your selected destination.")
-            .alert("File save failed", isPresented: self.$isSaveFileFailAlertPresented, actions: {}, message: "")
+            .alert("File save successful", isPresented: self.$isSaveFileSuccessAlertPresented, actions: {}, message: {
+                Text("The file has been saved to your selected destination.")
+            })
+            .alert("File save failed", isPresented: self.$isSaveFileFailAlertPresented, actions: {}, message: {
+                Text(self.saveFileFailMessage ?? "Unknown error")
+                
+            })
             .navigationBarBackButtonHidden(self.isBusy)
         }
     }

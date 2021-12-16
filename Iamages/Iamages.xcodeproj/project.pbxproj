@@ -11,11 +11,12 @@
 		2E04BC692764D58100093D45 /* ModifyFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04BC682764D58100093D45 /* ModifyFileView.swift */; };
 		2E04BC702765D5D300093D45 /* SPConfetti in Frameworks */ = {isa = PBXBuildFile; productRef = 2E04BC6F2765D5D300093D45 /* SPConfetti */; };
 		2E4A7DD62750C9A5000CCC27 /* String+urlEncode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4A7DD52750C9A5000CCC27 /* String+urlEncode.swift */; };
-		2E4A7DD82757BD71000CCC27 /* PublicCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4A7DD72757BD71000CCC27 /* PublicCollectionView.swift */; };
+		2E4A7DD82757BD71000CCC27 /* DetailedCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4A7DD72757BD71000CCC27 /* DetailedCollectionView.swift */; };
+		2E57B905276AC91A00FCF96A /* ModifyCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E57B904276AC91A00FCF96A /* ModifyCollectionView.swift */; };
+		2E57B907276AD16800FCF96A /* CollectionDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E57B906276AD16800FCF96A /* CollectionDetailsView.swift */; };
 		2E58F87F27377A000055EA4C /* UploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E58F87E27377A000055EA4C /* UploadView.swift */; };
 		2E58F8812737A9DD0055EA4C /* YouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E58F8802737A9DD0055EA4C /* YouView.swift */; };
 		2E5FB90827448DB000BA05DE /* ManageUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5FB90727448DB000BA05DE /* ManageUserView.swift */; };
-		2E77D810276251FF003991DD /* SwiftUIPullToRefresh in Frameworks */ = {isa = PBXBuildFile; productRef = 2E77D80F276251FF003991DD /* SwiftUIPullToRefresh */; };
 		2E77D81327625275003991DD /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2E77D81227625275003991DD /* Kingfisher */; };
 		2E89ED32273DF02E00DE77F7 /* Formatter+dates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E89ED31273DF02E00DE77F7 /* Formatter+dates.swift */; };
 		2E89ED34273DF1D700DE77F7 /* JSONDecoder+customISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E89ED33273DF1D700DE77F7 /* JSONDecoder+customISO8601.swift */; };
@@ -47,7 +48,9 @@
 /* Begin PBXFileReference section */
 		2E04BC682764D58100093D45 /* ModifyFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifyFileView.swift; sourceTree = "<group>"; };
 		2E4A7DD52750C9A5000CCC27 /* String+urlEncode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+urlEncode.swift"; sourceTree = "<group>"; };
-		2E4A7DD72757BD71000CCC27 /* PublicCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCollectionView.swift; sourceTree = "<group>"; };
+		2E4A7DD72757BD71000CCC27 /* DetailedCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedCollectionView.swift; sourceTree = "<group>"; };
+		2E57B904276AC91A00FCF96A /* ModifyCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifyCollectionView.swift; sourceTree = "<group>"; };
+		2E57B906276AD16800FCF96A /* CollectionDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionDetailsView.swift; sourceTree = "<group>"; };
 		2E58F87E27377A000055EA4C /* UploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadView.swift; sourceTree = "<group>"; };
 		2E58F8802737A9DD0055EA4C /* YouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouView.swift; sourceTree = "<group>"; };
 		2E5FB90727448DB000BA05DE /* ManageUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageUserView.swift; sourceTree = "<group>"; };
@@ -86,7 +89,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E77D81327625275003991DD /* Kingfisher in Frameworks */,
-				2E77D810276251FF003991DD /* SwiftUIPullToRefresh in Frameworks */,
 				2EE413D02732DC860015CDAB /* KeychainAccess in Frameworks */,
 				2E04BC672764517D00093D45 /* ImagePickerView in Frameworks */,
 				2E04BC702765D5D300093D45 /* SPConfetti in Frameworks */,
@@ -121,7 +123,9 @@
 		2E04BC6C2764F7E400093D45 /* CollectionViews */ = {
 			isa = PBXGroup;
 			children = (
-				2E4A7DD72757BD71000CCC27 /* PublicCollectionView.swift */,
+				2E4A7DD72757BD71000CCC27 /* DetailedCollectionView.swift */,
+				2E57B906276AD16800FCF96A /* CollectionDetailsView.swift */,
+				2E57B904276AC91A00FCF96A /* ModifyCollectionView.swift */,
 			);
 			path = CollectionViews;
 			sourceTree = "<group>";
@@ -241,7 +245,6 @@
 			name = Iamages;
 			packageProductDependencies = (
 				2EE413CF2732DC860015CDAB /* KeychainAccess */,
-				2E77D80F276251FF003991DD /* SwiftUIPullToRefresh */,
 				2E77D81227625275003991DD /* Kingfisher */,
 				2E04BC662764517D00093D45 /* ImagePickerView */,
 				2E04BC6F2765D5D300093D45 /* SPConfetti */,
@@ -276,7 +279,6 @@
 			mainGroup = 2ECDB3102732B420005D81E2;
 			packageReferences = (
 				2EE413CE2732DC860015CDAB /* XCRemoteSwiftPackageReference "KeychainAccess" */,
-				2E77D80E276251FF003991DD /* XCRemoteSwiftPackageReference "swiftui-pull-to-refresh" */,
 				2E77D81127625275003991DD /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				2E04BC652764517D00093D45 /* XCRemoteSwiftPackageReference "ImagePickerView" */,
 				2E04BC6E2765D5D300093D45 /* XCRemoteSwiftPackageReference "SPConfetti" */,
@@ -314,7 +316,7 @@
 				2EB61BAA273FF87300B265DE /* ImageDetailView.swift in Sources */,
 				2EAA971B2736BEC0005ED8A0 /* NavigableCollectionView.swift in Sources */,
 				2EB61BAF2741F0D600B265DE /* ZoomableScrollView.swift in Sources */,
-				2E4A7DD82757BD71000CCC27 /* PublicCollectionView.swift in Sources */,
+				2E4A7DD82757BD71000CCC27 /* DetailedCollectionView.swift in Sources */,
 				2E5FB90827448DB000BA05DE /* ManageUserView.swift in Sources */,
 				2E04BC692764D58100093D45 /* ModifyFileView.swift in Sources */,
 				2ECDB32C2732B532005D81E2 /* PreferencesView.swift in Sources */,
@@ -326,7 +328,9 @@
 				2EE413DF2733B3C30015CDAB /* Modals.swift in Sources */,
 				2E89ED36273E3AD300DE77F7 /* NavigableUserView.swift in Sources */,
 				2ECDB31F2732B420005D81E2 /* RootNavigationView.swift in Sources */,
+				2E57B907276AD16800FCF96A /* CollectionDetailsView.swift in Sources */,
 				2E89ED34273DF1D700DE77F7 /* JSONDecoder+customISO8601.swift in Sources */,
+				2E57B905276AC91A00FCF96A /* ModifyCollectionView.swift in Sources */,
 				2E89ED38273E567300DE77F7 /* ProfileImageView.swift in Sources */,
 				2EAA97192736AB87005ED8A0 /* SearchView.swift in Sources */,
 				2ECDB31D2732B420005D81E2 /* IamagesApp.swift in Sources */,
@@ -565,14 +569,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		2E77D80E276251FF003991DD /* XCRemoteSwiftPackageReference "swiftui-pull-to-refresh" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/globulus/swiftui-pull-to-refresh";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		2E77D81127625275003991DD /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
@@ -601,11 +597,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2E04BC6E2765D5D300093D45 /* XCRemoteSwiftPackageReference "SPConfetti" */;
 			productName = SPConfetti;
-		};
-		2E77D80F276251FF003991DD /* SwiftUIPullToRefresh */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2E77D80E276251FF003991DD /* XCRemoteSwiftPackageReference "swiftui-pull-to-refresh" */;
-			productName = SwiftUIPullToRefresh;
 		};
 		2E77D81227625275003991DD /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;

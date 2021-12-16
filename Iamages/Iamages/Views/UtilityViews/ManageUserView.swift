@@ -258,7 +258,6 @@ struct ManageUserView: View {
             }
             .alert(self.errorText ?? "Unknown error.", isPresented: self.$isErrorAlertPresented) {}
             .navigationTitle((self.dataObservable.currentAppUser?.username == nil)  ? "Login" : "Manage")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

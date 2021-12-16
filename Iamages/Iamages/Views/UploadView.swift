@@ -74,7 +74,6 @@ struct UploadView: View {
                 
             }
             .navigationTitle("Upload")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

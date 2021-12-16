@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftUIPullToRefresh
 
 enum PublicFeed: String, CaseIterable {
     case latestFiles = "Latest Files"
@@ -74,54 +73,44 @@ struct FeedView: View {
 
     var body: some View {
         NavigationView {
-            RefreshableScrollView(action: {
-                await self.startFeed()
-            }, progress: { state in
-                if state == .primed {
-                    Text("Release to refresh!")
-                }
-            }) {
-                LazyVStack {
-                    if self.selectedFeed != .latestCollections {
-                        ForEach(self.$feedFiles) { file in
-                            if self.selectedFeed == .latestFiles {
-                                NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
-                                    .task {
-                                        if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
-                                            await self.pageFeed()
-                                        }
-                                    }
-                            } else {
-                                NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
-                            }
-                        }
-                    } else {
-                        ForEach(self.$feedCollections) { collection in
-                            NavigableCollectionView(collection: collection)
+            List {
+                if self.selectedFeed != .latestCollections {
+                    ForEach(self.$feedFiles) { file in
+                        if self.selectedFeed == .latestFiles {
+                            NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
                                 .task {
-                                    if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
+                                    if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
                                         await self.pageFeed()
                                     }
                                 }
+                        } else {
+                            NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
                         }
                     }
+                } else {
+                    ForEach(self.$feedCollections) { collection in
+                        NavigableCollectionView(collection: collection, feedCollections: self.$feedCollections, type: .publicFeed)
+                            .task {
+                                if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
+                                    await self.pageFeed()
+                                }
+                            }
+                    }
                 }
-                .padding()
             }
-            .task {
+            .onAppear {
                 if !self.isFirstRefreshCompleted {
-                    await self.startFeed()
+                    Task {
+                        await self.startFeed()
+                    }
                     self.isFirstRefreshCompleted = true
                 }
             }
-//            .onAppear {
-//                if !self.isFirstRefreshCompleted {
-//                    Task {
-//                        await self.startFeed()
-//                    }
-//                    self.isFirstRefreshCompleted = true
-//                }
-//            }
+            #if !targetEnvironment(macCatalyst)
+            .refreshable {
+                await self.startFeed()
+            }
+            #endif
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Picker("Feed", selection: self.$selectedFeed) {
@@ -162,7 +151,7 @@ struct FeedView: View {
                 Text(self.errorAlertText ?? "Unknown error")
             }
             .navigationTitle("Feed")
-            .navigationBarTitleDisplayMode(.inline)
+//            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

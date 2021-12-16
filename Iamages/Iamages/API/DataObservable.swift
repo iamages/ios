@@ -207,6 +207,10 @@ class APIDataObservable: ObservableObject {
         )
     }
     
+    func getCollectionEmbedURL (id: String) -> URL {
+        return URL(string: self.apiRoot + "/collection/\(id)/embed")!
+    }
+    
     func getCollectionFiles (id: String, limit: Int?, startDate: Date?) async throws -> [IamagesFile] {
         return try self.jsond.decode(
             [IamagesFile].self,
@@ -221,6 +225,15 @@ class APIDataObservable: ObservableObject {
                 ),
                 auth: self.currentAppUserAuthHeader
             )
+        )
+    }
+    
+    func deleteCollection (id: String) async throws {
+        try await self.makeRequest(
+            "/collection/\(id)/delete",
+            method: .delete,
+            body: nil,
+            auth: self.currentAppUserAuthHeader
         )
     }
     

@@ -5,15 +5,13 @@ struct NavigableUserView: View {
     
     var body: some View {
         NavigationLink(destination: EmptyView()) {
-            GroupBox {
-                Label(title: {
-                    Text(verbatim: user.username)
-                        .lineLimit(1)
-                    Spacer()
-                }, icon: {
-                    ProfileImageView(username: user.username)
-                })
-            }
+            Label(title: {
+                Text(verbatim: user.username)
+                    .lineLimit(1)
+                Spacer()
+            }, icon: {
+                ProfileImageView(username: user.username)
+            })
         }
     }
 }

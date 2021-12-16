@@ -20,7 +20,7 @@ struct NavigableFileView: View {
             Label("NSFW viewing is disabled.", systemImage: "eye.slash")
         } else {
             NavigationLink(destination: DetailedFileView(file: self.$file, feed: self.$feed, type: self.type)) {
-                GroupBox(label:
+                VStack(alignment: .leading) {
                     Label(title: {
                         Text(verbatim: self.file.owner ?? "Anonymous")
                             .bold()
@@ -28,20 +28,19 @@ struct NavigableFileView: View {
                     }, icon: {
                         ProfileImageView(username: self.file.owner)
                     })
-                ) {
-                    VStack(alignment: .leading) {
-                        if self.file.isNSFW && self.isNSFWBlurred {
-                            FileThumbnailView(id: self.file.id)
-                                .blur(radius: 6.0)
-                                .colorMultiply(.red)
-                        } else {
-                            FileThumbnailView(id: self.file.id)
-                        }
-                        Text(verbatim: "\(self.file.description)")
-                            .lineLimit(1)
+                    if self.file.isNSFW && self.isNSFWBlurred {
+                        FileThumbnailView(id: self.file.id)
+                            .blur(radius: 6.0)
+                            .colorMultiply(.red)
+                    } else {
+                        FileThumbnailView(id: self.file.id)
                     }
+                    Text(verbatim: "\(self.file.description)")
+                        .lineLimit(1)
                 }
             }
+            .padding(.top, 4)
+            .padding(.bottom, 4)
         }
     }
 }

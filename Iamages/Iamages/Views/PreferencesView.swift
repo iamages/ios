@@ -102,7 +102,6 @@ struct PreferencesView: View {
                 #endif
             }
             .navigationTitle("Preferences")
-            .navigationBarTitleDisplayMode(.inline)
         }
         .navigationViewStyle(.stack)
         .confetti(
