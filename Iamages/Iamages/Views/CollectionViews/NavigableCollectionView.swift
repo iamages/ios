@@ -8,9 +8,10 @@ struct NavigableCollectionView: View {
     let type: FeedType
     
     @State var collectionFiles: [IamagesFile] = []
+    @State var isBusy: Bool = false
     
     var body: some View {
-        NavigationLink(destination: DetailedCollectionView(collection: self.$collection, feedCollections: self.$feedCollections, type: self.type)) {
+        NavigationLink(destination: DetailedCollectionView(collection: self.$collection, feed: self.$feedCollections, type: self.type)) {
             VStack(alignment: .leading) {
                 Label(title: {
                     Text(verbatim: self.collection.owner ?? "Anonymous")
@@ -39,11 +40,5 @@ struct NavigableCollectionView: View {
                 }
             }
         }
-    }
-}
-
-struct NavigableCollectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigableCollectionView(collection: .constant(IamagesCollection(id: "", description: "", isPrivate: false, isHidden: false, created: Date(), owner: nil)), feedCollections: .constant([]), type: .publicFeed)
     }
 }

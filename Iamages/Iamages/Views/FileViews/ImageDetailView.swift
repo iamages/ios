@@ -3,7 +3,7 @@ import UniformTypeIdentifiers
 
 struct ImageDetailView: View {
     @Binding var file: IamagesFile
-    @Binding var isDetailSheetPresented: Bool
+    @Binding var isPresented: Bool
     
     var body: some View {
         NavigationView {
@@ -61,21 +61,17 @@ struct ImageDetailView: View {
                 }
             }
             .toolbar {
-                Button(action: {
-                    self.isDetailSheetPresented = false
-                }) {
-                    Label("Close", systemImage: "xmark")
+                ToolbarItem {
+                    Button(action: {
+                        self.isPresented = false
+                    }) {
+                        Label("Close", systemImage: "xmark")
+                    }
+                    .keyboardShortcut(.escape)
                 }
-                .keyboardShortcut(.escape)
             }
             .navigationTitle("Details")
             .navigationBarTitleDisplayMode(.inline)
         }
-    }
-}
-
-struct ImageDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        ImageDetailView(file: .constant(IamagesFile(id: "", description: "", isNSFW: false, isPrivate: false, isHidden: false, created: Date(), mime: "", width: 0, height: 0, owner: nil, views: nil)), isDetailSheetPresented: .constant(false))
     }
 }

@@ -44,9 +44,3 @@ struct NavigableFileView: View {
         }
     }
 }
-
-struct NavigableFileView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigableFileView(file: .constant(IamagesFile(id: "", description: "", isNSFW: false, isPrivate: false, isHidden: false, created: Date(), mime: "", width: 0, height: 0, owner: nil, views: nil)), feed: .constant([]), type: .publicFeed)
-    }
-}

@@ -39,12 +39,23 @@ struct DetailedFileView: View {
     
     @State var isBusy: Bool = false
     @State var isDeleted: Bool = false
+
     @State var isDetailSheetPresented: Bool = false
     @State var isShareSheetPresented: Bool = false
     @State var isModifyFileSheetPresented: Bool = false
+
     @State var isDeleteAlertPresented: Bool = false
+    @State var deleteFileErrorText: String?
+    @State var isDeleteFileErrorAlertPresented: Bool = false
+
     @State var isSetProfilePictureAlertPresented: Bool = false
-    @State var isDeleteFileFailAlertPresented: Bool = false
+    @State var setProfilePictureErrorText: String?
+    @State var isSetProfilePictureErrorAlertPresented: Bool = false
+    
+    @State var isPickCollectionSheetPresented: Bool = false
+    @State var pickedCollectionID: String?
+    @State var addToCollectionErrorText: String?
+    @State var isAddToCollectionErrorAlertPresented: Bool = false
     
     @State var fileToSave: ImageDocument?
     @State var fileNameToSave: String?
@@ -58,7 +69,8 @@ struct DetailedFileView: View {
         do {
             try await self.dataObservable.modifyAppUser(modify: .pfp(self.file.id))
         } catch {
-            
+            self.setProfilePictureErrorText = error.localizedDescription
+            self.isSetProfilePictureErrorAlertPresented = true
         }
         self.isBusy = false
     }
@@ -74,7 +86,8 @@ struct DetailedFileView: View {
             self.presentationMode.wrappedValue.dismiss()
         } catch {
             self.isBusy = false
-            self.isDeleteFileFailAlertPresented = true
+            self.deleteFileErrorText = error.localizedDescription
+            self.isDeleteFileErrorAlertPresented = true
         }
     }
     
@@ -131,10 +144,21 @@ struct DetailedFileView: View {
     func checkAlreadyProfilePicture () -> Bool {
         return self.dataObservable.currentAppUserInformation?.pfp == self.file.id
     }
+    
+    func addToCollection () async {
+        self.isBusy = true
+        do {
+            try await self.dataObservable.modifyCollection(id: self.pickedCollectionID!, modify: .addFile(self.file.id))
+        } catch {
+            self.addToCollectionErrorText = error.localizedDescription
+            self.isAddToCollectionErrorAlertPresented = true
+        }
+        self.isBusy = false
+    }
 
     var body: some View {
         if self.isDeleted {
-            Label("File has been deleted. Pick something else on the sidebar.", systemImage: "trash")
+            Label("File has been modified/deleted. Pick something else on the sidebar.", systemImage: "trash")
         } else {
             ZoomableScrollComponent {
                 KFAnimatedImage(self.dataObservable.getFileImageURL(id: self.file.id))
@@ -160,53 +184,64 @@ struct DetailedFileView: View {
                 }
                 ToolbarItem {
                     Menu(content: {
-                        #if targetEnvironment(macCatalyst)
-                        Button(action: self.copyLink) {
-                            Label("Copy link", systemImage: "link")
-                        }
-                        #else
-                        Button(action: {
-                            self.isShareSheetPresented = true
-                        }) {
-                            Label("Share link", systemImage: "square.and.arrow.up")
-                        }
-                        #endif
-                        Divider()
-                        Menu(content: {
-                            ForEach(FileSaveMethod.allCases, id: \.self) { method in
-                                Button(method.rawValue) {
-                                    self.save(method: method)
-                                }
-                            }
-                        }) {
-                            Label("Save", systemImage: "square.and.arrow.down")
-                        }
-                        if self.checkBelongsToUser() {
-                            Divider()
+                        Section {
                             Button(action: {
-                                self.isModifyFileSheetPresented = true
+                                self.isShareSheetPresented = true
                             }) {
-                                Label("Modify", systemImage: "pencil")
+                                Label("Share link", systemImage: "square.and.arrow.up")
                             }
-                            Button(role: .destructive, action: {
-                                self.isDeleteAlertPresented = true
+                        }
+
+                        Section {
+                            Menu(content: {
+                                ForEach(FileSaveMethod.allCases, id: \.self) { method in
+                                    Button(method.rawValue) {
+                                        self.save(method: method)
+                                    }
+                                }
                             }) {
-                                Label("Delete", systemImage: "trash")
+                                Label("Save", systemImage: "square.and.arrow.down")
                             }
-                            .disabled(self.checkAlreadyProfilePicture())
+                        }
+                        
+                        if self.checkBelongsToUser() {
+                            Section {
+                                Button(action: {
+                                    self.isModifyFileSheetPresented = true
+                                }) {
+                                    Label("Modify", systemImage: "pencil")
+                                }
+                                Button(role: .destructive, action: {
+                                    self.isDeleteAlertPresented = true
+                                }) {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                .disabled(self.checkAlreadyProfilePicture())
+                            }
                         }
                         if self.checkBelongsToUser() && !self.file.isPrivate {
-                            Divider()
-                            Button(action: {
-                                self.isSetProfilePictureAlertPresented = true
-                            }) {
-                                Label("Set as profile picture", systemImage: "person.crop.circle")
+                            Section {
+                                Button(action: {
+                                    self.isSetProfilePictureAlertPresented = true
+                                }) {
+                                    Label("Set as profile picture", systemImage: "person.crop.circle")
+                                }
+                                .disabled(self.checkAlreadyProfilePicture())
                             }
-                            .disabled(self.checkAlreadyProfilePicture())
                         }
-                        Divider()
-                        Button(action: self.report) {
-                            Label("Report file", systemImage: "exclamationmark.bubble")
+                        if self.dataObservable.isLoggedIn && !self.file.isPrivate {
+                            Section {
+                                Button(action: {
+                                    self.isPickCollectionSheetPresented = true
+                                }) {
+                                    Label("Add to collection", systemImage: "rectangle.stack.badge.plus")
+                                }
+                            }
+                        }
+                        Section {
+                            Button(action: self.report) {
+                                Label("Report file", systemImage: "exclamationmark.bubble")
+                            }
                         }
                     }) {
                         Label("Actions", systemImage: "ellipsis.circle")
@@ -238,16 +273,23 @@ struct DetailedFileView: View {
                 }
             }
             .sheet(isPresented: self.$isDetailSheetPresented) {
-                ImageDetailView(file: self.$file, isDetailSheetPresented: self.$isDetailSheetPresented)
+                ImageDetailView(file: self.$file, isPresented: self.$isDetailSheetPresented)
             }
             .sheet(isPresented: self.$isModifyFileSheetPresented) {
-                ModifyFileView(file: self.$file, feed: self.$feed, type: self.type, isModifyFileSheetPresented: self.$isModifyFileSheetPresented)
+                ModifyFileView(file: self.$file, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isPresented: self.$isModifyFileSheetPresented)
             }
-            #if !targetEnvironment(macCatalyst)
+            .sheet(isPresented: self.$isPickCollectionSheetPresented, onDismiss: {
+                if self.pickedCollectionID != nil {
+                    Task {
+                        await self.addToCollection()
+                    }
+                }
+            }) {
+                UserCollectionPickerView(pickedCollectionID: self.$pickedCollectionID, isPresented: self.$isPickCollectionSheetPresented)
+            }
             .sheet(isPresented: self.$isShareSheetPresented) {
                 ShareView(activityItems: [self.dataObservable.getFileEmbedURL(id: self.file.id)])
             }
-            #endif
             .fileExporter(
                 isPresented: self.$isSaveFileSheetPresented,
                 document: self.fileToSave,
@@ -268,13 +310,18 @@ struct DetailedFileView: View {
                 Text(self.saveFileFailMessage ?? "Unknown error")
                 
             })
+            .alert("Delete failed", isPresented: self.$isDeleteAlertPresented, actions: {}, message: {
+                Text(self.deleteFileErrorText ?? "Unknown error")
+            })
+            .alert("Failed to set as profile picture", isPresented: self.$isSetProfilePictureErrorAlertPresented, actions: {}, message: {
+                Text(self.setProfilePictureErrorText ?? "Unknown error")
+            })
+            .alert("Failed to add to collection", isPresented: self.$isAddToCollectionErrorAlertPresented, actions: {}, message: {
+                Text(self.addToCollectionErrorText ?? "Unknown error")
+            })
+            .navigationTitle(self.file.description)
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(self.isBusy)
         }
-    }
-}
-
-struct DetailedFileView_Previews: PreviewProvider {
-    static var previews: some View {
-        DetailedFileView(file: .constant(IamagesFile(id: "", description: "", isNSFW: false, isPrivate: false, isHidden: false, created: Date(), mime: "", width: 0, height: 0)), feed: .constant([]), type: .publicFeed)
     }
 }

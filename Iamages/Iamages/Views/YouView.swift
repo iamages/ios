@@ -21,9 +21,8 @@ struct YouView: View {
     @State var feedFiles: [IamagesFile] = []
     @State var feedCollections: [IamagesCollection] = []
     
-    @State var searchString: String = ""
-    
-    @State var isManageUserCoverPresented: Bool = false
+    @State var isManageUserSheetPresented: Bool = false
+    @State var isUserSearchSheetPresented: Bool = false
     
     func pageFeed () async {
         guard let username: String = self.dataObservable.currentAppUser?.username else {
@@ -50,7 +49,8 @@ struct YouView: View {
                 }
             }
         } catch {
-            print(error)
+            self.errorAlertText = error.localizedDescription
+            self.isErrorAlertPresented = true
         }
         
         self.isBusy = false
@@ -104,6 +104,9 @@ struct YouView: View {
                     self.isFirstRefreshCompleted = true
                 }
             }
+            .refreshable {
+                await self.startFeed()
+            }
             .onChange(of: self.dataObservable.isLoggedIn) { isLoggedin in
                 if isLoggedin {
                     Task {
@@ -114,26 +117,23 @@ struct YouView: View {
                     self.feedCollections = []
                 }
             }
-            .searchable(text: self.$searchString)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Picker("List", selection: self.$selectedFeed) {
+                    Picker("Feed", selection: self.$selectedFeed) {
                         ForEach(UserFeed.allCases, id: \.self) { feed in
                             Text(feed.rawValue)
                                 .tag(feed)
                         }
                     }
-                    .pickerStyle(.menu)
                     .labelsHidden()
                     .disabled(self.isBusy)
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if self.isBusy {
-                        ProgressView()
+                    .onChange(of: self.selectedFeed) { _ in
+                        Task {
+                            await self.startFeed()
+                        }
                     }
                 }
-                #if targetEnvironment(macCatalyst)
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         Task {
                             await self.startFeed()
@@ -144,29 +144,38 @@ struct YouView: View {
                     .keyboardShortcut("r")
                     .disabled(self.isBusy)
                 }
-                #endif
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if self.isBusy {
+                        ProgressView()
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        self.isManageUserCoverPresented = true
+                        self.isUserSearchSheetPresented = true
+                    }) {
+                        Label("Search", systemImage: "magnifyingglass")
+                    }
+                    .disabled(!self.dataObservable.isLoggedIn || self.isBusy)
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        self.isManageUserSheetPresented = true
                     }) {
                         ProfileImageView(username: self.dataObservable.currentAppUser?.username)
                     }
                     .disabled(self.isBusy)
                 }
             }
-            .fullScreenCover(isPresented: self.$isManageUserCoverPresented) {
-                ManageUserView(isManageUserCoverPresented: self.$isManageUserCoverPresented)
+            .sheet(isPresented: self.$isUserSearchSheetPresented) {
+                UserSearchView(username: self.dataObservable.currentAppUser?.username ?? "nil", type: .privateFeed, isUserSearchSheetPresented: self.$isUserSearchSheetPresented)
+            }
+            .sheet(isPresented: self.$isManageUserSheetPresented) {
+                ManageUserView(isPresented: self.$isManageUserSheetPresented)
             }
             .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
                 Text(self.errorAlertText ?? "Unknown error")
             }
             .navigationTitle("You")
         }
-    }
-}
-
-struct YouView_Previews: PreviewProvider {
-    static var previews: some View {
-        YouView()
     }
 }

@@ -6,14 +6,15 @@ struct ModifyFileView: View {
     @Binding var file: IamagesFile
     @Binding var feed: [IamagesFile]
     let type: FeedType
+    @Binding var isDeleted: Bool
+    @Binding var isPresented: Bool
+    
+    @State var isBusy: Bool = false
     
     @State var newDescription: String = ""
     @State var newNSFW: Bool = false
     @State var newPrivate: Bool = false
     @State var newHidden: Bool = false
-
-    @Binding var isModifyFileSheetPresented: Bool
-    @State var isBusy: Bool = false
     
     @State var modifyErrorText: String?
     @State var isModifyErrorAlertPresented: Bool = false
@@ -26,40 +27,45 @@ struct ModifyFileView: View {
     
     func modify () async {
         self.isBusy = true
-        var fileModifications: [FileModifiable] = []
+        var modifications: [FileModifiable] = []
         if self.newDescription != self.file.description {
-            fileModifications.append(.description(self.newDescription))
+            modifications.append(.description(self.newDescription))
         }
         if self.newNSFW != self.file.isNSFW {
-            fileModifications.append(.isNSFW(self.newNSFW))
+            modifications.append(.isNSFW(self.newNSFW))
         }
         if self.newPrivate != self.file.isPrivate {
-            fileModifications.append(.isPrivate(self.newPrivate))
+            modifications.append(.isPrivate(self.newPrivate))
         }
         if self.newHidden != self.file.isHidden {
-            fileModifications.append(.isHidden(self.newHidden))
+            modifications.append(.isHidden(self.newHidden))
         }
+        var isDeletionNeeded: Bool = false
         do {
-            for fileModification in fileModifications {
-                try await self.dataObservable.modifyFile(id: self.file.id, modify: fileModification)
-                switch fileModification {
+            for modification in modifications {
+                try await self.dataObservable.modifyFile(id: self.file.id, modify: modification)
+                switch modification {
                 case .description(let description):
                     self.file.description = description
                 case .isNSFW(let isNSFW):
                     self.file.isNSFW = isNSFW
                 case .isPrivate(let isPrivate):
                     self.file.isPrivate = isPrivate
-                    if self.type == .publicFeed {
-                        self.removeFromFeed()
+                    if self.type == .publicFeed && isPrivate {
+                        isDeletionNeeded = true
                     }
                 case .isHidden(let isHidden):
                     self.file.isHidden = isHidden
-                    if self.type == .publicFeed {
-                        self.removeFromFeed()
+                    if self.type == .publicFeed && isHidden {
+                        isDeletionNeeded = true
                     }
                 }
             }
-            self.isModifyFileSheetPresented = false
+            if isDeletionNeeded {
+                self.removeFromFeed()
+                self.isDeleted = true
+            }
+            self.isPresented = false
         } catch {
             self.isBusy = false
             self.modifyErrorText = error.localizedDescription
@@ -88,6 +94,7 @@ struct ModifyFileView: View {
                         Toggle(isOn: self.$newPrivate) {
                             Text("Private")
                         }
+                        .disabled(self.dataObservable.currentAppUserInformation?.pfp == self.file.id)
                         .onAppear {
                             self.newPrivate = self.file.isPrivate
                         }
@@ -109,7 +116,7 @@ struct ModifyFileView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     if !self.isBusy {
                         Button(action: {
-                            self.isModifyFileSheetPresented = false
+                            self.isPresented = false
                         }) {
                             Label("Close", systemImage: "xmark")
                         }
@@ -144,11 +151,5 @@ struct ModifyFileView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .interactiveDismissDisabled(self.isBusy)
-    }
-}
-
-struct ModifyFileView_Previews: PreviewProvider {
-    static var previews: some View {
-        ModifyFileView(file: .constant(IamagesFile(id: "", description: "", isNSFW: false, isPrivate: false, isHidden: false, created: Date(), mime: "", width: 0, height: 0)), feed: .constant([]), type: .publicFeed, isModifyFileSheetPresented: .constant(false))
     }
 }

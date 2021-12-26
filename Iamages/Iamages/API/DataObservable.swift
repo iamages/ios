@@ -11,6 +11,7 @@ struct AppUser: Encodable {
 enum APICommunicationErrors: Error {
     case invalidURL(String)
     case badResponse(Int)
+    case invalidUploadRequest
 }
 
 extension APICommunicationErrors: LocalizedError {
@@ -20,6 +21,8 @@ extension APICommunicationErrors: LocalizedError {
             return NSLocalizedString("Invalid URL: \(url)", comment: "")
         case .badResponse(let code):
             return NSLocalizedString("Bad response code '\(code)' outside of range 200-299.", comment: "")
+        case .invalidUploadRequest:
+            return NSLocalizedString("Upload request doesn't have file or URL.", comment: "")
         }
     }
 }
@@ -38,7 +41,7 @@ class APIDataObservable: ObservableObject {
     private let keychain: Keychain = Keychain()
 
     let loadLimit: Int = 5
-    var apiRoot: String = "http://localhost:9999/iamages/api/v3"
+    var apiRoot: String = "http://192.168.0.189:9999/iamages/api/v3"
     
     @AppStorage("isNSFWEnabled") var isNSFWEnabled: Bool = true
 
@@ -72,16 +75,16 @@ class APIDataObservable: ObservableObject {
         })]
     }
     
-    func getURLRequest(_ endpoint: String, method: HTTPMethod, body: Data?, auth: String?) throws -> URLRequest {
+    func makeRequest(_ endpoint: String, method: HTTPMethod, body: Data?, auth: String?) async throws -> Data {
         guard let url: URL = URL(string: self.apiRoot + endpoint) else {
             throw APICommunicationErrors.invalidURL(self.apiRoot + endpoint)
         }
 
         var request = URLRequest(url: url)
-        if endpoint != "/file/upload" {
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        if endpoint != "/file/new/upload" {
+            request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
         } else {
-            request.addValue("multipart/form-data", forHTTPHeaderField: "Content-Type")
+            request.addValue("multipart/form-data; charset=utf-8; boundary=iamages", forHTTPHeaderField: "Content-Type")
         }
         if auth != nil {
             request.addValue(auth!, forHTTPHeaderField: "Authorization")
@@ -89,19 +92,8 @@ class APIDataObservable: ObservableObject {
 
         request.httpMethod = method.rawValue
         request.httpBody = body
-        
-        return request
-    }
-    
-    func makeRequest(_ endpoint: String, method: HTTPMethod, body: Data?, auth: String?) async throws -> Data {
-        let (data, response) = try await URLSession.shared.data(
-            for: try self.getURLRequest(
-                endpoint,
-                method: method,
-                body: body,
-                auth: auth
-            )
-        )
+
+        let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let statusCode: Int = (response as? HTTPURLResponse)?.statusCode else {
             throw APICommunicationErrors.badResponse(0)
@@ -112,6 +104,39 @@ class APIDataObservable: ObservableObject {
         } else {
             throw APICommunicationErrors.badResponse(statusCode)
         }
+    }
+    
+    func upload (request: UploadFileRequest) async throws -> IamagesFile {
+        var body: Data = Data()
+        var response: Data = Data()
+        if request.info.url != nil {
+            body = try self.jsone.encode(request.info)
+            response = try await self.makeRequest(
+                "/file/new/websave",
+                method: .post,
+                body: body,
+                auth: self.currentAppUserAuthHeader
+            )
+        } else if request.file != nil {
+            body.append("\r\n--iamages\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"info\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: application/json\r\n\r\n".data(using: .utf8)!)
+            body.append(try self.jsone.encode(request.info))
+            body.append("\r\n--iamages\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"upload_file\"; filename=\"\(UUID().uuidString).\(request.file!.type.preferredFilenameExtension!)\" \r\n".data(using: .utf8)!)
+            body.append("Content-Type: \(request.file!.type.preferredMIMEType!)\r\n\r\n".data(using: .utf8)!)
+            body.append(request.file!.image)
+            body.append("\r\n--iamages--\r\n".data(using: .utf8)!)
+            response = try await self.makeRequest(
+                "/file/new/upload",
+                method: .post,
+                body: body,
+                auth: self.currentAppUserAuthHeader
+            )
+        } else {
+            throw APICommunicationErrors.invalidUploadRequest
+        }
+        return try self.jsond.decode(IamagesFile.self, from: response)
     }
     
     func getLatestFiles (startDate: Date?) async throws -> [IamagesFile] {
@@ -189,7 +214,7 @@ class APIDataObservable: ObservableObject {
             "/file/\(id)/modify",
             method: .patch,
             body: try self.jsone.encode(
-                FileModifyRequest(
+                FieldDataRequest(
                     field: modify.field,
                     data: modify.data
                 )
@@ -225,6 +250,20 @@ class APIDataObservable: ObservableObject {
                 ),
                 auth: self.currentAppUserAuthHeader
             )
+        )
+    }
+    
+    func modifyCollection (id: String, modify: CollectionModifiable) async throws {
+        try await self.makeRequest(
+            "/collection/\(id)/modify",
+            method: .patch,
+            body: try self.jsone.encode(
+                FieldDataRequest(
+                    field: modify.field,
+                    data: modify.data
+                )
+            ),
+            auth: self.currentAppUserAuthHeader
         )
     }
     
@@ -346,7 +385,7 @@ class APIDataObservable: ObservableObject {
             "/user/modify",
             method: .patch,
             body: self.jsone.encode(
-                UserModifyRequest(
+                FieldDataRequest(
                     field: modify.field,
                     data: modify.data
                 )

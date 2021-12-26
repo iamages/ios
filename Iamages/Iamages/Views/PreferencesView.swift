@@ -91,7 +91,6 @@ struct PreferencesView: View {
                 }, footer: {
                     Text("Your support helps us maintain Iamages for you and many others! Thank you!\n\nEvery:\n- **Small tip** can keep our servers running for 1 month, courtesy of Uberspace.\n- **Medium tip** will keep our developers fed and motivated to create new features.\n- **Large tip** will help us afford devices to test our apps on.")
                 })
-                #if !targetEnvironment(macCatalyst)
                 Section(content: {
                     HelpLinksView()
                 }, header: {
@@ -99,7 +98,6 @@ struct PreferencesView: View {
                 }, footer: {
                     Text("Iamages iOS \(Bundle.main.version) (\(Bundle.main.build))")
                 })
-                #endif
             }
             .navigationTitle("Preferences")
         }
@@ -111,11 +109,5 @@ struct PreferencesView: View {
             duration: 3
         )
         .confettiParticle(\.velocity, 600)
-    }
-}
-
-struct PreferencesView_Previews: PreviewProvider {
-    static var previews: some View {
-        PreferencesView()
     }
 }

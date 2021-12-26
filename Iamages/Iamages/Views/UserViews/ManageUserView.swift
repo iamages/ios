@@ -3,7 +3,7 @@ import SwiftUI
 struct ManageUserView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
 
-    @Binding var isManageUserCoverPresented: Bool
+    @Binding var isPresented: Bool
 
     @State var isBusy: Bool = false
     
@@ -244,12 +244,9 @@ struct ManageUserView: View {
                 ToolbarItem {
                     if self.isBusy {
                         ProgressView()
-                    }
-                }
-                ToolbarItem {
-                    if !self.isBusy {
+                    } else {
                         Button(action: {
-                            self.isManageUserCoverPresented = false
+                            self.isPresented = false
                         }) {
                             Label("Close", systemImage: "xmark")
                         }
@@ -258,12 +255,8 @@ struct ManageUserView: View {
             }
             .alert(self.errorText ?? "Unknown error.", isPresented: self.$isErrorAlertPresented) {}
             .navigationTitle((self.dataObservable.currentAppUser?.username == nil)  ? "Login" : "Manage")
+            .navigationBarTitleDisplayMode(.inline)
         }
-    }
-}
-
-struct ManageUserView_Previews: PreviewProvider {
-    static var previews: some View {
-        ManageUserView(isManageUserCoverPresented: .constant(false))
+        .interactiveDismissDisabled(self.isBusy)
     }
 }

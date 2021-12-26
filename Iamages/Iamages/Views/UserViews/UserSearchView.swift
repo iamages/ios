@@ -1,15 +1,13 @@
 import SwiftUI
 
-enum SearchFeed: String, CaseIterable {
-    case files = "Files"
-    case collections = "Collections"
-    case users = "Users"
-}
-
-struct SearchView: View {
+struct UserSearchView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
-
-    @State var selectedFeed: SearchFeed = .files
+    
+    let username: String
+    let type: FeedType
+    @Binding var isUserSearchSheetPresented: Bool
+    
+    @State var selectedFeed: UserFeed = .files
     
     @State var isBusy: Bool = false
 
@@ -18,7 +16,6 @@ struct SearchView: View {
     @State var lastFeedItemDate: Date?
     @State var feedFiles: [IamagesFile] = []
     @State var feedCollections: [IamagesCollection] = []
-    @State var feedUsers: [IamagesUser] = []
     
     @State var isErrorAlertPresented: Bool = false
     @State var errorAlertText: String?
@@ -27,26 +24,19 @@ struct SearchView: View {
         self.isBusy = true
         
         do {
-            switch self.selectedFeed{
+            switch self.selectedFeed {
             case .files:
-                let receivedFiles: [IamagesFile] = try await self.dataObservable.getSearchFiles(description: self.searchString, startDate: self.lastFeedItemDate, username: nil)
+                let receivedFiles: [IamagesFile] = try await self.dataObservable.getSearchFiles(description: self.searchString, startDate: self.lastFeedItemDate, username: self.username)
                 self.feedFiles.append(contentsOf: receivedFiles)
                 self.lastFeedItemDate = receivedFiles.last?.created
                 if receivedFiles.count < self.dataObservable.loadLimit {
                     self.isEndOfFeed = true
                 }
             case .collections:
-                let receivedCollections: [IamagesCollection] = try await self.dataObservable.getSearchCollections(description: self.searchString, startDate: self.lastFeedItemDate, username: nil)
+                let receivedCollections: [IamagesCollection] = try await self.dataObservable.getSearchCollections(description: self.searchString, startDate: self.lastFeedItemDate, username: self.username)
                 self.feedCollections.append(contentsOf: receivedCollections)
                 self.lastFeedItemDate = receivedCollections.last?.created
                 if receivedCollections.count < self.dataObservable.loadLimit {
-                    self.isEndOfFeed = true
-                }
-            case .users:
-                let receivedUsers: [IamagesUser] = try await self.dataObservable.getSearchUsers(username: self.searchString, startDate: self.lastFeedItemDate)
-                self.feedUsers.append(contentsOf: receivedUsers)
-                self.lastFeedItemDate = receivedUsers.last?.created
-                if receivedUsers.count < self.dataObservable.loadLimit {
                     self.isEndOfFeed = true
                 }
             }
@@ -66,11 +56,10 @@ struct SearchView: View {
             self.lastFeedItemDate = nil
             self.feedFiles = []
             self.feedCollections = []
-            self.feedUsers = []
             await self.pageFeed()
         }
     }
-
+    
     var body: some View {
         NavigationView {
             List {
@@ -93,15 +82,6 @@ struct SearchView: View {
                                 }
                             }
                     }
-                case .users:
-                    ForEach(self.feedUsers, id: \.self) { user in
-                        NavigableUserView(user: user)
-                            .task {
-                                if !self.isBusy && !self.isEndOfFeed && self.feedUsers.last == user {
-                                    await self.pageFeed()
-                                }
-                            }
-                    }
                 }
             }
             .searchable(text: self.$searchString)
@@ -112,10 +92,10 @@ struct SearchView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Picker("Search", selection: self.$selectedFeed) {
-                        ForEach(SearchFeed.allCases, id: \.self) { search in
-                            Text(search.rawValue)
-                                .tag(search)
+                    Picker("Feed", selection: self.$selectedFeed) {
+                        ForEach(UserFeed.allCases, id: \.self) { feed in
+                            Text(feed.rawValue)
+                                .tag(feed)
                         }
                     }
                     .labelsHidden()
@@ -129,13 +109,22 @@ struct SearchView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if self.isBusy {
                         ProgressView()
+                    } else {
+                        Button(action: {
+                            self.isUserSearchSheetPresented = false
+                        }) {
+                            Label("Close", systemImage: "xmark")
+                        }
+                        .disabled(self.isBusy)
                     }
                 }
             }
             .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
                 Text(self.errorAlertText ?? "Unknown error")
             }
-            .navigationTitle("Search")
+            .navigationTitle(self.username)
+            .navigationBarTitleDisplayMode(.inline)
         }
+        .interactiveDismissDisabled(self.isBusy)
     }
 }

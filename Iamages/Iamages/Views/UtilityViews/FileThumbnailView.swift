@@ -15,9 +15,3 @@ struct FileThumbnailView: View {
             .scaledToFit()
     }
 }
-
-struct FileThumbnailView_Previews: PreviewProvider {
-    static var previews: some View {
-        FileThumbnailView(id: "")
-    }
-}

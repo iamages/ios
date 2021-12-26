@@ -106,11 +106,9 @@ struct FeedView: View {
                     self.isFirstRefreshCompleted = true
                 }
             }
-            #if !targetEnvironment(macCatalyst)
             .refreshable {
                 await self.startFeed()
             }
-            #endif
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Picker("Feed", selection: self.$selectedFeed) {
@@ -119,7 +117,6 @@ struct FeedView: View {
                                 .tag(feed)
                         }
                     }
-                    .pickerStyle(.menu)
                     .labelsHidden()
                     .disabled(self.isBusy)
                     .onChange(of: self.selectedFeed) { _ in
@@ -128,13 +125,7 @@ struct FeedView: View {
                         }
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if self.isBusy {
-                        ProgressView()
-                    }
-                }
-                #if targetEnvironment(macCatalyst)
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         Task {
                             await self.startFeed()
@@ -145,19 +136,16 @@ struct FeedView: View {
                     .keyboardShortcut("r")
                     .disabled(self.isBusy)
                 }
-                #endif
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if self.isBusy {
+                        ProgressView()
+                    }
+                }
             }
             .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
                 Text(self.errorAlertText ?? "Unknown error")
             }
             .navigationTitle("Feed")
-//            .navigationBarTitleDisplayMode(.inline)
         }
-    }
-}
-
-struct FeedView_Previews: PreviewProvider {
-    static var previews: some View {
-        FeedView()
     }
 }

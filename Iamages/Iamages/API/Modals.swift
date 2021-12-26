@@ -1,4 +1,5 @@
 import Foundation
+import UniformTypeIdentifiers
 
 struct IamagesFile: Decodable, Identifiable, Equatable, Hashable {
     let id: String
@@ -115,11 +116,6 @@ enum UserModifiable {
     }
 }
 
-struct UserModifyRequest: Encodable {
-    let field: String
-    let data: String
-}
-
 enum UserPrivatizable: String, Codable {
     case privatize_all
     case hide_all
@@ -162,15 +158,12 @@ enum FileModifiable {
     }
 }
 
-struct FileModifyRequest: Encodable {
-    let field: String
-    let data: String
-}
-
 enum CollectionModifiable {
     case description(String)
     case isHidden(Bool)
     case isPrivate(Bool)
+    case addFile(String)
+    case removeFile(String)
     
     var field: String {
         switch self {
@@ -180,6 +173,10 @@ enum CollectionModifiable {
             return "private"
         case .isHidden(_):
             return "hidden"
+        case .addFile(_):
+            return "add_file"
+        case .removeFile(_):
+            return "remove_file"
         }
     }
     
@@ -191,23 +188,48 @@ enum CollectionModifiable {
             return isPrivate ? "1" : "0"
         case .isHidden(let isHidden):
             return isHidden ? "1" : "0"
+        case .addFile(let id):
+            return id
+        case .removeFile(let id):
+            return id
         }
     }
 }
 
-struct CollectionModifyRequest: Encodable {
+struct FieldDataRequest: Encodable {
     let field: String
     let data: String
 }
 
-struct UploadFileInfoRequest: Encodable {
+struct UploadJSONRequest: Encodable, Equatable, Hashable {
     var description: String
     var isNSFW: Bool
     var isPrivate: Bool
     var isHidden: Bool
+    var url: URL?
+    
+    enum CodingKeys: String, CodingKey {
+        case description
+        case isNSFW = "nsfw"
+        case isPrivate = "private"
+        case isHidden = "hidden"
+        case url = "upload_url"
+    }
 }
 
-struct UploadFileFullRequest {
-    var info: UploadFileInfoRequest
-    var uploadFile: Data
+struct UploadFile {
+    var image: Data
+    var type: UTType
+}
+
+struct UploadFileRequest: Identifiable {
+    let id: UUID = UUID()
+    var info: UploadJSONRequest
+    var file: UploadFile?
+}
+
+struct UploadFailedInfo: Identifiable {
+    let id: UUID
+    let request: UploadFileRequest
+    let error: Error
 }

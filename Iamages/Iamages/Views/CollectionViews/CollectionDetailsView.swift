@@ -45,9 +45,3 @@ struct CollectionDetailsView: View {
         }
     }
 }
-
-struct CollectionDetailsView_Previews: PreviewProvider {
-    static var previews: some View {
-        CollectionDetailsView(collection: .constant(IamagesCollection(id: "", description: "", isPrivate: false, isHidden: false, created: Date(), owner: nil)), isDetailSheetPresented: .constant(false))
-    }
-}

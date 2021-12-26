@@ -1,18 +1,33 @@
 import SwiftUI
-import ImagePickerView
+import UniformTypeIdentifiers
 
 struct UploadView: View {
+    @AppStorage("uploadDefaults.isNSFW") var isNSFWDefault: Bool = false
+    @AppStorage("uploadDefaults.isHidden") var isHiddenDefault: Bool = false
+    @AppStorage("uploadDefaults.isPrivate") var isPrivateDefault: Bool = false
+    
     @State var isPhotoPickerPresented: Bool = false
     @State var isFilePickerPresented: Bool = false
     @State var isURLPickerPresented: Bool = false
+    @State var isUploadSheetPresented: Bool = false
     
-    @State var isUploadCoverPresented: Bool = false
+    @State var pickedURL: URL?
+    @State var pickedImages: [Data] = []
+    @State var rawPickerResultLength: Int = 0
+    
+    @State var pickErrorAlertText: String?
+    @State var isPickErrorAlertPresented: Bool = false
+    
+    @State var uploadRequests: [UploadFileRequest] = []
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVStack {
-                    
+            List {
+                ForEach(self.$uploadRequests) { uploadRequest in
+                    NavigableModifyUploadRequestView(uploadRequest: uploadRequest)
+                }
+                .onDelete { offsets in
+                    self.uploadRequests.remove(atOffsets: offsets)
                 }
             }
             .toolbar {
@@ -40,46 +55,93 @@ struct UploadView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        self.isUploadCoverPresented = true
+                        self.isUploadSheetPresented = true
                     }) {
                         Label("Upload", systemImage: "square.and.arrow.up.on.square")
                     }
+                    .disabled(self.uploadRequests.isEmpty)
                 }
             }
             .sheet(isPresented: self.$isPhotoPickerPresented) {
-                ImagePickerView(filter: .any(of: [.images]), selectionLimit: 0, delegate:
-                    ImagePickerView.Delegate(
-                        isPresented: self.$isPhotoPickerPresented,
-                        didCancel: { _ in },
-                        didSelect: { result in
-                            
-                        },
-                        didFail: { error in
-                            
-                        }
+                PhotosPickerView(imageRetrievedHandler: { image, type in
+                    self.uploadRequests.append(
+                        UploadFileRequest(
+                            info: UploadJSONRequest(
+                                description: "No description yet.",
+                                isNSFW: self.isNSFWDefault,
+                                isPrivate: self.isPrivateDefault,
+                                isHidden: self.isHiddenDefault,
+                                url: nil
+                            ),
+                            file: UploadFile(
+                                image: image,
+                                type: UTType(type)!
+                            )
+                        )
                     )
-                )
+                }, isPresented: self.$isPhotoPickerPresented)
+            }
+            .onChange(of: self.pickedImages) { _ in
+                if self.pickedImages.count == self.rawPickerResultLength {
+                    self.isPhotoPickerPresented = false
+                }
             }
             .fileImporter(
                 isPresented: self.$isFilePickerPresented,
                 allowedContentTypes: [.image],
                 allowsMultipleSelection: true
             ) { result in
-                
+                switch result {
+                    case .success(let urls):
+                    do {
+                        for url in urls {
+                            let image = try Data(contentsOf: url)
+                            self.uploadRequests.append(
+                                UploadFileRequest(
+                                    info: UploadJSONRequest(
+                                        description: "No description yet.",
+                                        isNSFW: self.isNSFWDefault,
+                                        isPrivate: self.isPrivateDefault,
+                                        isHidden: self.isHiddenDefault,
+                                        url: nil
+                                    ),
+                                    file: UploadFile(
+                                        image: image,
+                                        type: UTType(filenameExtension: url.pathExtension)!
+                                    )
+                                )
+                            )
+                        }
+                    } catch {
+                        print(error)
+                    }
+                    case .failure(let error):
+                    self.pickErrorAlertText = error.localizedDescription
+                    self.isPickErrorAlertPresented = true
+                }
             }
-            .sheet(isPresented: self.$isURLPickerPresented) {
-                
+            .sheet(isPresented: self.$isURLPickerPresented, onDismiss: {
+                if self.pickedURL != nil {
+                    self.uploadRequests.append(
+                        UploadFileRequest(
+                            info: UploadJSONRequest(
+                                description: "No description yet",
+                                isNSFW: self.isNSFWDefault,
+                                isPrivate: self.isPrivateDefault,
+                                isHidden: self.isHiddenDefault,
+                                url: self.pickedURL!
+                            ),
+                            file: nil
+                        )
+                    )
+                }
+            }) {
+                URLPickerView(pickedURL: self.$pickedURL, isPresented: self.$isURLPickerPresented)
             }
-            .fullScreenCover(isPresented: self.$isUploadCoverPresented) {
-                
+            .sheet(isPresented: self.$isUploadSheetPresented) {
+                UploadingView(uploadRequests: self.$uploadRequests, isPresented: self.$isUploadSheetPresented)
             }
             .navigationTitle("Upload")
         }
-    }
-}
-
-struct UploadView_Previews: PreviewProvider {
-    static var previews: some View {
-        UploadView()
     }
 }

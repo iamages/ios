@@ -11,9 +11,3 @@ struct HelpLinksView: View {
         Link("Discuss on Discord", destination: URL(string: "https://discord.com/")!)
     }
 }
-
-struct HelpLinksView_Previews: PreviewProvider {
-    static var previews: some View {
-        HelpLinksView()
-    }
-}

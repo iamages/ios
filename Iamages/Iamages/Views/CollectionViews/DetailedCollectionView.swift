@@ -4,11 +4,12 @@ struct DetailedCollectionView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     
     @Binding var collection: IamagesCollection
-    @Binding var feedCollections: [IamagesCollection]
+    @Binding var feed: [IamagesCollection]
     let type: FeedType
     
-    @State var isFirstRefreshCompleted: Bool = false
     @State var isBusy: Bool = false
+    @State var isDeleted: Bool = false
+    @State var isFirstRefreshCompleted: Bool = false
     
     @State var isEndOfFeed: Bool = false
     @State var lastFeedItemDate: Date?
@@ -18,13 +19,10 @@ struct DetailedCollectionView: View {
     @State var isFeedLoadFailAlertPresented: Bool = false
     
     @State var isShareSheetPresented: Bool = false
-    
-    @State var isModifyCollectionSheetPresented: Bool = false
-    @State var isDeleteAlertPresented: Bool = false
-    
     @State var isDetailSheetPresented: Bool = false
-    
-    @State var isDeleted: Bool = false
+    @State var isModifyCollectionSheetPresented: Bool = false
+
+    @State var isDeleteAlertPresented: Bool = false
     
     func pageFeed () async {
         self.isBusy = true
@@ -68,13 +66,6 @@ struct DetailedCollectionView: View {
         }
     }
     
-    func copyLink () {
-        UIPasteboard.general.setValue(
-            self.dataObservable.getCollectionEmbedURL(id: self.collection.id),
-            forPasteboardType: "public.url"
-        )
-    }
-    
     func report () {
         UIApplication.shared.open(URL(
             string: "mailto:iamages@uber.space?subject=\("Report collection: \(self.collection.id)".urlEncode())&body=\("Reason:".urlEncode())"
@@ -82,126 +73,117 @@ struct DetailedCollectionView: View {
     }
     
     var body: some View {
-        if self.isDeleted {
-            Label("Collection has been deleted. Pick something else on the sidebar.", systemImage: "trash")
-        } else {
-            List {
-                ForEach(self.$feedFiles) { file in
-                    NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
-                        .task {
-                            if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
-                                await self.pageFeed()
+        Group {
+            if self.isDeleted {
+                Label("Collection has been modified/deleted. Pick something else on the sidebar.", systemImage: "trash")
+            } else {
+                List {
+                    ForEach(self.$feedFiles) { file in
+                        NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
+                            .task {
+                                if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
+                                    await self.pageFeed()
+                                }
                             }
-                        }
-                }
-            }
-            .onAppear {
-                if !self.isFirstRefreshCompleted {
-                    Task {
-                        await self.startFeed()
-                    }
-                    self.isFirstRefreshCompleted = false
-                }
-            }
-            .refreshable {
-                await startFeed()
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    if self.isBusy {
-                        ProgressView()
                     }
                 }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        self.isDetailSheetPresented = true
-                    }) {
-                        Label("Details", systemImage: "info.circle")
-                    }
-                    .disabled(self.isBusy)
-                }
-                ToolbarItem {
-                    Menu(content: {
-                        #if targetEnvironment(macCatalyst)
-                        Button(action: self.copyLink) {
-                            Label("Copy link", systemImage: "link")
-                        }
-                        #else
-                        Button(action: {
-                            self.isShareSheetPresented = true
-                        }) {
-                            Label("Share link", systemImage: "square.and.arrow.up")
-                        }
-                        #endif
-                        Divider()
-                        if self.collection.owner != nil && self.collection.owner! == self.dataObservable.currentAppUser?.username {
-                            Divider()
-                            Button(action: {
-                                self.isModifyCollectionSheetPresented = true
-                            }) {
-                                Label("Modify", systemImage: "pencil")
-                            }
-                            Button(role: .destructive, action: {
-                                self.isDeleteAlertPresented = true
-                            }) {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        }
-                        Divider()
-                        Button(action: self.report) {
-                            Label("Report collection", systemImage: "exclamationmark.bubble")
-                        }
-                    }) {
-                        Label("Actions", systemImage: "ellipsis.circle")
-                    }
-                    .menuStyle(.borderlessButton)
-                    .disabled(self.isBusy)
-                    .confirmationDialog(
-                        "'\(self.collection.description)' will be deleted.",
-                        isPresented: self.$isDeleteAlertPresented,
-                        titleVisibility: .visible
-                    ) {
-                        Button("Delete", role: .destructive) {
-                            Task {
-                                await self.delete()
-                            }
-                        }
-                    }
-                    
-                }
-                #if targetEnvironment(macCatalyst)
-                ToolbarItem {
-                    Button(action: {
+                .onAppear {
+                    if !self.isFirstRefreshCompleted {
                         Task {
                             await self.startFeed()
                         }
-                    }) {
-                        Label("Refresh", systemImage: "arrow.clockwise")
+                        self.isFirstRefreshCompleted = false
                     }
-                    .keyboardShortcut("r")
-                    .disabled(self.isBusy)
                 }
-                #endif
+                .refreshable {
+                    await startFeed()
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        if self.isBusy {
+                            ProgressView()
+                        } else {
+                            Button(action: {
+                                Task {
+                                    await self.startFeed()
+                                }
+                            }) {
+                                Label("Refresh", systemImage: "arrow.clockwise")
+                            }
+                            .keyboardShortcut("r")
+                        }
+                    }
+                    ToolbarItem(placement: .principal) {
+                        Button(action: {
+                            self.isDetailSheetPresented = true
+                        }) {
+                            Label("Details", systemImage: "info.circle")
+                        }
+                        .disabled(self.isBusy)
+                    }
+                    ToolbarItem {
+                        Menu(content: {
+                            Section {
+                                Button(action: {
+                                    self.isShareSheetPresented = true
+                                }) {
+                                    Label("Share link", systemImage: "square.and.arrow.up")
+                                }
+                            }
+                            if self.collection.owner != nil && self.collection.owner! == self.dataObservable.currentAppUser?.username {
+                                Section {
+                                    Button(action: {
+                                        self.isModifyCollectionSheetPresented = true
+                                    }) {
+                                        Label("Modify", systemImage: "pencil")
+                                    }
+                                    Button(role: .destructive, action: {
+                                        self.isDeleteAlertPresented = true
+                                    }) {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
+                            Section {
+                                Button(action: self.report) {
+                                    Label("Report collection", systemImage: "exclamationmark.bubble")
+                                }
+                            }
+                        }) {
+                            Label("Actions", systemImage: "ellipsis.circle")
+                        }
+                        .menuStyle(.borderlessButton)
+                        .disabled(self.isBusy)
+                        .confirmationDialog(
+                            "'\(self.collection.description)' will be deleted.",
+                            isPresented: self.$isDeleteAlertPresented,
+                            titleVisibility: .visible
+                        ) {
+                            Button("Delete", role: .destructive) {
+                                Task {
+                                    await self.delete()
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .sheet(isPresented: self.$isDetailSheetPresented) {
+                    CollectionDetailsView(collection: self.$collection, isDetailSheetPresented: self.$isDetailSheetPresented)
+                }
+                .sheet(isPresented: self.$isShareSheetPresented) {
+                    ShareView(activityItems: [self.dataObservable.getCollectionEmbedURL(id: self.collection.id)])
+                }
+                .alert("Feed loading error", isPresented: self.$isFeedLoadFailAlertPresented, actions: {}, message: {
+                    Text(self.feedLoadFailAlertText ?? "Unknown error.")
+                })
+                .navigationTitle(self.collection.description)
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden(self.isBusy)
             }
-            .sheet(isPresented: self.$isDetailSheetPresented) {
-                CollectionDetailsView(collection: self.$collection, isDetailSheetPresented: self.$isDetailSheetPresented)
-            }
-            .sheet(isPresented: self.$isShareSheetPresented) {
-                ShareView(activityItems: [self.dataObservable.getCollectionEmbedURL(id: self.collection.id)])
-            }
-            .sheet(isPresented: self.$isModifyCollectionSheetPresented) {
-                ModifyCollectionView(collection: self.$collection, feedCollections: self.$feedCollections, type: self.type, isModifyCollectionSheetPresented: self.$isModifyCollectionSheetPresented)
-            }
-            .alert("Feed loading error", isPresented: self.$isFeedLoadFailAlertPresented, actions: {}, message: {
-                Text(self.feedLoadFailAlertText ?? "Unknown error.")
-            })
-            .navigationTitle(self.collection.description)
         }
-    }
-}
-
-struct DetailedCollectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        DetailedCollectionView(collection: .constant(IamagesCollection(id: "", description: "", isPrivate: false, isHidden: false, created: Date(), owner: nil)), feedCollections: .constant([]), type: .publicFeed)
+        .sheet(isPresented: self.$isModifyCollectionSheetPresented) {
+            ModifyCollectionView(collection: self.$collection, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isModifyCollectionSheetPresented: self.$isModifyCollectionSheetPresented)
+        }
     }
 }

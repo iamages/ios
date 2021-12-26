@@ -4,8 +4,9 @@ struct ModifyCollectionView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     
     @Binding var collection: IamagesCollection
-    @Binding var feedCollections: [IamagesCollection]
+    @Binding var feed: [IamagesCollection]
     let type: FeedType
+    @Binding var isDeleted: Bool
     @Binding var isModifyCollectionSheetPresented: Bool
     
     @State var newDescription: String = ""
@@ -13,13 +14,56 @@ struct ModifyCollectionView: View {
     @State var newHidden: Bool = false
     
     @State var isBusy: Bool = false
+    @State var isModifyErrorAlertPresented: Bool = false
+    @State var modifyErrorText: String?
+    
+    func removeFromFeed () {
+        if let fileIndex = self.feed.firstIndex(of: self.collection) {
+            self.feed.remove(at: fileIndex)
+        }
+    }
     
     func modify () async {
         self.isBusy = true
+        var modifications: [CollectionModifiable] = []
+        if self.newDescription != self.collection.description {
+            modifications.append(.description(self.newDescription))
+        }
+        if self.newPrivate != self.collection.isPrivate {
+            modifications.append(.isPrivate(self.newPrivate))
+        }
+        if self.newHidden != self.collection.isHidden {
+            modifications.append(.isHidden(self.newHidden))
+        }
+        var isDeletionNeeded: Bool = false
         do {
-            
+            for modification in modifications {
+                try await self.dataObservable.modifyCollection(id: self.collection.id, modify: modification)
+                switch modification {
+                case .description(let description):
+                    self.collection.description = description
+                case .isHidden(let isHidden):
+                    self.collection.isHidden = isHidden
+                    if self.type == .publicFeed && isHidden {
+                        isDeletionNeeded = true
+                    }
+                case .isPrivate(let isPrivate):
+                    self.collection.isPrivate = isPrivate
+                    if self.type == .publicFeed && isPrivate {
+                        isDeletionNeeded = true
+                    }
+                default:
+                    break
+                }
+            }
+            if isDeletionNeeded {
+                self.removeFromFeed()
+                self.isDeleted = true
+            }
             self.isModifyCollectionSheetPresented = false
         } catch {
+            self.modifyErrorText = error.localizedDescription
+            self.isModifyErrorAlertPresented = true
             self.isBusy = false
         }
     }
@@ -69,7 +113,7 @@ struct ModifyCollectionView: View {
                     } else {
                         Button(action: {
                             Task {
-                                
+                                await self.modify()
                             }
                         }) {
                             Label("Apply", systemImage: "checkmark")
@@ -77,14 +121,18 @@ struct ModifyCollectionView: View {
                     }
                 }
             }
+            .alert("Modification failed", isPresented: self.$isModifyErrorAlertPresented) {
+                Button("Retry") {
+                    Task {
+                        await self.modify()
+                    }
+                }
+                Button("Stop", role: .cancel) {}
+            } message: {
+                Text(self.modifyErrorText ?? "Unknown error")
+            }
             .navigationTitle("Modify")
             .navigationBarTitleDisplayMode(.inline)
         }
-    }
-}
-
-struct ModifyCollectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        ModifyCollectionView(collection: .constant(IamagesCollection(id: "", description: "", isPrivate: false, isHidden: false, created: Date(), owner: nil)), feedCollections: .constant([]), type: .publicFeed, isModifyCollectionSheetPresented: .constant(false))
     }
 }

@@ -29,9 +29,3 @@ struct ProfileImageView: View {
         }
     }
 }
-
-struct ProfileImageView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProfileImageView(username: "Test Username")
-    }
-}

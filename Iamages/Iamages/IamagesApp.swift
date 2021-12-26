@@ -28,13 +28,6 @@ struct IamagesApp: App {
                 }
                 .keyboardShortcut(",")
             }
-            CommandGroup(replacing: .textFormatting) {}
-            #if targetEnvironment(macCatalyst)
-            CommandGroup(replacing: .help) {
-                HelpLinksView()
-                    .environmentObject(self.dataObservable)
-            }
-            #endif
         }
     }
 }
