@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E84B16E27795E030006458A /* RemovedSuggestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16D27795E030006458A /* RemovedSuggestView.swift */; };
 		2EF4F15927784B8300E64446 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EF4F15827784B8300E64446 /* Assets.xcassets */; };
 		2EF4F15C27784B8300E64446 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EF4F15B27784B8300E64446 /* Preview Assets.xcassets */; };
 		2EF4F16527784BE300E64446 /* Modals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16327784BE300E64446 /* Modals.swift */; };
@@ -52,6 +53,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E84B16D27795E030006458A /* RemovedSuggestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedSuggestView.swift; sourceTree = "<group>"; };
 		2EF4F15127784B8100E64446 /* Iamages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Iamages.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EF4F15827784B8300E64446 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2EF4F15B27784B8300E64446 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 		2EF4F19427784C0900E64446 /* RootNavigationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootNavigationView.swift; sourceTree = "<group>"; };
 		2EF4F1B227784C1400E64446 /* IamagesApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IamagesApp.swift; sourceTree = "<group>"; };
 		2EF4F1BD27784D1F00E64446 /* Iamages.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Iamages.entitlements; sourceTree = "<group>"; };
+		2EF4F1BE27789A6600E64446 /* Iamages.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Iamages.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +135,7 @@
 				2EF4F16227784BE300E64446 /* API */,
 				2EF4F17227784C0900E64446 /* Views */,
 				2EF4F1B227784C1400E64446 /* IamagesApp.swift */,
+				2EF4F1BE27789A6600E64446 /* Iamages.storekit */,
 				2EF4F1BD27784D1F00E64446 /* Iamages.entitlements */,
 				2EF4F15827784B8300E64446 /* Assets.xcassets */,
 				2EF4F15A27784B8300E64446 /* Preview Content */,
@@ -176,11 +180,11 @@
 				2EF4F18627784C0900E64446 /* UserViews */,
 				2EF4F18027784C0900E64446 /* FileViews */,
 				2EF4F17327784C0900E64446 /* UploadViews */,
-				2EF4F17727784C0900E64446 /* SearchView.swift */,
-				2EF4F18527784C0900E64446 /* PreferencesView.swift */,
-				2EF4F18C27784C0900E64446 /* YouView.swift */,
-				2EF4F18D27784C0900E64446 /* UploadView.swift */,
 				2EF4F19327784C0900E64446 /* FeedView.swift */,
+				2EF4F17727784C0900E64446 /* SearchView.swift */,
+				2EF4F18D27784C0900E64446 /* UploadView.swift */,
+				2EF4F18C27784C0900E64446 /* YouView.swift */,
+				2EF4F18527784C0900E64446 /* PreferencesView.swift */,
 				2EF4F19427784C0900E64446 /* RootNavigationView.swift */,
 			);
 			path = Views;
@@ -206,6 +210,7 @@
 				2EF4F17D27784C0900E64446 /* HelpLinksView.swift */,
 				2EF4F17E27784C0900E64446 /* ZoomableScrollView.swift */,
 				2EF4F17F27784C0900E64446 /* URLPickerView.swift */,
+				2E84B16D27795E030006458A /* RemovedSuggestView.swift */,
 			);
 			path = UtilityViews;
 			sourceTree = "<group>";
@@ -324,6 +329,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E84B16E27795E030006458A /* RemovedSuggestView.swift in Sources */,
 				2EF4F1B027784C0900E64446 /* FeedView.swift in Sources */,
 				2EF4F19C27784C0900E64446 /* ShareView.swift in Sources */,
 				2EF4F1AE27784C0900E64446 /* ModifyCollectionView.swift in Sources */,

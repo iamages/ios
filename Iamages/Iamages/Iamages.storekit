@@ -1,0 +1,63 @@
+{
+  "identifier" : "FD747A8D",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "2",
+      "familyShareable" : false,
+      "internalID" : "1469CDD1",
+      "localizations" : [
+        {
+          "description" : "Keeps our servers running for one month.",
+          "displayName" : "Small Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "me.jkelol111.Iamages.tips.small",
+      "referenceName" : "Small Tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "5",
+      "familyShareable" : false,
+      "internalID" : "865CAA32",
+      "localizations" : [
+        {
+          "description" : "Keep our developers fed and motivated.",
+          "displayName" : "Medium Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "me.jkelol111.Iamages.tips.medium",
+      "referenceName" : "Medium Tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "10",
+      "familyShareable" : false,
+      "internalID" : "0064A4E3",
+      "localizations" : [
+        {
+          "description" : "Help us afford devices to test our apps on.",
+          "displayName" : "Large Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "me.jkelol111.Iamages.tips.large",
+      "referenceName" : "Large Tip",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 1,
+    "minor" : 1
+  }
+}

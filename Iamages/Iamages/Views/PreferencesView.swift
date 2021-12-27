@@ -15,7 +15,14 @@ struct PreferencesView: View {
     @State var isResetWarningAlertPresented: Bool = false
     
     @State var isCacheBeingCleared: Bool = false
-    
+
+    @State var isTransactionSubscribeCompleted: Bool = false
+    @State var areProductsLoading: Bool = false
+    @State var products: [Product] = []
+    @State var isPurchasingProduct: Bool = false
+    @State var tipErrorText: String?
+    @State var isTipErrorAlertPresented: Bool = false
+    @State var isTipThanksAlertPresented: Bool = false
     @State var isTipConfettiPresented: Bool = false
     
     func clearImageCache () {
@@ -28,6 +35,37 @@ struct PreferencesView: View {
     func resetAppSettings () {
         self.isNSFWEnabled = true
         self.isNSFWBlurred = true
+    }
+    
+    func purchaseProduct (_ product: Product) async {
+        self.isPurchasingProduct = true
+        do {
+            let result = try await product.purchase()
+            switch result {
+            case .success(let verificationResult):
+                switch verificationResult {
+                case .verified(let transaction):
+                    self.isTipThanksAlertPresented = true
+                    self.isTipConfettiPresented = true
+                    await transaction.finish()
+                case .unverified(let transaction, let verificationError):
+                    self.tipErrorText = verificationError.localizedDescription
+                    self.isTipErrorAlertPresented = true
+                    await transaction.finish()
+                }
+            case .userCancelled:
+                self.tipErrorText = "Please come back another time to the Tip Jar!"
+                self.isTipErrorAlertPresented = true
+            case .pending:
+                break
+            @unknown default:
+                break
+            }
+        } catch {
+            self.tipErrorText = error.localizedDescription
+            self.isTipErrorAlertPresented = true
+        }
+        self.isPurchasingProduct = false
     }
 
     var body: some View {
@@ -77,14 +115,17 @@ struct PreferencesView: View {
                     }
                 }
                 Section(content: {
-                    Button("Small tip ($2)") {
-                        self.isTipConfettiPresented = true
-                    }
-                    Button("Medium tip ($5)") {
-                        self.isTipConfettiPresented = true
-                    }
-                    Button("Large tip ($10)") {
-                        self.isTipConfettiPresented = true
+                    if self.areProductsLoading {
+                        ProgressView()
+                    } else {
+                        ForEach(self.products) { product in
+                            Button("\(product.displayName) (\(product.displayPrice))") {
+                                Task {
+                                    await self.purchaseProduct(product)
+                                }
+                            }
+                            .disabled(self.isPurchasingProduct)
+                        }
                     }
                 }, header: {
                     Text("Tip Jar")
@@ -102,6 +143,12 @@ struct PreferencesView: View {
             .navigationTitle("Preferences")
         }
         .navigationViewStyle(.stack)
+        .alert("Tipping failed", isPresented: self.$isTipErrorAlertPresented, actions: {}) {
+            Text(self.tipErrorText ?? "Unknown error")
+        }
+        .alert("Thank you!", isPresented: self.$isTipThanksAlertPresented, actions: {}) {
+            Text("Your tip will help us continue developing Iamages. Thank you for tipping!")
+        }
         .confetti(
             isPresented: self.$isTipConfettiPresented,
             animation: .fullWidthToDown,
@@ -109,5 +156,33 @@ struct PreferencesView: View {
             duration: 3
         )
         .confettiParticle(\.velocity, 600)
+        .onAppear {
+            self.areProductsLoading = true
+            Task {
+                do {
+                    self.products = try await Product.products(for: [
+                        "me.jkelol111.Iamages.tips.small",
+                        "me.jkelol111.Iamages.tips.medium",
+                        "me.jkelol111.Iamages.tips.large"
+                    ])
+                } catch {
+                    print(error)
+                }
+            }
+            self.areProductsLoading = false
+            if !self.isTransactionSubscribeCompleted {
+                Task.detached {
+                    for await verificationResult in Transaction.updates {
+                        guard case .verified(let transaction) = verificationResult else {
+                            continue
+                        }
+                        self.isTipThanksAlertPresented = true
+                        self.isTipConfettiPresented = true
+                        await transaction.finish()
+                    }
+                }
+                self.isTransactionSubscribeCompleted = true
+            }
+        }
     }
 }

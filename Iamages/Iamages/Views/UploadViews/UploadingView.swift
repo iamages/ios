@@ -8,12 +8,14 @@ struct UploadingView: View {
     
     @State var isBusy: Bool = false
     @State var uploadedFiles: [IamagesFile] = []
-    @State var uploadFailed: [UploadFailedInfo] = []
     
     func upload (uploadRequest: UploadFileRequest) async {
         self.isBusy = true
         do {
             self.uploadedFiles.append(try await self.dataObservable.upload(request: uploadRequest))
+            if let position = self.uploadRequests.firstIndex(of: uploadRequest) {
+                self.uploadRequests.remove(at: position)
+            }
         } catch {
             print(error)
         }
@@ -27,14 +29,43 @@ struct UploadingView: View {
                     ForEach(self.uploadedFiles) { uploadedFile in
                         Link(destination: self.dataObservable.getFileEmbedURL(id: uploadedFile.id)) {
                             VStack(alignment: .leading) {
-                                 
+                                Label(title: {
+                                    Text(verbatim: self.dataObservable.currentAppUser?.username ?? "Anonymous")
+                                        .bold()
+                                        .lineLimit(1)
+                                }, icon: {
+                                    ProfileImageView(username: self.dataObservable.currentAppUser?.username)
+                                })
+                                FileThumbnailView(id: uploadedFile.id)
+                                Text(uploadedFile.description)
                             }
+                            .padding(.top, 4)
+                            .padding(.bottom, 4)
                         }
                     }
                 }
                 Section(self.isBusy ? "Uploading" : "Failed") {
                     ForEach(self.uploadRequests) { uploadRequest in
-                        
+                        VStack(alignment: .leading) {
+                            Label(title: {
+                                Text(verbatim: self.dataObservable.currentAppUser?.username ?? "Anonymous")
+                                    .bold()
+                                    .lineLimit(1)
+                            }, icon: {
+                                ProfileImageView(username: self.dataObservable.currentAppUser?.username)
+                            })
+                            if uploadRequest.file != nil {
+                                Image(uiImage: UIImage(data: uploadRequest.file!.image)!)
+                                    .resizable()
+                                    .scaledToFit()
+                            } else {
+                                Label(uploadRequest.info.url!.absoluteString, systemImage: "globe")
+                                    .lineLimit(1)
+                            }
+                            Text(uploadRequest.info.description)
+                        }
+                        .padding(.top, 4)
+                        .padding(.bottom, 4)
                     }
                 }
             }
@@ -58,7 +89,7 @@ struct UploadingView: View {
                     }
                 }
             }
-            .navigationTitle("Uploading")
+            .navigationTitle(self.isBusy ? "Uploading" : "Uploaded")
         }
         .interactiveDismissDisabled(self.isBusy)
     }

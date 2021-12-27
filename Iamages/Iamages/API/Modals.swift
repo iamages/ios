@@ -217,19 +217,13 @@ struct UploadJSONRequest: Encodable, Equatable, Hashable {
     }
 }
 
-struct UploadFile {
+struct UploadFile: Equatable {
     var image: Data
     var type: UTType
 }
 
-struct UploadFileRequest: Identifiable {
+struct UploadFileRequest: Identifiable, Equatable {
     let id: UUID = UUID()
     var info: UploadJSONRequest
     var file: UploadFile?
-}
-
-struct UploadFailedInfo: Identifiable {
-    let id: UUID
-    let request: UploadFileRequest
-    let error: Error
 }

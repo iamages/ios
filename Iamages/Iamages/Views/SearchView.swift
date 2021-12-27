@@ -118,6 +118,7 @@ struct SearchView: View {
                                 .tag(search)
                         }
                     }
+                    .pickerStyle(.menu)
                     .labelsHidden()
                     .disabled(self.isBusy)
                     .onChange(of: self.selectedFeed) { _ in

@@ -107,17 +107,16 @@ class APIDataObservable: ObservableObject {
     }
     
     func upload (request: UploadFileRequest) async throws -> IamagesFile {
-        var body: Data = Data()
         var response: Data = Data()
         if request.info.url != nil {
-            body = try self.jsone.encode(request.info)
             response = try await self.makeRequest(
                 "/file/new/websave",
                 method: .post,
-                body: body,
+                body: try self.jsone.encode(request.info),
                 auth: self.currentAppUserAuthHeader
             )
         } else if request.file != nil {
+            var body: Data = Data()
             body.append("\r\n--iamages\r\n".data(using: .utf8)!)
             body.append("Content-Disposition: form-data; name=\"info\"\r\n".data(using: .utf8)!)
             body.append("Content-Type: application/json\r\n\r\n".data(using: .utf8)!)

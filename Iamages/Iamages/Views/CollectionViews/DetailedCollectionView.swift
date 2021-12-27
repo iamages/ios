@@ -75,7 +75,7 @@ struct DetailedCollectionView: View {
     var body: some View {
         Group {
             if self.isDeleted {
-                Label("Collection has been modified/deleted. Pick something else on the sidebar.", systemImage: "trash")
+                RemovedSuggestView()
             } else {
                 List {
                     ForEach(self.$feedFiles) { file in
@@ -92,11 +92,11 @@ struct DetailedCollectionView: View {
                         Task {
                             await self.startFeed()
                         }
-                        self.isFirstRefreshCompleted = false
+                        self.isFirstRefreshCompleted = true
                     }
                 }
                 .refreshable {
-                    await startFeed()
+                    await self.startFeed()
                 }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {

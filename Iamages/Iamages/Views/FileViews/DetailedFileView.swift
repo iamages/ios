@@ -158,7 +158,7 @@ struct DetailedFileView: View {
 
     var body: some View {
         if self.isDeleted {
-            Label("File has been modified/deleted. Pick something else on the sidebar.", systemImage: "trash")
+            RemovedSuggestView()
         } else {
             ZoomableScrollComponent {
                 KFAnimatedImage(self.dataObservable.getFileImageURL(id: self.file.id))
