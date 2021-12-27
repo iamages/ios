@@ -13,6 +13,8 @@ struct ModifyCollectionView: View {
     @State var newPrivate: Bool = false
     @State var newHidden: Bool = false
     
+    @State var isToggleHelpPopoverPresented: Bool = false
+    
     @State var isBusy: Bool = false
     @State var isModifyErrorAlertPresented: Bool = false
     @State var modifyErrorText: String?
@@ -90,6 +92,12 @@ struct ModifyCollectionView: View {
                             }
                     }
                     .disabled(self.isBusy)
+                    Button("Help") {
+                        self.isToggleHelpPopoverPresented = true
+                    }
+                    .popover(isPresented: self.$isToggleHelpPopoverPresented) {
+                        ToggleHelpView()
+                    }
                 }, header: {
                     Text("Options")
                 }, footer: {

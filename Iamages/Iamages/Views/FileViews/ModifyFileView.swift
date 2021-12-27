@@ -16,6 +16,8 @@ struct ModifyFileView: View {
     @State var newPrivate: Bool = false
     @State var newHidden: Bool = false
     
+    @State var isToggleHelpPopoverPresented: Bool = false
+    
     @State var modifyErrorText: String?
     @State var isModifyErrorAlertPresented: Bool = false
     
@@ -106,6 +108,12 @@ struct ModifyFileView: View {
                         }
                     }
                     .disabled(self.isBusy)
+                    Button("Help") {
+                        self.isToggleHelpPopoverPresented = true
+                    }
+                    .popover(isPresented: self.$isToggleHelpPopoverPresented) {
+                        ToggleHelpView()
+                    }
                 }, header: {
                     Text("Options")
                 }, footer: {
