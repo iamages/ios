@@ -167,6 +167,9 @@ struct DetailedFileView: View {
                     }
                     .cancelOnDisappear(true)
                     .scaledToFit()
+                    .onDrag {
+                        return NSItemProvider(item: self.dataObservable.getFileEmbedURL(id: self.file.id) as NSSecureCoding, typeIdentifier: "public.url")
+                    }
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -185,11 +188,17 @@ struct DetailedFileView: View {
                 ToolbarItem {
                     Menu(content: {
                         Section {
+                            #if targetEnvironment(macCatalyst)
+                            Button("Copy link") {
+                                self.copyLink()
+                            }
+                            #else
                             Button(action: {
                                 self.isShareSheetPresented = true
                             }) {
                                 Label("Share link", systemImage: "square.and.arrow.up")
                             }
+                            #endif
                         }
 
                         Section {

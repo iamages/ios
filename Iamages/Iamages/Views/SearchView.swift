@@ -95,12 +95,14 @@ struct SearchView: View {
                     }
                 case .users:
                     ForEach(self.feedUsers, id: \.self) { user in
-                        NavigableUserView(user: user)
-                            .task {
-                                if !self.isBusy && !self.isEndOfFeed && self.feedUsers.last == user {
-                                    await self.pageFeed()
+                        if user.username != self.dataObservable.currentAppUser?.username {
+                            NavigableUserView(user: user)
+                                .task {
+                                    if !self.isBusy && !self.isEndOfFeed && self.feedUsers.last == user {
+                                        await self.pageFeed()
+                                    }
                                 }
-                            }
+                        }
                     }
                 }
             }

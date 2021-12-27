@@ -39,6 +39,9 @@ struct NavigableFileView: View {
                         .lineLimit(1)
                 }
             }
+            .onDrag {
+                return NSItemProvider(item: self.dataObservable.getFileEmbedURL(id: self.file.id) as NSSecureCoding, typeIdentifier: "public.url")
+            }
             .padding(.top, 4)
             .padding(.bottom, 4)
         }

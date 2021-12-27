@@ -100,6 +100,7 @@ struct PublicUserView: View {
                             .tag(feed)
                     }
                 }
+                .pickerStyle(.menu)
                 .labelsHidden()
                 .disabled(self.isBusy)
                 .onChange(of: self.selectedFeed) { _ in

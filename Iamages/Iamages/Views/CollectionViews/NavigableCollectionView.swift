@@ -40,5 +40,8 @@ struct NavigableCollectionView: View {
                 }
             }
         }
+        .onDrag {
+            return NSItemProvider(item: self.dataObservable.getCollectionEmbedURL(id: self.collection.id) as NSSecureCoding, typeIdentifier: "public.url")
+        }
     }
 }

@@ -288,7 +288,7 @@ class APIDataObservable: ObservableObject {
                         startDate: startDate
                     )
                 ),
-                auth: self.currentAppUserAuthHeader
+                auth: (username == self.currentAppUser?.username) ? self.currentAppUserAuthHeader : nil
             )
         )
     }
@@ -306,7 +306,7 @@ class APIDataObservable: ObservableObject {
                         startDate: startDate
                     )
                 ),
-                auth: self.currentAppUserAuthHeader
+                auth: (username == self.currentAppUser?.username) ? self.currentAppUserAuthHeader : nil
             )
         )
     }
@@ -340,7 +340,7 @@ class APIDataObservable: ObservableObject {
                 "/user/\(username.urlEncode())/info",
                 method: .get,
                 body: nil,
-                auth: self.currentAppUserAuthHeader
+                auth: (username == self.currentAppUser?.username) ? self.currentAppUserAuthHeader : nil
             )
         )
     }
@@ -357,7 +357,7 @@ class APIDataObservable: ObservableObject {
                         startDate: startDate
                     )
                 ),
-                auth: self.currentAppUserAuthHeader
+                auth: (username == self.currentAppUser?.username) ? self.currentAppUserAuthHeader : nil
             )
         )
     }
@@ -374,9 +374,13 @@ class APIDataObservable: ObservableObject {
                         startDate: startDate
                     )
                 ),
-                auth: self.currentAppUserAuthHeader
+                auth: (username == self.currentAppUser?.username) ? self.currentAppUserAuthHeader : nil
             )
         )
+    }
+    
+    func getUserEmbedURL (username: String) -> URL {
+        return URL(string: "\(self.apiRoot)/user/\(username)/embed")!
     }
     
     func modifyAppUser (modify: UserModifiable) async throws {

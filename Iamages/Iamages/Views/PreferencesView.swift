@@ -137,7 +137,7 @@ struct PreferencesView: View {
                 }, header: {
                     Text("About + links")
                 }, footer: {
-                    Text("Iamages iOS \(Bundle.main.version) (\(Bundle.main.build))")
+                    Text("Iamages \(Bundle.main.version) (\(Bundle.main.build))")
                 })
             }
             .navigationTitle("Preferences")

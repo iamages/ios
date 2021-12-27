@@ -26,9 +26,6 @@ struct UploadView: View {
                 ForEach(self.$uploadRequests) { uploadRequest in
                     NavigableModifyUploadRequestView(uploadRequest: uploadRequest, uploadRequests: self.$uploadRequests)
                 }
-                .onDelete { offsets in
-                    self.uploadRequests.remove(atOffsets: offsets)
-                }
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {

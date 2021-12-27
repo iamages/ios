@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct NavigableUserView: View {
+    @EnvironmentObject var dataObservable: APIDataObservable
+    
     let user: IamagesUser
     
     var body: some View {
@@ -12,6 +14,9 @@ struct NavigableUserView: View {
             }, icon: {
                 ProfileImageView(username: user.username)
             })
+        }
+        .onDrag {
+            return NSItemProvider(item: self.dataObservable.getUserEmbedURL(username: self.user.username) as NSSecureCoding, typeIdentifier: "public.url")
         }
     }
 }
