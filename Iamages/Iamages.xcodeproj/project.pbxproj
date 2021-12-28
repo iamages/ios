@@ -54,6 +54,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E7344FC277A92480076E672 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2E84B16D27795E030006458A /* RemovedSuggestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedSuggestView.swift; sourceTree = "<group>"; };
 		2E84B16F2779B4870006458A /* ToggleHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleHelpView.swift; sourceTree = "<group>"; };
 		2EF4F15127784B8100E64446 /* Iamages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Iamages.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -139,6 +140,7 @@
 				2EF4F1B227784C1400E64446 /* IamagesApp.swift */,
 				2EF4F1BE27789A6600E64446 /* Iamages.storekit */,
 				2EF4F1BD27784D1F00E64446 /* Iamages.entitlements */,
+				2E7344FC277A92480076E672 /* Info.plist */,
 				2EF4F15827784B8300E64446 /* Assets.xcassets */,
 				2EF4F15A27784B8300E64446 /* Preview Content */,
 			);
@@ -507,6 +509,7 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Iamages/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This is used to add photos to your library.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -542,6 +545,7 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Iamages/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This is used to add photos to your library.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
