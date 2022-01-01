@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2E84B16E27795E030006458A /* RemovedSuggestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16D27795E030006458A /* RemovedSuggestView.swift */; };
 		2E84B1702779B4870006458A /* ToggleHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16F2779B4870006458A /* ToggleHelpView.swift */; };
+		2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB252D5277B33B9009A17DC /* NewCollectionView.swift */; };
 		2EF4F15927784B8300E64446 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EF4F15827784B8300E64446 /* Assets.xcassets */; };
 		2EF4F15C27784B8300E64446 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EF4F15B27784B8300E64446 /* Preview Assets.xcassets */; };
 		2EF4F16527784BE300E64446 /* Modals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16327784BE300E64446 /* Modals.swift */; };
@@ -57,6 +58,7 @@
 		2E7344FC277A92480076E672 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2E84B16D27795E030006458A /* RemovedSuggestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedSuggestView.swift; sourceTree = "<group>"; };
 		2E84B16F2779B4870006458A /* ToggleHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleHelpView.swift; sourceTree = "<group>"; };
+		2EB252D5277B33B9009A17DC /* NewCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCollectionView.swift; sourceTree = "<group>"; };
 		2EF4F15127784B8100E64446 /* Iamages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Iamages.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EF4F15827784B8300E64446 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2EF4F15B27784B8300E64446 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@
 				2EF4F19027784C0900E64446 /* NavigableCollectionView.swift */,
 				2EF4F19127784C0900E64446 /* ModifyCollectionView.swift */,
 				2EF4F19227784C0900E64446 /* DetailedCollectionView.swift */,
+				2EB252D5277B33B9009A17DC /* NewCollectionView.swift */,
 			);
 			path = CollectionViews;
 			sourceTree = "<group>";
@@ -361,6 +364,7 @@
 				2EF4F1A327784C0900E64446 /* DetailedFileView.swift in Sources */,
 				2EF4F1A827784C0900E64446 /* ManageUserView.swift in Sources */,
 				2EF4F1A927784C0900E64446 /* UserSearchView.swift in Sources */,
+				2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */,
 				2EF4F1AF27784C0900E64446 /* DetailedCollectionView.swift in Sources */,
 				2EF4F1AB27784C0900E64446 /* UploadView.swift in Sources */,
 				2EF4F16527784BE300E64446 /* Modals.swift in Sources */,
@@ -521,7 +525,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
@@ -557,7 +561,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;

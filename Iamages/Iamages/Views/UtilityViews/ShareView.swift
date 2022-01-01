@@ -8,12 +8,12 @@ import SwiftUI
 struct ShareView: UIViewControllerRepresentable {
     var activityItems: [Any]
     var applicationActivities: [UIActivity]? = nil
-    @Environment(\.presentationMode) var presentationMode
+    @Binding var isPresented: Bool
 
     func makeUIViewController(context: UIViewControllerRepresentableContext<ShareView>) -> UIActivityViewController {
         let controller = UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
         controller.completionWithItemsHandler = { (activityType, completed, returnedItems, error) in
-            self.presentationMode.wrappedValue.dismiss()
+            self.isPresented = false
         }
         return controller
     }

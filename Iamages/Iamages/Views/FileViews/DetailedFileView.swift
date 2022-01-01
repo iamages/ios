@@ -297,7 +297,7 @@ struct DetailedFileView: View {
                 UserCollectionPickerView(pickedCollectionID: self.$pickedCollectionID, isPresented: self.$isPickCollectionSheetPresented)
             }
             .sheet(isPresented: self.$isShareSheetPresented) {
-                ShareView(activityItems: [self.dataObservable.getFileEmbedURL(id: self.file.id)])
+                ShareView(activityItems: [self.dataObservable.getFileEmbedURL(id: self.file.id)], isPresented: self.$isShareSheetPresented)
             }
             .fileExporter(
                 isPresented: self.$isSaveFileSheetPresented,

@@ -227,3 +227,15 @@ struct UploadFileRequest: Identifiable, Equatable {
     var info: UploadJSONRequest
     var file: UploadFile?
 }
+
+struct NewCollectionRequest: Encodable {
+    var description: String
+    var isPrivate: Bool
+    var isHidden: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case description
+        case isPrivate = "private"
+        case isHidden = "hidden"
+    }
+}

@@ -66,6 +66,13 @@ struct DetailedCollectionView: View {
         }
     }
     
+    func copyLink () {
+        UIPasteboard.general.setValue(
+            self.dataObservable.getCollectionEmbedURL(id: self.collection.id),
+            forPasteboardType: "public.url"
+        )
+    }
+    
     func report () {
         UIApplication.shared.open(URL(
             string: "mailto:iamages@uber.space?subject=\("Report collection: \(self.collection.id)".urlEncode())&body=\("Reason:".urlEncode())"
@@ -124,11 +131,17 @@ struct DetailedCollectionView: View {
                     ToolbarItem {
                         Menu(content: {
                             Section {
+                                #if targetEnvironment(macCatalyst)
+                                Button("Copy link") {
+                                    self.copyLink()
+                                }
+                                #else
                                 Button(action: {
                                     self.isShareSheetPresented = true
                                 }) {
                                     Label("Share link", systemImage: "square.and.arrow.up")
                                 }
+                                #endif
                             }
                             if self.collection.owner != nil && self.collection.owner! == self.dataObservable.currentAppUser?.username {
                                 Section {
@@ -172,7 +185,7 @@ struct DetailedCollectionView: View {
                     CollectionDetailsView(collection: self.$collection, isDetailSheetPresented: self.$isDetailSheetPresented)
                 }
                 .sheet(isPresented: self.$isShareSheetPresented) {
-                    ShareView(activityItems: [self.dataObservable.getCollectionEmbedURL(id: self.collection.id)])
+                    ShareView(activityItems: [self.dataObservable.getCollectionEmbedURL(id: self.collection.id)], isPresented: self.$isShareSheetPresented)
                 }
                 .alert("Feed loading error", isPresented: self.$isFeedLoadFailAlertPresented, actions: {}, message: {
                     Text(self.feedLoadFailAlertText ?? "Unknown error.")

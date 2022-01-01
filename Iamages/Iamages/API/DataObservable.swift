@@ -41,7 +41,8 @@ class APIDataObservable: ObservableObject {
     private let keychain: Keychain = Keychain()
 
     let loadLimit: Int = 5
-    var apiRoot: String = "https://iamages.uber.space/iamages/api/v3"
+//    let apiRoot: String = "http://localhost:9999/iamages/api/v3"
+    let apiRoot: String = "https://iamages.uber.space/iamages/api/v3"
     
     @AppStorage("isNSFWEnabled") var isNSFWEnabled: Bool = true
 
@@ -272,6 +273,18 @@ class APIDataObservable: ObservableObject {
             method: .delete,
             body: nil,
             auth: self.currentAppUserAuthHeader
+        )
+    }
+    
+    func newCollection(request: NewCollectionRequest) async throws -> IamagesCollection {
+        return try self.jsond.decode(
+            IamagesCollection.self,
+            from: try await self.makeRequest(
+                "/collection/new",
+                method: .post,
+                body: try self.jsone.encode(request),
+                auth: self.currentAppUserAuthHeader
+            )
         )
     }
     

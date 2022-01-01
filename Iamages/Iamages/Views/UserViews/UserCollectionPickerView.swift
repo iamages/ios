@@ -140,6 +140,11 @@ struct UserCollectionPickerView: View {
                 await self.startFeed()
             }
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: NewCollectionView(feedCollections: self.$feedCollections)) {
+                        Label("New", systemImage: "plus")
+                    }
+                }
                 ToolbarItem {
                     Button(action: {
                         self.pickedCollectionID = nil
