@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ModifyCollectionView: View {
+struct ModifyCollectionInfoView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     
     @Binding var collection: IamagesCollection

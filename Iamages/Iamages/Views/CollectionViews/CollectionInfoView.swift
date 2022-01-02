@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CollectionDetailsView: View {
+struct CollectionInfoView: View {
     @Binding var collection: IamagesCollection
     @Binding var isDetailSheetPresented: Bool
     

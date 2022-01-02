@@ -1,7 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct ImageDetailView: View {
+struct FileInfoView: View {
     @Binding var file: IamagesFile
     @Binding var isPresented: Bool
     

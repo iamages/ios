@@ -29,7 +29,7 @@ struct ImageDocument: FileDocument {
     }
 }
 
-struct DetailedFileView: View {
+struct FileView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     @Environment(\.presentationMode) var presentationMode
 
@@ -282,10 +282,10 @@ struct DetailedFileView: View {
                 }
             }
             .sheet(isPresented: self.$isDetailSheetPresented) {
-                ImageDetailView(file: self.$file, isPresented: self.$isDetailSheetPresented)
+                FileInfoView(file: self.$file, isPresented: self.$isDetailSheetPresented)
             }
             .sheet(isPresented: self.$isModifyFileSheetPresented) {
-                ModifyFileView(file: self.$file, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isPresented: self.$isModifyFileSheetPresented)
+                ModifyFileInfoView(file: self.$file, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isPresented: self.$isModifyFileSheetPresented)
             }
             .sheet(isPresented: self.$isPickCollectionSheetPresented, onDismiss: {
                 if self.pickedCollectionID != nil {

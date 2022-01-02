@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DetailedCollectionView: View {
+struct CollectionFilesListView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     
     @Binding var collection: IamagesCollection
@@ -182,7 +182,7 @@ struct DetailedCollectionView: View {
                     }
                 }
                 .sheet(isPresented: self.$isDetailSheetPresented) {
-                    CollectionDetailsView(collection: self.$collection, isDetailSheetPresented: self.$isDetailSheetPresented)
+                    CollectionInfoView(collection: self.$collection, isDetailSheetPresented: self.$isDetailSheetPresented)
                 }
                 .sheet(isPresented: self.$isShareSheetPresented) {
                     ShareView(activityItems: [self.dataObservable.getCollectionEmbedURL(id: self.collection.id)], isPresented: self.$isShareSheetPresented)
@@ -196,7 +196,7 @@ struct DetailedCollectionView: View {
             }
         }
         .sheet(isPresented: self.$isModifyCollectionSheetPresented) {
-            ModifyCollectionView(collection: self.$collection, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isModifyCollectionSheetPresented: self.$isModifyCollectionSheetPresented)
+            ModifyCollectionInfoView(collection: self.$collection, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isModifyCollectionSheetPresented: self.$isModifyCollectionSheetPresented)
         }
     }
 }

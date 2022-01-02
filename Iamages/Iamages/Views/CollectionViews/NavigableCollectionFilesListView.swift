@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct NavigableCollectionView: View {
+struct NavigableCollectionFilesListView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
 
     @Binding var collection: IamagesCollection
@@ -11,7 +11,7 @@ struct NavigableCollectionView: View {
     @State var isBusy: Bool = false
     
     var body: some View {
-        NavigationLink(destination: DetailedCollectionView(collection: self.$collection, feed: self.$feedCollections, type: self.type)) {
+        NavigationLink(destination: CollectionFilesListView(collection: self.$collection, feed: self.$feedCollections, type: self.type)) {
             VStack(alignment: .leading) {
                 Label(title: {
                     Text(verbatim: self.collection.owner ?? "Anonymous")

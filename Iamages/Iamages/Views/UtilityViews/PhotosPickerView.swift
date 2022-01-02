@@ -1,6 +1,14 @@
 import SwiftUI
 import PhotosUI
 
+/*
+ Thanks to:
+ - https://github.com/fassko/PHPickerViewController-SwiftUI/blob/main/PHPhotoPickerSwiftUI/PhotoPicker.swift
+ - https://github.com/antranapp/AnPhotosPicker/blob/master/Sources/AnPhotosPicker/AnPhotosPicker.swift
+ - https://github.com/RemiBardon/swiftui-photos-picker/blob/main/Sources/PhotosPicker/PhotosPicker.swift
+ - https://github.com/onizine/PHPickerGetDataSample/blob/main/PHPickerSample/ViewController.swift
+ */
+
 struct PhotosPickerView: UIViewControllerRepresentable {
     let imageRetrievedHandler: (Data, String) -> Void
     @Binding var isPresented: Bool
@@ -30,6 +38,10 @@ struct PhotosPickerView: UIViewControllerRepresentable {
         }
         
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            if results.isEmpty {
+                self.parent.isPresented = false
+            }
+            
             let pickerResultLength: Int = results.count
             var pickedCount: Int = 0 {
                 didSet {

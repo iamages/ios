@@ -19,7 +19,7 @@ struct NavigableFileView: View {
         if self.file.isNSFW && !self.isNSFWEnabled {
             Label("NSFW viewing is disabled.", systemImage: "eye.slash")
         } else {
-            NavigationLink(destination: DetailedFileView(file: self.$file, feed: self.$feed, type: self.type)) {
+            NavigationLink(destination: FileView(file: self.$file, feed: self.$feed, type: self.type)) {
                 VStack(alignment: .leading) {
                     Label(title: {
                         Text(verbatim: self.file.owner ?? "Anonymous")

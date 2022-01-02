@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ModifyFileView: View {
+struct ModifyFileInfoView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     
     @Binding var file: IamagesFile

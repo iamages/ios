@@ -87,7 +87,7 @@ struct YouView: View {
                     }
                 case .collections:
                     ForEach(self.$feedCollections) { collection in
-                        NavigableCollectionView(collection: collection, feedCollections: self.$feedCollections, type: .privateFeed)
+                        NavigableCollectionFilesListView(collection: collection, feedCollections: self.$feedCollections, type: .privateFeed)
                             .task {
                                 if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
                                     await self.pageFeed()
