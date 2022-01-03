@@ -232,10 +232,12 @@ struct NewCollectionRequest: Encodable {
     var description: String
     var isPrivate: Bool
     var isHidden: Bool
+    var fileIDs: [String]?
     
     enum CodingKeys: String, CodingKey {
         case description
         case isPrivate = "private"
         case isHidden = "hidden"
+        case fileIDs = "file_ids"
     }
 }

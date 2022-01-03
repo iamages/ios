@@ -59,6 +59,9 @@ struct CollectionFilesListView: View {
         self.isBusy = true
         do {
             try await self.dataObservable.deleteCollection(id: self.collection.id)
+            if let position = self.feed.firstIndex(of: self.collection) {
+                self.feed.remove(at: position)
+            }
             self.isDeleted = true
         } catch {
             print(error)

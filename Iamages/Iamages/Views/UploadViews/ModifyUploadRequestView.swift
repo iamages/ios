@@ -35,11 +35,6 @@ struct ModifyUploadRequestView: View {
                     }
                 }
             }
-            .onChange(of: self.uploadRequests) { [uploadRequest] _ in
-                if self.uploadRequests.firstIndex(of: uploadRequest) == nil {
-                    self.isDeleted = true
-                }
-            }
             .navigationTitle(uploadRequest.info.description)
         }
     }

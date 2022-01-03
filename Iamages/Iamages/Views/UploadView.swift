@@ -9,25 +9,23 @@ struct UploadView: View {
     @State var isPhotoPickerPresented: Bool = false
     @State var isFilePickerPresented: Bool = false
     @State var isURLPickerPresented: Bool = false
-    @State var isUploadSheetPresented: Bool = false
+    @State var isNewUploadCollectionSheetPresented: Bool = false
+    @State var isUploadingFilesListSheetPresented: Bool = false
     
     @State var pickedURL: URL?
-    @State var pickedImages: [Data] = []
-    @State var rawPickerResultLength: Int = 0
     
     @State var pickErrorAlertText: String?
     @State var isPickErrorAlertPresented: Bool = false
     
     @State var uploadRequests: [UploadFileRequest] = []
+    @State var uploadMode: UploadMode = .separate
+    @State var newCollection: NewCollectionRequest = NewCollectionRequest(description: "No description yet.", isPrivate: false, isHidden: false)
     
     var body: some View {
         NavigationView {
             List {
                 ForEach(self.$uploadRequests) { uploadRequest in
                     NavigableModifyUploadRequestView(uploadRequest: uploadRequest, uploadRequests: self.$uploadRequests)
-                }
-                .onDelete { offset in
-                    self.uploadRequests.remove(atOffsets: offset)
                 }
             }
             .toolbar {
@@ -54,12 +52,24 @@ struct UploadView: View {
                     .menuStyle(.borderlessButton)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        self.isUploadSheetPresented = true
+                    Menu(content: {
+                        Button(action: {
+                            self.uploadMode = .separate
+                            self.isUploadingFilesListSheetPresented = true
+                        }) {
+                            Label("Upload separately", systemImage: "square.and.arrow.up.on.square")
+                        }
+                        Button(action: {
+                            self.uploadMode = .toCollection
+                            self.isNewUploadCollectionSheetPresented = true
+                        }) {
+                            Label("Upload to new collection", systemImage: "square.grid.3x1.folder.badge.plus")
+                        }
                     }) {
-                        Label("Upload", systemImage: "square.and.arrow.up.on.square")
+                        Label("Upload", systemImage: "square.and.arrow.up")
                     }
                     .disabled(self.uploadRequests.isEmpty)
+                    .menuStyle(.borderlessButton)
                 }
             }
             .sheet(isPresented: self.$isPhotoPickerPresented) {
@@ -80,11 +90,6 @@ struct UploadView: View {
                         )
                     )
                 }, isPresented: self.$isPhotoPickerPresented)
-            }
-            .onChange(of: self.pickedImages) { _ in
-                if self.pickedImages.count == self.rawPickerResultLength {
-                    self.isPhotoPickerPresented = false
-                }
             }
             .fileImporter(
                 isPresented: self.$isFilePickerPresented,
@@ -138,8 +143,16 @@ struct UploadView: View {
             }) {
                 URLPickerView(pickedURL: self.$pickedURL, isPresented: self.$isURLPickerPresented)
             }
-            .sheet(isPresented: self.$isUploadSheetPresented) {
-                UploadingView(uploadRequests: self.$uploadRequests, isPresented: self.$isUploadSheetPresented)
+            .sheet(isPresented: self.$isUploadingFilesListSheetPresented) {
+                UploadingFilesListView(uploadRequests: self.$uploadRequests, mode: self.$uploadMode, newCollection: self.$newCollection, isPresented: self.$isUploadingFilesListSheetPresented)
+            }
+            .sheet(isPresented: self.$isNewUploadCollectionSheetPresented, onDismiss: {
+                // Tiny delay for weird Mac Catalyst sheet slow dismiss.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.isUploadingFilesListSheetPresented = true
+                }
+            }) {
+                UploadingNewCollectionView(newCollection: self.$newCollection, isPresented: self.$isNewUploadCollectionSheetPresented)
             }
             .navigationTitle("Upload")
         }

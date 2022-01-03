@@ -40,29 +40,29 @@ struct PhotosPickerView: UIViewControllerRepresentable {
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             if results.isEmpty {
                 self.parent.isPresented = false
-            }
-            
-            let pickerResultLength: Int = results.count
-            var pickedCount: Int = 0 {
-                didSet {
-                    if pickedCount == pickerResultLength {
-                        self.parent.isPresented = false
+            } else {
+                let pickerResultLength: Int = results.count
+                var pickedCount: Int = 0 {
+                    didSet {
+                        if pickedCount == pickerResultLength {
+                            self.parent.isPresented = false
+                        }
                     }
                 }
-            }
-            
-            results.forEach { image in
-                let provider = image.itemProvider
-                if let typeIdentifier: String = provider.registeredTypeIdentifiers.first {
-                    if provider.canLoadObject(ofClass: UIImage.self) {
-                        provider.loadDataRepresentation(forTypeIdentifier: typeIdentifier, completionHandler: { data, error in
-                            if let data = data {
-                                self.parent.imageRetrievedHandler(data, typeIdentifier)
-                            } else if let error = error {
-                                print(error)
-                            }
-                            pickedCount += 1
-                        })
+                
+                results.forEach { image in
+                    let provider = image.itemProvider
+                    if let typeIdentifier: String = provider.registeredTypeIdentifiers.first {
+                        if provider.canLoadObject(ofClass: UIImage.self) {
+                            provider.loadDataRepresentation(forTypeIdentifier: typeIdentifier, completionHandler: { data, error in
+                                if let data = data {
+                                    self.parent.imageRetrievedHandler(data, typeIdentifier)
+                                } else if let error = error {
+                                    print(error)
+                                }
+                                pickedCount += 1
+                            })
+                        }
                     }
                 }
             }

@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 enum PublicFeed: String, CaseIterable {
     case latestFiles = "Latest Files"
@@ -9,6 +10,7 @@ enum PublicFeed: String, CaseIterable {
 
 struct FeedView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
+    @AppStorage("feedOpenedCount") var feedOpenedCount: Int = 0
 
     @State var errorAlertText: String?
     @State var isErrorAlertPresented: Bool = false
@@ -104,10 +106,23 @@ struct FeedView: View {
                         await self.startFeed()
                     }
                     self.isFirstRefreshCompleted = true
+                    self.feedOpenedCount += 1
                 }
             }
             .refreshable {
                 await self.startFeed()
+            }
+            .onDisappear {
+                if self.feedOpenedCount > 20 {
+                    self.feedOpenedCount = 0
+                    DispatchQueue.main.async {
+                        if let scene = UIApplication.shared.connectedScenes
+                                .first(where: { $0.activationState == .foregroundActive })
+                                as? UIWindowScene {
+                            SKStoreReviewController.requestReview(in: scene)
+                        }
+                    }
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {

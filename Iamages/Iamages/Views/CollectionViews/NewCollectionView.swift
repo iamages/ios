@@ -33,6 +33,7 @@ struct NewCollectionView: View {
             Section("Options") {
                 Group {
                     Toggle("Private", isOn: self.$collection.isPrivate)
+                        .disabled(!self.dataObservable.isLoggedIn)
                     Toggle("Hidden", isOn: self.$collection.isHidden)
                 }
                 .disabled(self.isBusy)
