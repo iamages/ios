@@ -110,14 +110,19 @@ struct ManageUserView: View {
                         .textInputAutocapitalization(.none)
                         .disableAutocorrection(true)
                     SecureField("Password", text: self.$password)
+                        .onSubmit {
+                            Task {
+                                await self.login()
+                            }
+                        }
 
                     Button("Log in") {
                         Task {
                             await self.login()
                         }
                     }
-                    .disabled(self.isBusy)
                     .keyboardShortcut(.defaultAction)
+                    .disabled(self.isBusy)
     
                     Button("Sign up") {
                         Task {
