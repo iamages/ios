@@ -41,8 +41,8 @@ class APIDataObservable: ObservableObject {
     private let keychain: Keychain = Keychain()
 
     let loadLimit: Int = 5
-    let apiRoot: String = "http://localhost:9999/iamages/api/v3"
-//    let apiRoot: String = "https://iamages.uber.space/iamages/api/v3"
+//    let apiRoot: String = "http://localhost:9999/iamages/api/v3"
+    let apiRoot: String = "https://iamages.uber.space/iamages/api/v3"
     
     @AppStorage("isNSFWEnabled") var isNSFWEnabled: Bool = true
 
