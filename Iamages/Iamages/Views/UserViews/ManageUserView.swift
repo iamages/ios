@@ -121,7 +121,6 @@ struct ManageUserView: View {
                             await self.login()
                         }
                     }
-                    .keyboardShortcut(.defaultAction)
                     .disabled(self.isBusy)
     
                     Button("Sign up") {
