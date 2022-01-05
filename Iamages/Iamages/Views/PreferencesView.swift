@@ -138,7 +138,7 @@ struct PreferencesView: View {
                 }, header: {
                     Text("About + links")
                 }, footer: {
-                    Text("Iamages \(Bundle.main.version) (\(Bundle.main.build))")
+                    Text("**Iamages \(Bundle.main.version) (\(Bundle.main.build))**\n\(Bundle.main.copyright)")
                 })
                 #endif
             }

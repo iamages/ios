@@ -7,4 +7,7 @@ extension Bundle {
     public var build: String {
         return Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
     }
+    public var copyright: String {
+        return Bundle.main.infoDictionary?["NSHumanReadableCopyright"] as? String ?? "© jkelol111"
+    }
 }

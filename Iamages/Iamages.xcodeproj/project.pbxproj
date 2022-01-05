@@ -527,6 +527,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Iamages/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2022-present Nam Thành Nguyễn (jkelol111) et. al. Licensed under the GPL v3. A copy of the license can be found in the source code.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This is used to add photos to your library.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -563,6 +564,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Iamages/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2022-present Nam Thành Nguyễn (jkelol111) et. al. Licensed under the GPL v3. A copy of the license can be found in the source code.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This is used to add photos to your library.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
