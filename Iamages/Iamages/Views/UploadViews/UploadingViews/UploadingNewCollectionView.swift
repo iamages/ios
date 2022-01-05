@@ -23,8 +23,9 @@ struct UploadingNewCollectionView: View {
                     Button(action: {
                         self.isPresented = false
                     }) {
-                        Label("Cancel", systemImage: "checkmark")
+                        Label("Confirm", systemImage: "checkmark")
                     }
+                    .keyboardShortcut(.defaultAction)
                 }
             }
             .navigationTitle("New collection")

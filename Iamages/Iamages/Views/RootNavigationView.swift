@@ -3,7 +3,9 @@ import SwiftUI
 struct RootNavigationView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
 
-    @Binding var selectedTabItem: NavigationViews
+    @Binding var selectedTabItem: AppNavigationView
+    
+    @State var isFirstViewDone: Bool = false
 
     var body: some View {
         TabView(selection: self.$selectedTabItem) {
@@ -11,27 +13,38 @@ struct RootNavigationView: View {
                 .tabItem {
                     Label("Feed", systemImage: "newspaper")
                 }
-                .tag(NavigationViews.feed)
+                .tag(AppNavigationView.feed)
             SearchView()
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
-                .tag(NavigationViews.search)
+                .tag(AppNavigationView.search)
             UploadView()
                 .tabItem {
                     Label("Upload", systemImage: "square.and.arrow.up.on.square")
                 }
-                .tag(NavigationViews.upload)
+                .tag(AppNavigationView.upload)
             YouView()
                 .tabItem {
                     Label("You", systemImage: "person")
                 }
-                .tag(NavigationViews.you)
+                .tag(AppNavigationView.you)
             PreferencesView()
                 .tabItem {
                     Label("Preferences", systemImage: "gearshape")
                 }
-                .tag(NavigationViews.preferences)
+                .tag(AppNavigationView.preferences)
         }
+        // Disabling window titlebar in Calalyst.
+        #if targetEnvironment(macCatalyst)
+        .onAppear {
+            if !self.isFirstViewDone {
+                if let titlebar = (UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene)?.titlebar {
+                    titlebar.titleVisibility = .hidden
+                }
+                self.isFirstViewDone = true
+            }
+        }
+        #endif
     }
 }

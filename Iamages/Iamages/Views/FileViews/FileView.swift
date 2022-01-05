@@ -40,7 +40,7 @@ struct FileView: View {
     @State var isBusy: Bool = false
     @State var isDeleted: Bool = false
 
-    @State var isDetailSheetPresented: Bool = false
+    @State var isInfoSheetPresented: Bool = false
     @State var isShareSheetPresented: Bool = false
     @State var isModifyFileSheetPresented: Bool = false
 
@@ -179,11 +179,12 @@ struct FileView: View {
                 }
                 ToolbarItem(placement: .principal) {
                     Button(action: {
-                        self.isDetailSheetPresented = true
+                        self.isInfoSheetPresented = true
                     }) {
-                        Label("Details", systemImage: "info.circle")
+                        Label("Info", systemImage: "info.circle")
                     }
                     .disabled(self.isBusy)
+                    .keyboardShortcut("i")
                 }
                 ToolbarItem {
                     Menu(content: {
@@ -255,8 +256,6 @@ struct FileView: View {
                     }) {
                         Label("Actions", systemImage: "ellipsis.circle")
                     }
-                    .menuStyle(.borderlessButton)
-                    .disabled(self.isBusy)
                     .confirmationDialog(
                         "'\(self.file.description)' will be deleted.",
                         isPresented: self.$isDeleteAlertPresented,
@@ -279,10 +278,12 @@ struct FileView: View {
                             }
                         }
                     }
+                    .menuStyle(.borderlessButton)
+                    .disabled(self.isBusy)
                 }
             }
-            .sheet(isPresented: self.$isDetailSheetPresented) {
-                FileInfoView(file: self.$file, isPresented: self.$isDetailSheetPresented)
+            .sheet(isPresented: self.$isInfoSheetPresented) {
+                FileInfoView(file: self.$file, isPresented: self.$isInfoSheetPresented)
             }
             .sheet(isPresented: self.$isModifyFileSheetPresented) {
                 ModifyFileInfoView(file: self.$file, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isPresented: self.$isModifyFileSheetPresented)

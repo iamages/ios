@@ -33,6 +33,7 @@ struct ModifyUploadRequestView: View {
                     }) {
                         Label("Delete", systemImage: "trash")
                     }
+                    .keyboardShortcut(.delete)
                 }
             }
             .navigationTitle(uploadRequest.info.description)

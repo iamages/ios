@@ -132,6 +132,7 @@ struct PreferencesView: View {
                 }, footer: {
                     Text("Your support helps us maintain Iamages for you and many others! Thank you!\n\nEvery:\n- **Small tip** can keep our servers running for 1 month, courtesy of Uberspace.\n- **Medium tip** will keep our developers fed and motivated to create new features.\n- **Large tip** will help us afford devices to test our apps on.")
                 })
+                #if !targetEnvironment(macCatalyst)
                 Section(content: {
                     HelpLinksView()
                 }, header: {
@@ -139,6 +140,7 @@ struct PreferencesView: View {
                 }, footer: {
                     Text("Iamages \(Bundle.main.version) (\(Bundle.main.build))")
                 })
+                #endif
             }
             .navigationTitle("Preferences")
         }

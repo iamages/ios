@@ -96,7 +96,7 @@ struct ModifyCollectionInfoView: View {
                         self.isToggleHelpPopoverPresented = true
                     }
                     .popover(isPresented: self.$isToggleHelpPopoverPresented) {
-                        ToggleHelpView()
+                        TogglesHelpView()
                     }
                 }, header: {
                     Text("Options")
@@ -126,6 +126,7 @@ struct ModifyCollectionInfoView: View {
                         }) {
                             Label("Apply", systemImage: "checkmark")
                         }
+                        .keyboardShortcut(.defaultAction)
                     }
                 }
             }

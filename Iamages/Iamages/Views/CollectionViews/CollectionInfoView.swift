@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CollectionInfoView: View {
     @Binding var collection: IamagesCollection
-    @Binding var isDetailSheetPresented: Bool
+    @Binding var isPresented: Bool
     
     var body: some View {
         NavigationView {
@@ -34,7 +34,7 @@ struct CollectionInfoView: View {
             .toolbar {
                 ToolbarItem {
                     Button(action: {
-                        self.isDetailSheetPresented = false
+                        self.isPresented = false
                     }) {
                        Label("Close", systemImage: "xmark")
                     }

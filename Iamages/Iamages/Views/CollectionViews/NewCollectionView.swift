@@ -51,6 +51,7 @@ struct NewCollectionView: View {
                     }) {
                         Label("Create", systemImage: "plus")
                     }
+                    .keyboardShortcut(.defaultAction)
                 }
             }
         }

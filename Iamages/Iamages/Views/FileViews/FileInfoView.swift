@@ -67,7 +67,6 @@ struct FileInfoView: View {
                     }) {
                         Label("Close", systemImage: "xmark")
                     }
-                    .keyboardShortcut(.escape)
                 }
             }
             .navigationTitle("Details")

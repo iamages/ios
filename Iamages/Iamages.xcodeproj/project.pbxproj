@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2E84B16E27795E030006458A /* RemovedSuggestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16D27795E030006458A /* RemovedSuggestView.swift */; };
-		2E84B1702779B4870006458A /* ToggleHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16F2779B4870006458A /* ToggleHelpView.swift */; };
+		2E84B1702779B4870006458A /* TogglesHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16F2779B4870006458A /* TogglesHelpView.swift */; };
 		2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB252D5277B33B9009A17DC /* NewCollectionView.swift */; };
 		2EE3196D2781E321005B83B0 /* UploadingFilesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3196C2781E321005B83B0 /* UploadingFilesListView.swift */; };
 		2EE3196F2781E7B4005B83B0 /* UploadingNewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3196E2781E7B4005B83B0 /* UploadingNewCollectionView.swift */; };
@@ -58,7 +58,7 @@
 /* Begin PBXFileReference section */
 		2E7344FC277A92480076E672 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2E84B16D27795E030006458A /* RemovedSuggestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedSuggestView.swift; sourceTree = "<group>"; };
-		2E84B16F2779B4870006458A /* ToggleHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleHelpView.swift; sourceTree = "<group>"; };
+		2E84B16F2779B4870006458A /* TogglesHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglesHelpView.swift; sourceTree = "<group>"; };
 		2EB252D5277B33B9009A17DC /* NewCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCollectionView.swift; sourceTree = "<group>"; };
 		2EE3196C2781E321005B83B0 /* UploadingFilesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadingFilesListView.swift; sourceTree = "<group>"; };
 		2EE3196E2781E7B4005B83B0 /* UploadingNewCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadingNewCollectionView.swift; sourceTree = "<group>"; };
@@ -213,6 +213,8 @@
 				2EE3196B2781E25E005B83B0 /* UploadingViews */,
 				2EF4F17527784C0900E64446 /* NavigableModifyUploadRequestView.swift */,
 				2EF4F17627784C0900E64446 /* ModifyUploadRequestView.swift */,
+				2EF4F17F27784C0900E64446 /* URLPickerView.swift */,
+				2EF4F17B27784C0900E64446 /* PhotosPickerView.swift */,
 			);
 			path = UploadViews;
 			sourceTree = "<group>";
@@ -222,13 +224,11 @@
 			children = (
 				2EF4F17927784C0900E64446 /* FileThumbnailView.swift */,
 				2EF4F17A27784C0900E64446 /* ProfileImageView.swift */,
-				2EF4F17B27784C0900E64446 /* PhotosPickerView.swift */,
 				2EF4F17C27784C0900E64446 /* ShareView.swift */,
 				2EF4F17D27784C0900E64446 /* HelpLinksView.swift */,
 				2EF4F17E27784C0900E64446 /* ZoomableScrollView.swift */,
-				2EF4F17F27784C0900E64446 /* URLPickerView.swift */,
 				2E84B16D27795E030006458A /* RemovedSuggestView.swift */,
-				2E84B16F2779B4870006458A /* ToggleHelpView.swift */,
+				2E84B16F2779B4870006458A /* TogglesHelpView.swift */,
 			);
 			path = UtilityViews;
 			sourceTree = "<group>";
@@ -369,7 +369,7 @@
 				2EF4F19727784C0900E64446 /* ModifyUploadRequestView.swift in Sources */,
 				2EF4F19E27784C0900E64446 /* ZoomableScrollView.swift in Sources */,
 				2EF4F1AA27784C0900E64446 /* YouView.swift in Sources */,
-				2E84B1702779B4870006458A /* ToggleHelpView.swift in Sources */,
+				2E84B1702779B4870006458A /* TogglesHelpView.swift in Sources */,
 				2EF4F1AC27784C0900E64446 /* CollectionInfoView.swift in Sources */,
 				2EF4F1A427784C0900E64446 /* PreferencesView.swift in Sources */,
 				2EF4F1A327784C0900E64446 /* FileView.swift in Sources */,

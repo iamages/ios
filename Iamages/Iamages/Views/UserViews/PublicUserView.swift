@@ -131,6 +131,7 @@ struct PublicUserView: View {
                 }) {
                     Label("Search", systemImage: "magnifyingglass")
                 }
+                .keyboardShortcut("f")
                 .disabled(self.isBusy)
             }
         }

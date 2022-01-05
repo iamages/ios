@@ -48,6 +48,7 @@ struct URLPickerView: View {
                     }) {
                         Label("Add", systemImage: "plus")
                     }
+                    .keyboardShortcut(.defaultAction)
                 }
             }
             .alert("Invalid URL", isPresented: self.$isURLInvalidErrorAlertPresented, actions: {}, message: {

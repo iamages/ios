@@ -156,6 +156,7 @@ struct YouView: View {
                     }) {
                         Label("Search", systemImage: "magnifyingglass")
                     }
+                    .keyboardShortcut("f")
                     .disabled(!self.dataObservable.isLoggedIn || self.isBusy)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {

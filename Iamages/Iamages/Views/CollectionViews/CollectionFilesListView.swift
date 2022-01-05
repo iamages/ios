@@ -19,7 +19,7 @@ struct CollectionFilesListView: View {
     @State var isFeedLoadFailAlertPresented: Bool = false
     
     @State var isShareSheetPresented: Bool = false
-    @State var isDetailSheetPresented: Bool = false
+    @State var isInfoSheetPresented: Bool = false
     @State var isModifyCollectionSheetPresented: Bool = false
 
     @State var isDeleteAlertPresented: Bool = false
@@ -125,11 +125,12 @@ struct CollectionFilesListView: View {
                     }
                     ToolbarItem(placement: .principal) {
                         Button(action: {
-                            self.isDetailSheetPresented = true
+                            self.isInfoSheetPresented = true
                         }) {
-                            Label("Details", systemImage: "info.circle")
+                            Label("Info", systemImage: "info.circle")
                         }
                         .disabled(self.isBusy)
+                        .keyboardShortcut("i")
                     }
                     ToolbarItem {
                         Menu(content: {
@@ -184,8 +185,8 @@ struct CollectionFilesListView: View {
                         
                     }
                 }
-                .sheet(isPresented: self.$isDetailSheetPresented) {
-                    CollectionInfoView(collection: self.$collection, isDetailSheetPresented: self.$isDetailSheetPresented)
+                .sheet(isPresented: self.$isInfoSheetPresented) {
+                    CollectionInfoView(collection: self.$collection, isPresented: self.$isInfoSheetPresented)
                 }
                 .sheet(isPresented: self.$isShareSheetPresented) {
                     ShareView(activityItems: [self.dataObservable.getCollectionEmbedURL(id: self.collection.id)], isPresented: self.$isShareSheetPresented)

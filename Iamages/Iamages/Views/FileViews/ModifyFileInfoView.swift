@@ -112,7 +112,7 @@ struct ModifyFileInfoView: View {
                         self.isToggleHelpPopoverPresented = true
                     }
                     .popover(isPresented: self.$isToggleHelpPopoverPresented) {
-                        ToggleHelpView()
+                        TogglesHelpView()
                     }
                 }, header: {
                     Text("Options")
@@ -141,7 +141,7 @@ struct ModifyFileInfoView: View {
                         }) {
                             Label("Apply", systemImage: "checkmark")
                         }
-                        .keyboardShortcut(.escape)
+                        .keyboardShortcut(.defaultAction)
                     }
                 }
             }
