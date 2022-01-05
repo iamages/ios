@@ -40,7 +40,7 @@ struct CollectionInfoView: View {
                     }
                 }
             }
-            .navigationTitle("Details")
+            .navigationTitle("Info")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
