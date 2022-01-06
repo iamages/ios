@@ -1,2 +1,2 @@
 # ios
-iOS client.
+iOS (& Mac Catalyst) client for Iamages.
