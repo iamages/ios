@@ -172,7 +172,7 @@ struct FileView: View {
                     }
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .status) {
                     if self.isBusy {
                         ProgressView()
                     }
@@ -180,13 +180,14 @@ struct FileView: View {
                 ToolbarItem(placement: .principal) {
                     Button(action: {
                         self.isInfoSheetPresented = true
+                        self.dataObservable.isModalPresented = true
                     }) {
                         Label("Info", systemImage: "info.circle")
                     }
                     .disabled(self.isBusy)
                     .keyboardShortcut("i")
                 }
-                ToolbarItem {
+                ToolbarItem(placement: .primaryAction) {
                     Menu(content: {
                         Section {
                             #if targetEnvironment(macCatalyst)
@@ -196,6 +197,7 @@ struct FileView: View {
                             #else
                             Button(action: {
                                 self.isShareSheetPresented = true
+                                self.dataObservable.isModalPresented = true
                             }) {
                                 Label("Share link", systemImage: "square.and.arrow.up")
                             }
@@ -218,6 +220,7 @@ struct FileView: View {
                             Section {
                                 Button(action: {
                                     self.isModifyFileSheetPresented = true
+                                    self.dataObservable.isModalPresented = true
                                 }) {
                                     Label("Modify", systemImage: "pencil")
                                 }
@@ -243,6 +246,7 @@ struct FileView: View {
                             Section {
                                 Button(action: {
                                     self.isPickCollectionSheetPresented = true
+                                    self.dataObservable.isModalPresented = true
                                 }) {
                                     Label("Add to collection", systemImage: "rectangle.stack.badge.plus")
                                 }
@@ -282,13 +286,18 @@ struct FileView: View {
                     .disabled(self.isBusy)
                 }
             }
-            .sheet(isPresented: self.$isInfoSheetPresented) {
+            .sheet(isPresented: self.$isInfoSheetPresented, onDismiss: {
+                self.dataObservable.isModalPresented = false
+            }) {
                 FileInfoView(file: self.$file, isPresented: self.$isInfoSheetPresented)
             }
-            .sheet(isPresented: self.$isModifyFileSheetPresented) {
+            .sheet(isPresented: self.$isModifyFileSheetPresented, onDismiss: {
+                self.dataObservable.isModalPresented = false
+            }) {
                 ModifyFileInfoView(file: self.$file, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isPresented: self.$isModifyFileSheetPresented)
             }
             .sheet(isPresented: self.$isPickCollectionSheetPresented, onDismiss: {
+                self.dataObservable.isModalPresented = false
                 if self.pickedCollectionID != nil {
                     Task {
                         await self.addToCollection()
@@ -297,7 +306,9 @@ struct FileView: View {
             }) {
                 UserCollectionPickerView(pickedCollectionID: self.$pickedCollectionID, isPresented: self.$isPickCollectionSheetPresented)
             }
-            .sheet(isPresented: self.$isShareSheetPresented) {
+            .sheet(isPresented: self.$isShareSheetPresented, onDismiss: {
+                self.dataObservable.isModalPresented = false
+            }) {
                 ShareView(activityItems: [self.dataObservable.getFileEmbedURL(id: self.file.id)], isPresented: self.$isShareSheetPresented)
             }
             .fileExporter(

@@ -55,6 +55,8 @@ class APIDataObservable: ObservableObject {
     @Published var currentAppUserAuthHeader: String?
     @Published var isLoggedIn: Bool = false
     
+    @Published var isModalPresented: Bool = false
+    
     init () {
         self.jsond.dateDecodingStrategy = .customISO8601
         self.jsone.dateEncodingStrategy = .customISO8601

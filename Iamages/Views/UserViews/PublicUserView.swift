@@ -93,7 +93,7 @@ struct PublicUserView: View {
             await self.startFeed()
         }
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            ToolbarItem {
                 Picker("Feed", selection: self.$selectedFeed) {
                     ForEach(UserFeed.allCases, id: \.self) { feed in
                         Text(feed.rawValue)
@@ -109,25 +109,26 @@ struct PublicUserView: View {
                     }
                 }
             }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    Task {
-                        await self.startFeed()
-                    }
-                }) {
-                    Label("Refresh", systemImage: "arrow.clockwise")
-                }
-                .keyboardShortcut("r")
-                .disabled(self.isBusy)
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
+            #if targetEnvironment(macCatalyst)
+            ToolbarItem(placement: .primaryAction) {
                 if self.isBusy {
                     ProgressView()
+                } else {
+                    Button(action: {
+                        Task {
+                            await self.startFeed()
+                        }
+                    }) {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
+                    .keyboardShortcut("r")
                 }
             }
-            ToolbarItem(placement: .navigationBarTrailing) {
+            #endif
+            ToolbarItem {
                 Button(action: {
                     self.isUserSearchSheetPresented = true
+                    self.dataObservable.isModalPresented = true
                 }) {
                     Label("Search", systemImage: "magnifyingglass")
                 }
@@ -135,7 +136,9 @@ struct PublicUserView: View {
                 .disabled(self.isBusy)
             }
         }
-        .sheet(isPresented: self.$isUserSearchSheetPresented) {
+        .sheet(isPresented: self.$isUserSearchSheetPresented, onDismiss: {
+            self.dataObservable.isModalPresented = false
+        }) {
             UserSearchView(username: self.username, type: .publicFeed, isUserSearchSheetPresented: self.$isUserSearchSheetPresented)
         }
         .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {

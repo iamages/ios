@@ -69,81 +69,79 @@ struct PreferencesView: View {
     }
 
     var body: some View {
-        NavigationView {
-            Form {
-                Section("Viewing") {
-                    Toggle("Enable NSFW viewing", isOn: self.$isNSFWEnabled)
-                    Toggle("Blur NSFW Content", isOn: self.$isNSFWBlurred)
-                        .disabled(!self.isNSFWEnabled)
-                }
-                Section {
-                    Toggle(isOn: self.$isNSFWDefault) {
-                        Text("NSFW (18+)")
-                    }
-                    Toggle(isOn: self.$isHiddenDefault) {
-                        Text("Hidden")
-                    }
-                    Toggle(isOn: self.$isPrivateDefault) {
-                        Text("Private")
-                    }
-                } header: {
-                    Text("Upload defaults")
-                } footer: {
-                    Text("These preferences will be applied to every new upload created after the changes were made.")
-                }
-                Section("Maintenance") {
-                    Button("Clear image cache") {
-                        self.isClearCacheAlertPresented = true
-                    }
-                    .confirmationDialog(
-                        "The image cache will be cleared and images will need to be reloaded.",
-                        isPresented: self.$isClearCacheAlertPresented,
-                        titleVisibility: .visible
-                    ) {
-                        Button("Clear image cache", role: .destructive, action: self.clearImageCache)
-                    }
-                    .disabled(self.isCacheBeingCleared)
-                    Button("Reset app settings", role: .destructive) {
-                        self.isResetWarningAlertPresented = true
-                    }
-                    .confirmationDialog(
-                        "This will reset all your preferences to default.",
-                        isPresented: self.$isResetWarningAlertPresented,
-                        titleVisibility: .visible
-                    ) {
-                        Button("Reset all preferences", role: .destructive, action: self.resetAppSettings)
-                    }
-                }
-                Section(content: {
-                    if self.areProductsLoading {
-                        ProgressView()
-                    } else {
-                        ForEach(self.products) { product in
-                            Button("\(product.displayName) (\(product.displayPrice))") {
-                                Task {
-                                    await self.purchaseProduct(product)
-                                }
-                            }
-                            .disabled(self.isPurchasingProduct)
-                        }
-                    }
-                }, header: {
-                    Text("Tip Jar")
-                }, footer: {
-                    Text("Your support helps us maintain Iamages for you and many others! Thank you!\n\nEvery:\n- **Small tip** can keep our servers running for 1 month, courtesy of Uberspace.\n- **Medium tip** will keep our developers fed and motivated to create new features.\n- **Large tip** will help us afford devices to test our apps on.")
-                })
-                #if !targetEnvironment(macCatalyst)
-                Section(content: {
-                    HelpLinksView()
-                }, header: {
-                    Text("About + links")
-                }, footer: {
-                    Text("**Iamages \(Bundle.main.version) (\(Bundle.main.build))**\n\(Bundle.main.copyright)")
-                })
-                #endif
+        Form {
+            Section("Viewing") {
+                Toggle("Enable NSFW viewing", isOn: self.$isNSFWEnabled)
+                Toggle("Blur NSFW Content", isOn: self.$isNSFWBlurred)
+                    .disabled(!self.isNSFWEnabled)
             }
-            .navigationTitle("Preferences")
+            Section {
+                Toggle(isOn: self.$isNSFWDefault) {
+                    Text("NSFW (18+)")
+                }
+                Toggle(isOn: self.$isHiddenDefault) {
+                    Text("Hidden")
+                }
+                Toggle(isOn: self.$isPrivateDefault) {
+                    Text("Private")
+                }
+            } header: {
+                Text("Upload defaults")
+            } footer: {
+                Text("These preferences will be applied to every new upload created after the changes were made.")
+            }
+            Section("Maintenance") {
+                Button("Clear image cache") {
+                    self.isClearCacheAlertPresented = true
+                }
+                .confirmationDialog(
+                    "The image cache will be cleared and images will need to be reloaded.",
+                    isPresented: self.$isClearCacheAlertPresented,
+                    titleVisibility: .visible
+                ) {
+                    Button("Clear image cache", role: .destructive, action: self.clearImageCache)
+                }
+                .disabled(self.isCacheBeingCleared)
+                Button("Reset app settings", role: .destructive) {
+                    self.isResetWarningAlertPresented = true
+                }
+                .confirmationDialog(
+                    "This will reset all your preferences to default.",
+                    isPresented: self.$isResetWarningAlertPresented,
+                    titleVisibility: .visible
+                ) {
+                    Button("Reset all preferences", role: .destructive, action: self.resetAppSettings)
+                }
+            }
+            Section(content: {
+                if self.areProductsLoading {
+                    ProgressView()
+                } else {
+                    ForEach(self.products) { product in
+                        Button("\(product.displayName) (\(product.displayPrice))") {
+                            Task {
+                                await self.purchaseProduct(product)
+                            }
+                        }
+                        .disabled(self.isPurchasingProduct)
+                    }
+                }
+            }, header: {
+                Text("Tip Jar")
+            }, footer: {
+                Text("Your support helps us maintain Iamages for you and many others! Thank you!\n\nEvery:\n- **Small tip** can keep our servers running for 1 month, courtesy of Uberspace.\n- **Medium tip** will keep our developers fed and motivated to create new features.\n- **Large tip** will help us afford devices to test our apps on.")
+            })
+            #if !targetEnvironment(macCatalyst)
+            Section(content: {
+                HelpLinksView()
+            }, header: {
+                Text("Links + about")
+            }, footer: {
+                Text("**Iamages \(Bundle.main.version) (\(Bundle.main.build))**\n\(Bundle.main.copyright)")
+            })
+            #endif
         }
+        .navigationTitle("Preferences")
         .navigationViewStyle(.stack)
         .alert("Tipping failed", isPresented: self.$isTipErrorAlertPresented, actions: {}) {
             Text(self.tipErrorText ?? "Unknown error")

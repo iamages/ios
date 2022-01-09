@@ -24,6 +24,10 @@ struct YouView: View {
     @State var isManageUserSheetPresented: Bool = false
     @State var isUserSearchSheetPresented: Bool = false
     
+    #if targetEnvironment(macCatalyst)
+    @State var isThirdPanePresented: Bool = true
+    #endif
+    
     func pageFeed () async {
         guard let username: String = self.dataObservable.currentAppUser?.username else {
             return
@@ -73,111 +77,126 @@ struct YouView: View {
     }
 
     var body: some View {
-        NavigationView {
-            List {
-                switch self.selectedFeed {
-                case .files:
-                    ForEach(self.$feedFiles) { file in
-                        NavigableFileView(file: file, feed: self.$feedFiles, type: .privateFeed)
-                            .task {
-                                if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
-                                    await self.pageFeed()
-                                }
+        List {
+            switch self.selectedFeed {
+            case .files:
+                ForEach(self.$feedFiles) { file in
+                    NavigableFileView(file: file, feed: self.$feedFiles, type: .privateFeed)
+                        .task {
+                            if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
+                                await self.pageFeed()
                             }
-                    }
-                case .collections:
-                    ForEach(self.$feedCollections) { collection in
-                        NavigableCollectionFilesListView(collection: collection, feedCollections: self.$feedCollections, type: .privateFeed)
-                            .task {
-                                if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
-                                    await self.pageFeed()
-                                }
+                        }
+                }
+            case .collections:
+                ForEach(self.$feedCollections) { collection in
+                    NavigableCollectionFilesListView(collection: collection, feedCollections: self.$feedCollections, type: .privateFeed)
+                        .task {
+                            if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
+                                await self.pageFeed()
                             }
-                    }
+                        }
                 }
             }
-            .onAppear {
-                if !self.isFirstRefreshCompleted {
+        }
+        .onAppear {
+            if !self.isFirstRefreshCompleted {
+                Task {
+                    await self.startFeed()
+                }
+                self.isFirstRefreshCompleted = true
+            }
+        }
+        #if !targetEnvironment(macCatalyst)
+        .refreshable {
+            await self.startFeed()
+        }
+        #endif
+        .onChange(of: self.dataObservable.isLoggedIn) { isLoggedin in
+            if isLoggedin {
+                Task {
+                    await startFeed()
+                }
+            } else {
+                self.feedFiles = []
+                self.feedCollections = []
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Picker("Feed", selection: self.$selectedFeed) {
+                    ForEach(UserFeed.allCases, id: \.self) { feed in
+                        Text(feed.rawValue)
+                            .tag(feed)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                .disabled(self.isBusy)
+                .onChange(of: self.selectedFeed) { _ in
                     Task {
                         await self.startFeed()
                     }
-                    self.isFirstRefreshCompleted = true
                 }
             }
-            .refreshable {
-                await self.startFeed()
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    self.isUserSearchSheetPresented = true
+                    self.dataObservable.isModalPresented = true
+                }) {
+                    Label("Search", systemImage: "magnifyingglass")
+                }
+                .keyboardShortcut("f")
+                .disabled(!self.dataObservable.isLoggedIn || self.isBusy)
             }
-            .onChange(of: self.dataObservable.isLoggedIn) { isLoggedin in
-                if isLoggedin {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    self.isManageUserSheetPresented = true
+                    self.dataObservable.isModalPresented = true
+                }) {
+                    ProfileImageView(username: self.dataObservable.currentAppUser?.username)
+                }
+                .disabled(self.isBusy)
+            }
+            #if targetEnvironment(macCatalyst)
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
                     Task {
-                        await startFeed()
+                        await self.startFeed()
                     }
-                } else {
-                    self.feedFiles = []
-                    self.feedCollections = []
+                }) {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+                .keyboardShortcut("r")
+                .disabled(self.isBusy)
+            }
+            #endif
+            ToolbarItem(placement: .status) {
+                if self.isBusy {
+                    ProgressView()
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Picker("Feed", selection: self.$selectedFeed) {
-                        ForEach(UserFeed.allCases, id: \.self) { feed in
-                            Text(feed.rawValue)
-                                .tag(feed)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                    .disabled(self.isBusy)
-                    .onChange(of: self.selectedFeed) { _ in
-                        Task {
-                            await self.startFeed()
-                        }
-                    }
-                }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        Task {
-                            await self.startFeed()
-                        }
-                    }) {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                    }
-                    .keyboardShortcut("r")
-                    .disabled(self.isBusy)
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if self.isBusy {
-                        ProgressView()
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        self.isUserSearchSheetPresented = true
-                    }) {
-                        Label("Search", systemImage: "magnifyingglass")
-                    }
-                    .keyboardShortcut("f")
-                    .disabled(!self.dataObservable.isLoggedIn || self.isBusy)
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        self.isManageUserSheetPresented = true
-                    }) {
-                        ProfileImageView(username: self.dataObservable.currentAppUser?.username)
-                    }
-                    .disabled(self.isBusy)
-                }
-            }
-            .sheet(isPresented: self.$isUserSearchSheetPresented) {
-                UserSearchView(username: self.dataObservable.currentAppUser?.username ?? "nil", type: .privateFeed, isUserSearchSheetPresented: self.$isUserSearchSheetPresented)
-            }
-            .sheet(isPresented: self.$isManageUserSheetPresented) {
-                ManageUserView(isPresented: self.$isManageUserSheetPresented)
-            }
-            .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
-                Text(self.errorAlertText ?? "Unknown error")
-            }
-            .navigationTitle("You")
         }
+        .sheet(isPresented: self.$isUserSearchSheetPresented, onDismiss: {
+            self.dataObservable.isModalPresented = false
+        }) {
+            UserSearchView(username: self.dataObservable.currentAppUser?.username ?? "nil", type: .privateFeed, isUserSearchSheetPresented: self.$isUserSearchSheetPresented)
+        }
+        .sheet(isPresented: self.$isManageUserSheetPresented, onDismiss: {
+            self.dataObservable.isModalPresented = false
+        }) {
+            ManageUserView(isPresented: self.$isManageUserSheetPresented)
+        }
+        .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
+            Text(self.errorAlertText ?? "Unknown error")
+        }
+        .navigationTitle("You")
+        #if targetEnvironment(macCatalyst)
+        .background {
+            NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
+                EmptyView()
+            }
+        }
+        #endif
     }
 }

@@ -24,6 +24,10 @@ struct FeedView: View {
     @State var feedFiles: [IamagesFile] = []
     @State var feedCollections: [IamagesCollection] = []
     
+    #if targetEnvironment(macCatalyst)
+    @State var isThirdPanePresented: Bool = true
+    #endif
+    
     func pageFeed () async {
         self.isBusy = true
 
@@ -74,94 +78,103 @@ struct FeedView: View {
     }
 
     var body: some View {
-        NavigationView {
-            List {
-                if self.selectedFeed != .latestCollections {
-                    ForEach(self.$feedFiles) { file in
-                        if self.selectedFeed == .latestFiles {
-                            NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
-                                .task {
-                                    if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
-                                        await self.pageFeed()
-                                    }
-                                }
-                        } else {
-                            NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
-                        }
-                    }
-                } else {
-                    ForEach(self.$feedCollections) { collection in
-                        NavigableCollectionFilesListView(collection: collection, feedCollections: self.$feedCollections, type: .publicFeed)
+        List {
+            if self.selectedFeed != .latestCollections {
+                ForEach(self.$feedFiles) { file in
+                    if self.selectedFeed == .latestFiles {
+                        NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
                             .task {
-                                if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
+                                if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
                                     await self.pageFeed()
                                 }
                             }
+                    } else {
+                        NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
+                    }
+                }
+            } else {
+                ForEach(self.$feedCollections) { collection in
+                    NavigableCollectionFilesListView(collection: collection, feedCollections: self.$feedCollections, type: .publicFeed)
+                        .task {
+                            if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
+                                await self.pageFeed()
+                            }
+                        }
+                }
+            }
+        }
+        .onAppear {
+            if !self.isFirstRefreshCompleted {
+                Task {
+                    await self.startFeed()
+                }
+                self.isFirstRefreshCompleted = true
+                self.feedOpenedCount += 1
+            }
+        }
+        #if !targetEnvironment(macCatalyst)
+        .refreshable {
+            await self.startFeed()
+        }
+        #endif
+        .onDisappear {
+            if self.feedOpenedCount > 20 {
+                self.feedOpenedCount = 0
+                DispatchQueue.main.async {
+                    if let scene = UIApplication.shared.connectedScenes
+                            .first(where: { $0.activationState == .foregroundActive })
+                            as? UIWindowScene {
+                        SKStoreReviewController.requestReview(in: scene)
                     }
                 }
             }
-            .onAppear {
-                if !self.isFirstRefreshCompleted {
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Picker("Feed", selection: self.$selectedFeed) {
+                    ForEach(PublicFeed.allCases, id: \.self) { feed in
+                        Text(feed.rawValue)
+                            .tag(feed)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                .disabled(self.isBusy)
+                .onChange(of: self.selectedFeed) { _ in
                     Task {
                         await self.startFeed()
                     }
-                    self.isFirstRefreshCompleted = true
-                    self.feedOpenedCount += 1
                 }
             }
-            .refreshable {
-                await self.startFeed()
-            }
-            .onDisappear {
-                if self.feedOpenedCount > 20 {
-                    self.feedOpenedCount = 0
-                    DispatchQueue.main.async {
-                        if let scene = UIApplication.shared.connectedScenes
-                                .first(where: { $0.activationState == .foregroundActive })
-                                as? UIWindowScene {
-                            SKStoreReviewController.requestReview(in: scene)
-                        }
+            #if targetEnvironment(macCatalyst)
+            ToolbarItem(placement: .primaryAction) {
+                Button(action: {
+                    Task {
+                        await self.startFeed()
                     }
+                }) {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+                .keyboardShortcut("r")
+                .disabled(self.isBusy)
+            }
+            #endif
+            ToolbarItem(placement: .status) {
+                if self.isBusy {
+                    ProgressView()
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Picker("Feed", selection: self.$selectedFeed) {
-                        ForEach(PublicFeed.allCases, id: \.self) { feed in
-                            Text(feed.rawValue)
-                                .tag(feed)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                    .disabled(self.isBusy)
-                    .onChange(of: self.selectedFeed) { _ in
-                        Task {
-                            await self.startFeed()
-                        }
-                    }
-                }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        Task {
-                            await self.startFeed()
-                        }
-                    }) {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                    }
-                    .keyboardShortcut("r")
-                    .disabled(self.isBusy)
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if self.isBusy {
-                        ProgressView()
-                    }
-                }
-            }
-            .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
-                Text(self.errorAlertText ?? "Unknown error")
-            }
-            .navigationTitle("Feed")
         }
+        .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
+            Text(self.errorAlertText ?? "Unknown error")
+        }
+        .navigationTitle("Feed")
+        #if targetEnvironment(macCatalyst)
+        .background {
+            NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
+                EmptyView()
+            }
+        }
+        #endif
     }
 }

@@ -105,11 +105,13 @@ struct CollectionFilesListView: View {
                         self.isFirstRefreshCompleted = true
                     }
                 }
+                #if !targetEnvironment(macCatalyst)
                 .refreshable {
                     await self.startFeed()
                 }
+                #endif
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
+                    ToolbarItem(placement: .primaryAction) {
                         if self.isBusy {
                             ProgressView()
                         } else {
@@ -126,6 +128,7 @@ struct CollectionFilesListView: View {
                     ToolbarItem(placement: .principal) {
                         Button(action: {
                             self.isInfoSheetPresented = true
+                            self.dataObservable.isModalPresented = true
                         }) {
                             Label("Info", systemImage: "info.circle")
                         }
@@ -142,6 +145,7 @@ struct CollectionFilesListView: View {
                                 #else
                                 Button(action: {
                                     self.isShareSheetPresented = true
+                                    self.dataObservable.isModalPresented = true
                                 }) {
                                     Label("Share link", systemImage: "square.and.arrow.up")
                                 }
@@ -151,6 +155,7 @@ struct CollectionFilesListView: View {
                                 Section {
                                     Button(action: {
                                         self.isModifyCollectionSheetPresented = true
+                                        self.dataObservable.isModalPresented = true
                                     }) {
                                         Label("Modify", systemImage: "pencil")
                                     }
@@ -185,10 +190,14 @@ struct CollectionFilesListView: View {
                         
                     }
                 }
-                .sheet(isPresented: self.$isInfoSheetPresented) {
+                .sheet(isPresented: self.$isInfoSheetPresented, onDismiss: {
+                    self.dataObservable.isModalPresented = false
+                }) {
                     CollectionInfoView(collection: self.$collection, isPresented: self.$isInfoSheetPresented)
                 }
-                .sheet(isPresented: self.$isShareSheetPresented) {
+                .sheet(isPresented: self.$isShareSheetPresented, onDismiss: {
+                    self.dataObservable.isModalPresented = false
+                }) {
                     ShareView(activityItems: [self.dataObservable.getCollectionEmbedURL(id: self.collection.id)], isPresented: self.$isShareSheetPresented)
                 }
                 .alert("Feed loading error", isPresented: self.$isFeedLoadFailAlertPresented, actions: {}, message: {
@@ -199,7 +208,9 @@ struct CollectionFilesListView: View {
                 .navigationBarBackButtonHidden(self.isBusy)
             }
         }
-        .sheet(isPresented: self.$isModifyCollectionSheetPresented) {
+        .sheet(isPresented: self.$isModifyCollectionSheetPresented, onDismiss: {
+            self.dataObservable.isModalPresented = false
+        }) {
             ModifyCollectionInfoView(collection: self.$collection, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isModifyCollectionSheetPresented: self.$isModifyCollectionSheetPresented)
         }
     }

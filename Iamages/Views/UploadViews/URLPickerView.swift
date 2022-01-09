@@ -29,7 +29,7 @@ struct URLPickerView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button(action: {
                         self.pickedURL = nil
                         self.isPresented = false
@@ -37,7 +37,7 @@ struct URLPickerView: View {
                         Label("Close", systemImage: "xmark")
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button(action: {
                         if let url = URL(string: self.inputURL) {
                             self.pickedURL = url

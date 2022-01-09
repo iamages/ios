@@ -23,6 +23,10 @@ struct SearchView: View {
     @State var isErrorAlertPresented: Bool = false
     @State var errorAlertText: String?
     
+    #if targetEnvironment(macCatalyst)
+    @State var isThirdPanePresented: Bool = true
+    #endif
+    
     func pageFeed () async {
         self.isBusy = true
         
@@ -72,73 +76,78 @@ struct SearchView: View {
     }
 
     var body: some View {
-        NavigationView {
-            List {
-                switch self.selectedFeed {
-                case .files:
-                    ForEach(self.$feedFiles) { file in
-                        NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
+        List {
+            switch self.selectedFeed {
+            case .files:
+                ForEach(self.$feedFiles) { file in
+                    NavigableFileView(file: file, feed: self.$feedFiles, type: .publicFeed)
+                        .task {
+                            if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
+                                await self.pageFeed()
+                            }
+                        }
+                }
+            case .collections:
+                ForEach(self.$feedCollections) { collection in
+                    NavigableCollectionFilesListView(collection: collection, feedCollections: self.$feedCollections, type: .publicFeed)
+                        .task {
+                            if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
+                                await self.pageFeed()
+                            }
+                        }
+                }
+            case .users:
+                ForEach(self.feedUsers, id: \.self) { user in
+                    if user.username != self.dataObservable.currentAppUser?.username {
+                        NavigableUserView(user: user)
                             .task {
-                                if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
+                                if !self.isBusy && !self.isEndOfFeed && self.feedUsers.last == user {
                                     await self.pageFeed()
                                 }
                             }
                     }
-                case .collections:
-                    ForEach(self.$feedCollections) { collection in
-                        NavigableCollectionFilesListView(collection: collection, feedCollections: self.$feedCollections, type: .publicFeed)
-                            .task {
-                                if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
-                                    await self.pageFeed()
-                                }
-                            }
-                    }
-                case .users:
-                    ForEach(self.feedUsers, id: \.self) { user in
-                        if user.username != self.dataObservable.currentAppUser?.username {
-                            NavigableUserView(user: user)
-                                .task {
-                                    if !self.isBusy && !self.isEndOfFeed && self.feedUsers.last == user {
-                                        await self.pageFeed()
-                                    }
-                                }
-                        }
-                    }
                 }
             }
-            .searchable(text: self.$searchString)
-            .onSubmit(of: .search) {
-                Task {
-                    await self.startFeed()
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Picker("Search", selection: self.$selectedFeed) {
-                        ForEach(SearchFeed.allCases, id: \.self) { search in
-                            Text(search.rawValue)
-                                .tag(search)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                    .disabled(self.isBusy)
-                    .onChange(of: self.selectedFeed) { _ in
-                        Task {
-                            await self.startFeed()
-                        }
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if self.isBusy {
-                        ProgressView()
-                    }
-                }
-            }
-            .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
-                Text(self.errorAlertText ?? "Unknown error")
-            }
-            .navigationTitle("Search")
         }
+        .searchable(text: self.$searchString)
+        .onSubmit(of: .search) {
+            Task {
+                await self.startFeed()
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Picker("Search", selection: self.$selectedFeed) {
+                    ForEach(SearchFeed.allCases, id: \.self) { search in
+                        Text(search.rawValue)
+                            .tag(search)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                .disabled(self.isBusy)
+                .onChange(of: self.selectedFeed) { _ in
+                    Task {
+                        await self.startFeed()
+                    }
+                }
+            }
+            ToolbarItem(placement: .status) {
+                if self.isBusy {
+                    ProgressView()
+                }
+            }
+        }
+        .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
+            Text(self.errorAlertText ?? "Unknown error")
+        }
+        .navigationTitle("Search")
+        #if targetEnvironment(macCatalyst)
+        .background {
+            NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
+                EmptyView()
+            }
+        }
+        #endif
     }
 }

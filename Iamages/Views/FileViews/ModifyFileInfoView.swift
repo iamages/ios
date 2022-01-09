@@ -121,7 +121,7 @@ struct ModifyFileInfoView: View {
                 })
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     if !self.isBusy {
                         Button(action: {
                             self.isPresented = false
@@ -130,7 +130,7 @@ struct ModifyFileInfoView: View {
                         }
                     }
                 }
-                ToolbarItem {
+                ToolbarItem(placement: .confirmationAction) {
                     if self.isBusy {
                         ProgressView()
                     } else {

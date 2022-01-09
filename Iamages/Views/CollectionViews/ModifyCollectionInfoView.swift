@@ -105,17 +105,16 @@ struct ModifyCollectionInfoView: View {
                 })
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     if !self.isBusy {
                         Button(action: {
                             self.isModifyCollectionSheetPresented = false
                         }) {
                             Label("Close", systemImage: "xmark")
                         }
-                        .disabled(self.isBusy)
                     }
                 }
-                ToolbarItem {
+                ToolbarItem(placement: .confirmationAction) {
                     if self.isBusy {
                         ProgressView()
                     } else {

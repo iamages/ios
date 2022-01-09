@@ -91,7 +91,17 @@ struct UserSearchView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
+                    if !self.isBusy {
+                        Button(action: {
+                            self.isUserSearchSheetPresented = false
+                        }) {
+                            Label("Close", systemImage: "xmark")
+                        }
+                        .disabled(self.isBusy)
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
                     Picker("Feed", selection: self.$selectedFeed) {
                         ForEach(UserFeed.allCases, id: \.self) { feed in
                             Text(feed.rawValue)
@@ -107,16 +117,9 @@ struct UserSearchView: View {
                         }
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .status) {
                     if self.isBusy {
                         ProgressView()
-                    } else {
-                        Button(action: {
-                            self.isUserSearchSheetPresented = false
-                        }) {
-                            Label("Close", systemImage: "xmark")
-                        }
-                        .disabled(self.isBusy)
                     }
                 }
             }

@@ -245,7 +245,7 @@ struct ManageUserView: View {
                 }
             }
             .toolbar {
-                ToolbarItem {
+                ToolbarItem(placement: .cancellationAction) {
                     if self.isBusy {
                         ProgressView()
                     } else {
@@ -254,6 +254,7 @@ struct ManageUserView: View {
                         }) {
                             Label("Close", systemImage: "xmark")
                         }
+                        .keyboardShortcut(.cancelAction)
                     }
                 }
             }

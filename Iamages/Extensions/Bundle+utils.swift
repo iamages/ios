@@ -1,4 +1,5 @@
-import SwiftUI
+#if !targetEnvironment(macCatalyst)
+import Foundation
 
 extension Bundle {
     public var version: String {
@@ -11,3 +12,4 @@ extension Bundle {
         return Bundle.main.infoDictionary?["NSHumanReadableCopyright"] as? String ?? "© jkelol111"
     }
 }
+#endif
