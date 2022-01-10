@@ -7,7 +7,7 @@ struct ModifyCollectionInfoView: View {
     @Binding var feed: [IamagesCollection]
     let type: FeedType
     @Binding var isDeleted: Bool
-    @Binding var isModifyCollectionSheetPresented: Bool
+    @Binding var isPresented: Bool
     
     @State var newDescription: String = ""
     @State var newPrivate: Bool = false
@@ -62,7 +62,7 @@ struct ModifyCollectionInfoView: View {
                 self.removeFromFeed()
                 self.isDeleted = true
             }
-            self.isModifyCollectionSheetPresented = false
+            self.isPresented = false
         } catch {
             self.modifyErrorText = error.localizedDescription
             self.isModifyErrorAlertPresented = true
@@ -108,7 +108,7 @@ struct ModifyCollectionInfoView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     if !self.isBusy {
                         Button(action: {
-                            self.isModifyCollectionSheetPresented = false
+                            self.isPresented = false
                         }) {
                             Label("Close", systemImage: "xmark")
                         }

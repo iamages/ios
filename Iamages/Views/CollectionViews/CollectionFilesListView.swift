@@ -111,18 +111,22 @@ struct CollectionFilesListView: View {
                 }
                 #endif
                 .toolbar {
+                    #if targetEnvironment(macCatalyst)
                     ToolbarItem(placement: .primaryAction) {
+                        Button(action: {
+                            Task {
+                                await self.startFeed()
+                            }
+                        }) {
+                            Label("Refresh", systemImage: "arrow.clockwise")
+                        }
+                        .keyboardShortcut("r")
+                        .disabled(self.isBusy)
+                    }
+                    #endif
+                    ToolbarItem(placement: .status) {
                         if self.isBusy {
                             ProgressView()
-                        } else {
-                            Button(action: {
-                                Task {
-                                    await self.startFeed()
-                                }
-                            }) {
-                                Label("Refresh", systemImage: "arrow.clockwise")
-                            }
-                            .keyboardShortcut("r")
                         }
                     }
                     ToolbarItem(placement: .principal) {
@@ -211,7 +215,7 @@ struct CollectionFilesListView: View {
         .sheet(isPresented: self.$isModifyCollectionSheetPresented, onDismiss: {
             self.dataObservable.isModalPresented = false
         }) {
-            ModifyCollectionInfoView(collection: self.$collection, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isModifyCollectionSheetPresented: self.$isModifyCollectionSheetPresented)
+            ModifyCollectionInfoView(collection: self.$collection, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isPresented: self.$isModifyCollectionSheetPresented)
         }
     }
 }

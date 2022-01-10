@@ -89,11 +89,13 @@ struct PublicUserView: View {
                 self.isFirstRefreshCompleted = true
             }
         }
+        #if !targetEnvironment(macCatalyst)
         .refreshable {
             await self.startFeed()
         }
+        #endif
         .toolbar {
-            ToolbarItem {
+            ToolbarItem(placement: .navigationBarLeading) {
                 Picker("Feed", selection: self.$selectedFeed) {
                     ForEach(UserFeed.allCases, id: \.self) { feed in
                         Text(feed.rawValue)
@@ -109,23 +111,7 @@ struct PublicUserView: View {
                     }
                 }
             }
-            #if targetEnvironment(macCatalyst)
-            ToolbarItem(placement: .primaryAction) {
-                if self.isBusy {
-                    ProgressView()
-                } else {
-                    Button(action: {
-                        Task {
-                            await self.startFeed()
-                        }
-                    }) {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                    }
-                    .keyboardShortcut("r")
-                }
-            }
-            #endif
-            ToolbarItem {
+            ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
                     self.isUserSearchSheetPresented = true
                     self.dataObservable.isModalPresented = true
@@ -135,6 +121,24 @@ struct PublicUserView: View {
                 .keyboardShortcut("f")
                 .disabled(self.isBusy)
             }
+            ToolbarItem(placement: .status) {
+                if self.isBusy {
+                    ProgressView()
+                }
+            }
+            #if targetEnvironment(macCatalyst)
+            ToolbarItem(placement: .primaryAction) {
+                Button(action: {
+                    Task {
+                        await self.startFeed()
+                    }
+                }) {
+                    Label("Refresh", systemImage: "arrow.clockwise")
+                }
+                .keyboardShortcut("r")
+                .disabled(self.isBusy)
+            }
+            #endif
         }
         .sheet(isPresented: self.$isUserSearchSheetPresented, onDismiss: {
             self.dataObservable.isModalPresented = false

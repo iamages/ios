@@ -134,8 +134,8 @@
 			isa = PBXGroup;
 			children = (
 				2EF4F15327784B8100E64446 /* Iamages */,
-				2EBBE6D42786BFA600BB93CB /* LICENSE.txt */,
 				2EBBE6D52786BFA600BB93CB /* README.md */,
+				2EBBE6D42786BFA600BB93CB /* LICENSE.txt */,
 				2EF4F15227784B8100E64446 /* Products */,
 			);
 			sourceTree = "<group>";
