@@ -72,6 +72,7 @@ struct FileInfoView: View {
             }
             .navigationTitle("Info")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationViewStyle(.stack)
         }
     }
 }

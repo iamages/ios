@@ -215,6 +215,18 @@ class APIDataObservable: ObservableObject {
         return URL(string: self.apiRoot + "/file/\(id)/embed")!
     }
     
+    func getFileInformation (id: String) async throws -> IamagesFile {
+        return try self.jsond.decode(
+            IamagesFile.self,
+            from: try await self.makeRequest(
+                "/file/\(id)/info",
+                method: .get,
+                body: nil,
+                auth: self.currentAppUserAuthHeader
+            )
+        )
+    }
+    
     func modifyFile (id: String, modify: FileModifiable) async throws {
         try await self.makeRequest(
             "/file/\(id)/modify",
@@ -240,6 +252,18 @@ class APIDataObservable: ObservableObject {
     
     func getCollectionEmbedURL (id: String) -> URL {
         return URL(string: self.apiRoot + "/collection/\(id)/embed")!
+    }
+    
+    func getCollectionInformation(id: String) async throws -> IamagesCollection {
+        return try self.jsond.decode(
+            IamagesCollection.self,
+            from: try await self.makeRequest(
+                "/collection/\(id)/info",
+                method: .get,
+                body: nil,
+                auth: self.currentAppUserAuthHeader
+            )
+        )
     }
     
     func getCollectionFiles (id: String, limit: Int?, startDate: Date?) async throws -> [IamagesFile] {

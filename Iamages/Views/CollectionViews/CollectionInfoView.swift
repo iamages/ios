@@ -32,16 +32,18 @@ struct CollectionInfoView: View {
                 }
             }
             .toolbar {
-                ToolbarItem {
+                ToolbarItem(placement: .cancellationAction) {
                     Button(action: {
                         self.isPresented = false
                     }) {
                        Label("Close", systemImage: "xmark")
                     }
+                    .keyboardShortcut(.cancelAction)
                 }
             }
             .navigationTitle("Info")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationViewStyle(.stack)
         }
     }
 }
