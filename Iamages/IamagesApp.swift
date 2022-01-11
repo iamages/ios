@@ -24,7 +24,6 @@ struct IamagesApp: App {
     var body: some Scene {
         WindowGroup {
             RootNavigationView(selectedTabItem: self.$selectedTabItem)
-                .environmentObject(self.dataObservable)
             #if targetEnvironment(macCatalyst)
                 .customSheet(isPresented: self.$isPreferencesSheetPresented) {
                     NavigationView {
@@ -43,6 +42,7 @@ struct IamagesApp: App {
                     }
                 }
             #endif
+                .environmentObject(self.dataObservable)
         }
         .commands {
             CommandGroup(replacing: .appSettings) {
