@@ -18,11 +18,15 @@ struct CollectionFilesListView: View {
     @State var feedLoadFailAlertText: String?
     @State var isFeedLoadFailAlertPresented: Bool = false
     
+    #if !targetEnvironment(macCatalyst)
     @State var isShareSheetPresented: Bool = false
+    #endif
     @State var isInfoSheetPresented: Bool = false
     @State var isModifyCollectionSheetPresented: Bool = false
 
     @State var isDeleteAlertPresented: Bool = false
+    @State var deleteFailedMessage: String?
+    @State var isDeleteFailedAlertPresented: Bool = false
     
     func pageFeed () async {
         self.isBusy = true
@@ -64,7 +68,8 @@ struct CollectionFilesListView: View {
             }
             self.isDeleted = true
         } catch {
-            print(error)
+            self.deleteFailedMessage = error.localizedDescription
+            self.isDeleteFailedAlertPresented = true
             self.isBusy = false
         }
     }
@@ -149,7 +154,6 @@ struct CollectionFilesListView: View {
                                 #else
                                 Button(action: {
                                     self.isShareSheetPresented = true
-                                    self.dataObservable.isModalPresented = true
                                 }) {
                                     Label("Share link", systemImage: "square.and.arrow.up")
                                 }
@@ -159,7 +163,6 @@ struct CollectionFilesListView: View {
                                 Section {
                                     Button(action: {
                                         self.isModifyCollectionSheetPresented = true
-                                        self.dataObservable.isModalPresented = true
                                     }) {
                                         Label("Modify", systemImage: "pencil")
                                     }
@@ -194,27 +197,22 @@ struct CollectionFilesListView: View {
                         
                     }
                 }
-                .sheet(isPresented: self.$isInfoSheetPresented, onDismiss: {
-                    self.dataObservable.isModalPresented = false
-                }) {
+                .customSheet(isPresented: self.$isInfoSheetPresented) {
                     CollectionInfoView(collection: self.$collection, isPresented: self.$isInfoSheetPresented)
                 }
-                .sheet(isPresented: self.$isShareSheetPresented, onDismiss: {
-                    self.dataObservable.isModalPresented = false
-                }) {
+                #if !targetEnvironment(macCatalyst)
+                .customSheet(isPresented: self.$isShareSheetPresented) {
                     ShareView(activityItems: [self.dataObservable.getCollectionEmbedURL(id: self.collection.id)], isPresented: self.$isShareSheetPresented)
                 }
-                .alert("Feed loading error", isPresented: self.$isFeedLoadFailAlertPresented, actions: {}, message: {
-                    Text(self.feedLoadFailAlertText ?? "Unknown error.")
-                })
+                #endif
+                .customBindingAlert(title: "Feed loading failed", message: self.$feedLoadFailAlertText, isPresented: self.$isFeedLoadFailAlertPresented)
+                .customBindingAlert(title: "Delete failed", message: self.$deleteFailedMessage, isPresented: self.$isDeleteFailedAlertPresented)
                 .navigationTitle(self.collection.description)
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(self.isBusy)
             }
         }
-        .sheet(isPresented: self.$isModifyCollectionSheetPresented, onDismiss: {
-            self.dataObservable.isModalPresented = false
-        }) {
+        .customSheet(isPresented: self.$isModifyCollectionSheetPresented) {
             ModifyCollectionInfoView(collection: self.$collection, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isPresented: self.$isModifyCollectionSheetPresented)
         }
     }

@@ -143,12 +143,8 @@ struct PreferencesView: View {
         }
         .navigationTitle("Preferences")
         .navigationViewStyle(.stack)
-        .alert("Tipping failed", isPresented: self.$isTipErrorAlertPresented, actions: {}) {
-            Text(self.tipErrorText ?? "Unknown error")
-        }
-        .alert("Thank you!", isPresented: self.$isTipThanksAlertPresented, actions: {}) {
-            Text("Your tip will help us continue developing Iamages. Thank you for tipping!")
-        }
+        .customBindingAlert(title: "Tipping failed", message: self.$tipErrorText, isPresented: self.$isTipErrorAlertPresented)
+        .customFixedAlert(title: "Thank you!", message: "Your tip will help us continue developing Iamages. Thank you for tipping!", isPresented: self.$isTipThanksAlertPresented)
         .confetti(
             isPresented: self.$isTipConfettiPresented,
             animation: .fullWidthToDown,

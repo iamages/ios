@@ -41,7 +41,9 @@ struct FileView: View {
     @State var isDeleted: Bool = false
 
     @State var isInfoSheetPresented: Bool = false
+    #if !targetEnvironment(macCatalyst)
     @State var isShareSheetPresented: Bool = false
+    #endif
     @State var isModifyFileSheetPresented: Bool = false
 
     @State var isDeleteAlertPresented: Bool = false
@@ -180,7 +182,6 @@ struct FileView: View {
                 ToolbarItem(placement: .principal) {
                     Button(action: {
                         self.isInfoSheetPresented = true
-                        self.dataObservable.isModalPresented = true
                     }) {
                         Label("Info", systemImage: "info.circle")
                     }
@@ -197,7 +198,6 @@ struct FileView: View {
                             #else
                             Button(action: {
                                 self.isShareSheetPresented = true
-                                self.dataObservable.isModalPresented = true
                             }) {
                                 Label("Share link", systemImage: "square.and.arrow.up")
                             }
@@ -220,7 +220,6 @@ struct FileView: View {
                             Section {
                                 Button(action: {
                                     self.isModifyFileSheetPresented = true
-                                    self.dataObservable.isModalPresented = true
                                 }) {
                                     Label("Modify", systemImage: "pencil")
                                 }
@@ -246,7 +245,6 @@ struct FileView: View {
                             Section {
                                 Button(action: {
                                     self.isPickCollectionSheetPresented = true
-                                    self.dataObservable.isModalPresented = true
                                 }) {
                                     Label("Add to collection", systemImage: "rectangle.stack.badge.plus")
                                 }
@@ -286,31 +284,27 @@ struct FileView: View {
                     .disabled(self.isBusy)
                 }
             }
-            .sheet(isPresented: self.$isInfoSheetPresented, onDismiss: {
-                self.dataObservable.isModalPresented = false
-            }) {
+            .customSheet(isPresented: self.$isInfoSheetPresented) {
                 FileInfoView(file: self.$file, isPresented: self.$isInfoSheetPresented)
             }
-            .sheet(isPresented: self.$isModifyFileSheetPresented, onDismiss: {
-                self.dataObservable.isModalPresented = false
-            }) {
+            .customSheet(isPresented: self.$isModifyFileSheetPresented) {
                 ModifyFileInfoView(file: self.$file, feed: self.$feed, type: self.type, isDeleted: self.$isDeleted, isPresented: self.$isModifyFileSheetPresented)
             }
-            .sheet(isPresented: self.$isPickCollectionSheetPresented, onDismiss: {
-                self.dataObservable.isModalPresented = false
-                if self.pickedCollectionID != nil {
-                    Task {
-                        await self.addToCollection()
-                    }
-                }
-            }) {
+            .customSheet(isPresented: self.$isPickCollectionSheetPresented) {
                 UserCollectionPickerView(pickedCollectionID: self.$pickedCollectionID, isPresented: self.$isPickCollectionSheetPresented)
+                    .onDisappear {
+                        if self.pickedCollectionID != nil {
+                            Task {
+                                await self.addToCollection()
+                            }
+                        }
+                    }
             }
-            .sheet(isPresented: self.$isShareSheetPresented, onDismiss: {
-                self.dataObservable.isModalPresented = false
-            }) {
+            #if !targetEnvironment(macCatalyst)
+            .customSheet(isPresented: self.$isShareSheetPresented) {
                 ShareView(activityItems: [self.dataObservable.getFileEmbedURL(id: self.file.id)], isPresented: self.$isShareSheetPresented)
             }
+            #endif
             .fileExporter(
                 isPresented: self.$isSaveFileSheetPresented,
                 document: self.fileToSave,
@@ -324,22 +318,11 @@ struct FileView: View {
                     self.isSaveFileFailAlertPresented = true
                 }
             }
-            .alert("File save successful", isPresented: self.$isSaveFileSuccessAlertPresented, actions: {}, message: {
-                Text("The file has been saved to your selected destination.")
-            })
-            .alert("File save failed", isPresented: self.$isSaveFileFailAlertPresented, actions: {}, message: {
-                Text(self.saveFileFailMessage ?? "Unknown error")
-                
-            })
-            .alert("Delete failed", isPresented: self.$isDeleteAlertPresented, actions: {}, message: {
-                Text(self.deleteFileErrorText ?? "Unknown error")
-            })
-            .alert("Failed to set as profile picture", isPresented: self.$isSetProfilePictureErrorAlertPresented, actions: {}, message: {
-                Text(self.setProfilePictureErrorText ?? "Unknown error")
-            })
-            .alert("Failed to add to collection", isPresented: self.$isAddToCollectionErrorAlertPresented, actions: {}, message: {
-                Text(self.addToCollectionErrorText ?? "Unknown error")
-            })
+            .customFixedAlert(title: "File save successfully", message: "The file has been saved to your selected destination.", isPresented: self.$isSaveFileSuccessAlertPresented)
+            .customBindingAlert(title: "File save failed", message: self.$saveFileFailMessage, isPresented: self.$isSaveFileFailAlertPresented)
+            .customBindingAlert(title: "Delete failed", message: self.$deleteFileErrorText, isPresented: self.$isDeleteFileErrorAlertPresented)
+            .customBindingAlert(title: "Set profile picture failed", message: self.$setProfilePictureErrorText, isPresented: self.$isSetProfilePictureErrorAlertPresented)
+            .customBindingAlert(title: "Add to collection failed", message: self.$addToCollectionErrorText, isPresented: self.$isAddToCollectionErrorAlertPresented)
             .navigationTitle(self.file.description)
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(self.isBusy)

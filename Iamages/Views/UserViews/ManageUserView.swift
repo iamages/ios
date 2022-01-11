@@ -258,7 +258,7 @@ struct ManageUserView: View {
                     }
                 }
             }
-            .alert(self.errorText ?? "Unknown error.", isPresented: self.$isErrorAlertPresented) {}
+            .customBindingAlert(title: "User operation failed", message: self.$errorText, isPresented: self.$isErrorAlertPresented)
             .navigationTitle((self.dataObservable.currentAppUser?.username == nil)  ? "Login" : "Manage")
             .navigationBarTitleDisplayMode(.inline)
         }

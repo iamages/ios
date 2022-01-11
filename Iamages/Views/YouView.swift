@@ -187,9 +187,7 @@ struct YouView: View {
         }) {
             ManageUserView(isPresented: self.$isManageUserSheetPresented)
         }
-        .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
-            Text(self.errorAlertText ?? "Unknown error")
-        }
+        .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
         .navigationTitle("You")
         #if targetEnvironment(macCatalyst)
         .background {

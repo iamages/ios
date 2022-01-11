@@ -136,9 +136,11 @@ struct UserCollectionPickerView: View {
                     self.isFirstRefreshCompleted = true
                 }
             }
+            #if !targetEnvironment(macCatalyst)
             .refreshable {
                 await self.startFeed()
             }
+            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(action: {

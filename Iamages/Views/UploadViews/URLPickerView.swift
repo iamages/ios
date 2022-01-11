@@ -51,9 +51,7 @@ struct URLPickerView: View {
                     .keyboardShortcut(.defaultAction)
                 }
             }
-            .alert("Invalid URL", isPresented: self.$isURLInvalidErrorAlertPresented, actions: {}, message: {
-                Text("The provided URL is invalid. Please recheck it.")
-            })
+            .customFixedAlert(title: "Invalid URL", message: "The provided URL is invalid. Please recheck it.", isPresented: self.$isURLInvalidErrorAlertPresented)
             .navigationTitle("Pick URL")
             .navigationBarTitleDisplayMode(.inline)
         }

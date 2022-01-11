@@ -26,9 +26,7 @@ struct IamagesApp: App {
             RootNavigationView(selectedTabItem: self.$selectedTabItem)
                 .environmentObject(self.dataObservable)
             #if targetEnvironment(macCatalyst)
-                .sheet(isPresented: self.$isPreferencesSheetPresented, onDismiss: {
-                    self.dataObservable.isModalPresented = false
-                }) {
+                .customSheet(isPresented: self.$isPreferencesSheetPresented) {
                     NavigationView {
                         PreferencesView()
                             .toolbar {

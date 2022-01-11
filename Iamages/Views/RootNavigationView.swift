@@ -106,7 +106,7 @@ fileprivate struct CommonViewModifiers: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onOpenURL(perform: self.handleOpenURL)
-            .alert("Provided open URL is invalid.", isPresented: self.$isOpenURLInvalidAlertPresented) {}
+            .customFixedAlert(title: "Open URL failed", message: "Provided open URL is invalid.", isPresented: self.$isOpenURLInvalidAlertPresented)
             .sheet(isPresented: self.$isURLFileCollectionViewSheetPresented, onDismiss: {
                 self.dataObservable.isModalPresented = false
             }) {

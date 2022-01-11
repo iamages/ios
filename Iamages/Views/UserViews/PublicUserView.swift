@@ -114,7 +114,6 @@ struct PublicUserView: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
                     self.isUserSearchSheetPresented = true
-                    self.dataObservable.isModalPresented = true
                 }) {
                     Label("Search", systemImage: "magnifyingglass")
                 }
@@ -140,14 +139,10 @@ struct PublicUserView: View {
             }
             #endif
         }
-        .sheet(isPresented: self.$isUserSearchSheetPresented, onDismiss: {
-            self.dataObservable.isModalPresented = false
-        }) {
+        .customSheet(isPresented: self.$isUserSearchSheetPresented) {
             UserSearchView(username: self.username, type: .publicFeed, isUserSearchSheetPresented: self.$isUserSearchSheetPresented)
         }
-        .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
-            Text(self.errorAlertText ?? "Unknown error")
-        }
+        .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
         .navigationTitle(self.username)
     }
 }

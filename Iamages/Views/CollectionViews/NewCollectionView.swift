@@ -55,9 +55,7 @@ struct NewCollectionView: View {
                 }
             }
         }
-        .alert("Failed to create new collection", isPresented: self.$isErrorAlertPresented, actions: {}) {
-            Text(self.errorAlertText ?? "Unknown error")
-        }
+        .customBindingAlert(title: "Create new collection failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
         .navigationTitle("New collection")
         .navigationBarBackButtonHidden(self.isBusy)
     }

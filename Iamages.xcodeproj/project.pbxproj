@@ -52,7 +52,7 @@
 		2EF4F1B627784C5300E64446 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2EF4F1B527784C5300E64446 /* Kingfisher */; };
 		2EF4F1B927784C6400E64446 /* SPConfetti in Frameworks */ = {isa = PBXBuildFile; productRef = 2EF4F1B827784C6400E64446 /* SPConfetti */; };
 		2EF4F1BC27784D1200E64446 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 2EF4F1BB27784D1200E64446 /* KeychainAccess */; };
-		2EFB09832785768A00041F49 /* View+withHostingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EFB09822785768A00041F49 /* View+withHostingWindow.swift */; };
+		2EFB09832785768A00041F49 /* View+utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EFB09822785768A00041F49 /* View+utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -104,7 +104,7 @@
 		2EF4F1B227784C1400E64446 /* IamagesApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IamagesApp.swift; sourceTree = "<group>"; };
 		2EF4F1BD27784D1F00E64446 /* Iamages.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Iamages.entitlements; sourceTree = "<group>"; };
 		2EF4F1BE27789A6600E64446 /* Iamages.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Iamages.storekit; sourceTree = "<group>"; };
-		2EFB09822785768A00041F49 /* View+withHostingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+withHostingWindow.swift"; sourceTree = "<group>"; };
+		2EFB09822785768A00041F49 /* View+utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+utils.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,7 +188,7 @@
 				2EF4F16A27784C0100E64446 /* Bundle+utils.swift */,
 				2EF4F16B27784C0100E64446 /* String+urlEncode.swift */,
 				2EF4F16C27784C0100E64446 /* Formatter+dates.swift */,
-				2EFB09822785768A00041F49 /* View+withHostingWindow.swift */,
+				2EFB09822785768A00041F49 /* View+utils.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -374,7 +374,7 @@
 				2EF4F1AA27784C0900E64446 /* YouView.swift in Sources */,
 				2E84B1702779B4870006458A /* TogglesHelpView.swift in Sources */,
 				2EF4F1AC27784C0900E64446 /* CollectionInfoView.swift in Sources */,
-				2EFB09832785768A00041F49 /* View+withHostingWindow.swift in Sources */,
+				2EFB09832785768A00041F49 /* View+utils.swift in Sources */,
 				2EF4F1A427784C0900E64446 /* PreferencesView.swift in Sources */,
 				2EF4F1A327784C0900E64446 /* FileView.swift in Sources */,
 				2EE3196F2781E7B4005B83B0 /* UploadingNewCollectionView.swift in Sources */,

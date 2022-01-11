@@ -129,16 +129,7 @@ struct ModifyCollectionInfoView: View {
                     }
                 }
             }
-            .alert("Modification failed", isPresented: self.$isModifyErrorAlertPresented) {
-                Button("Retry") {
-                    Task {
-                        await self.modify()
-                    }
-                }
-                Button("Stop", role: .cancel) {}
-            } message: {
-                Text(self.modifyErrorText ?? "Unknown error")
-            }
+            .customBindingAlert(title: "Modification failed", message: self.$modifyErrorText, isPresented: self.$isModifyErrorAlertPresented)
             .navigationTitle("Modify")
             .navigationBarTitleDisplayMode(.inline)
         }

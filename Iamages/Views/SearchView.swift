@@ -138,9 +138,7 @@ struct SearchView: View {
                 }
             }
         }
-        .alert("Feed loading failed", isPresented: self.$isErrorAlertPresented, actions: {}) {
-            Text(self.errorAlertText ?? "Unknown error")
-        }
+        .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
         .navigationTitle("Search")
         #if targetEnvironment(macCatalyst)
         .background {
