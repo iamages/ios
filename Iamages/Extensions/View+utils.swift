@@ -1,6 +1,6 @@
-#if targetEnvironment(macCatalyst)
 import SwiftUI
 
+#if targetEnvironment(macCatalyst)
 // Thanks to Stack Overflow!
 struct HostingWindowFinder: UIViewRepresentable {
     var callback: (UIWindow?) -> ()

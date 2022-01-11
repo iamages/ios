@@ -43,7 +43,7 @@ struct CollectionInfoView: View {
             }
             .navigationTitle("Info")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationViewStyle(.stack)
         }
+        .navigationViewStyle(.stack)
     }
 }
