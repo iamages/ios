@@ -1,33 +1,42 @@
 import SwiftUI
 
-fileprivate struct URLFileCollectionView: View {
+fileprivate enum URLViewable: String {
+    case file
+    case collection
+    case user
+}
+
+fileprivate struct URLViewerView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
-    @Binding var fileID: String?
-    @Binding var collectionID: String?
+    @Binding var type: URLViewable
+    @Binding var id: String
     @Binding var isPresented: Bool
 
     @State var isBusy: Bool = true
     
     @State var file: IamagesFile = IamagesFile(id: "", description: "", isNSFW: false, isPrivate: false, isHidden: false, created: Date(), mime: "", width: 0, height: 0)
     @State var collection: IamagesCollection = IamagesCollection(id: "", description: "", isPrivate: false, isHidden: false, created: Date())
-    @State var feedCollections: [IamagesCollection] = []
     @State var feedFiles: [IamagesFile] = []
+    @State var feedCollections: [IamagesCollection] = []
     
     @State var isNavigationLinkActive: Bool = false
     @State var onAppearCount: Int = 0
     
     var body: some View {
         NavigationView {
-            ProgressView("Locating file...")
+            ProgressView("Locating \(self.type.rawValue)...")
                 .task {
                     if onAppearCount == 0 {
                         do {
-                            if self.fileID != nil {
-                                self.file = try await self.dataObservable.getFileInformation(id: self.fileID!)
+                            switch self.type {
+                            case .file:
+                                self.file = try await self.dataObservable.getFileInformation(id: self.id)
                                 self.feedFiles.append(self.file)
-                            } else if self.collectionID != nil {
-                                self.collection = try await self.dataObservable.getCollectionInformation(id: self.collectionID!)
+                            case .collection:
+                                self.collection = try await self.dataObservable.getCollectionInformation(id: self.id)
                                 self.feedCollections.append(self.collection)
+                            case .user:
+                                break
                             }
                             self.onAppearCount += 1
                             self.isNavigationLinkActive = true
@@ -40,10 +49,13 @@ fileprivate struct URLFileCollectionView: View {
                     }
                 }
                 .background {
-                    if self.fileID != nil {
+                    switch self.type {
+                    case .file:
                         NavigationLink(destination: FileView(file: self.$file, feed: self.$feedFiles, type: .publicFeed), isActive: self.$isNavigationLinkActive) {}
-                    } else if self.collectionID != nil {
+                    case .collection:
                         NavigationLink(destination: CollectionFilesListView(collection: self.$collection, feed: self.$feedCollections, type: .publicFeed), isActive: self.$isNavigationLinkActive) {}
+                    case .user:
+                        NavigationLink(destination: PublicUserView(username: self.id), isActive: self.$isNavigationLinkActive) {}
                     }
                 }
         }
@@ -59,10 +71,10 @@ fileprivate struct CommonViewModifiers: ViewModifier {
     #else
     @Binding var selectedTabItem: AppNavigationView
     #endif
-    @State var fileID: String?
-    @State var collectionID: String?
+    @State var type: URLViewable = .file
+    @State var id: String = ""
     @State var isOpenURLInvalidAlertPresented: Bool = false
-    @State var isURLFileCollectionViewSheetPresented: Bool = false
+    @State var isURLViewerSheetPresented: Bool = false
     
     func handleOpenURL(_ url: URL) {
         if url.scheme == "iamages" {
@@ -76,23 +88,16 @@ fileprivate struct CommonViewModifiers: ViewModifier {
             case "you":
                 self.selectedTabItem = .you
             case "view":
-                guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-                      let queryArgs = components.queryItems,
-                      let type = queryArgs.first?.value,
-                      let id = queryArgs[1].value else {
+                guard let components: URLComponents = URLComponents(url: url, resolvingAgainstBaseURL: true),
+                      let queryArgs: [URLQueryItem] = components.queryItems,
+                      let type: URLViewable = URLViewable(rawValue: queryArgs.first?.value ?? ""),
+                      let id: String = queryArgs[1].value else {
                     self.isOpenURLInvalidAlertPresented = true
                     return
                 }
-                switch type {
-                case "file":
-                    self.fileID = id
-                    self.isURLFileCollectionViewSheetPresented = true
-                case "collection":
-                    self.collectionID = id
-                    self.isURLFileCollectionViewSheetPresented = true
-                default:
-                    self.isOpenURLInvalidAlertPresented = true
-                }
+                self.type = type
+                self.id = id
+                self.isURLViewerSheetPresented = true
             default:
                 self.isOpenURLInvalidAlertPresented = true
             }
@@ -105,8 +110,8 @@ fileprivate struct CommonViewModifiers: ViewModifier {
         content
             .onOpenURL(perform: self.handleOpenURL)
             .customFixedAlert(title: "Open URL failed", message: "Provided open URL is invalid.", isPresented: self.$isOpenURLInvalidAlertPresented)
-            .customSheet(isPresented: self.$isURLFileCollectionViewSheetPresented) {
-                URLFileCollectionView(fileID: self.$fileID, collectionID: self.$collectionID, isPresented: self.$isURLFileCollectionViewSheetPresented)
+            .customSheet(isPresented: self.$isURLViewerSheetPresented) {
+                URLViewerView(type: self.$type, id: self.$id, isPresented: self.$isURLViewerSheetPresented)
             }
     }
 }
