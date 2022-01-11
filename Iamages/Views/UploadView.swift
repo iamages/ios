@@ -38,7 +38,6 @@ struct UploadView: View {
                 Menu(content: {
                     Button(action: {
                         self.isPhotoPickerPresented = true
-                        self.dataObservable.isModalPresented = true
                     }) {
                         Label("Select photos", systemImage: "photo.on.rectangle")
                     }
@@ -50,7 +49,6 @@ struct UploadView: View {
                     }
                     Button(action: {
                         self.isURLPickerPresented = true
-                        self.dataObservable.isModalPresented = true
                     }) {
                         Label("Save from URLs", systemImage: "externaldrive.badge.icloud")
                     }
@@ -64,14 +62,12 @@ struct UploadView: View {
                     Button(action: {
                         self.uploadMode = .separate
                         self.isUploadingFilesListSheetPresented = true
-                        self.dataObservable.isModalPresented = true
                     }) {
                         Label("Upload separately", systemImage: "square.and.arrow.up.on.square")
                     }
                     Button(action: {
                         self.uploadMode = .toCollection
                         self.isNewUploadCollectionSheetPresented = true
-                        self.dataObservable.isModalPresented = true
                     }) {
                         Label("Upload to new collection", systemImage: "square.grid.3x1.folder.badge.plus")
                     }
@@ -82,9 +78,7 @@ struct UploadView: View {
                 .menuStyle(.borderlessButton)
             }
         }
-        .sheet(isPresented: self.$isPhotoPickerPresented, onDismiss: {
-            self.dataObservable.isModalPresented = false
-        }) {
+        .customSheet(isPresented: self.$isPhotoPickerPresented) {
             PhotosPickerView(imageRetrievedHandler: { image, type in
                 self.uploadRequests.append(
                     UploadFileRequest(
@@ -138,39 +132,35 @@ struct UploadView: View {
                 self.isPickErrorAlertPresented = true
             }
         }
-        .sheet(isPresented: self.$isURLPickerPresented, onDismiss: {
-            self.dataObservable.isModalPresented = false
-            if self.pickedURL != nil {
-                self.uploadRequests.append(
-                    UploadFileRequest(
-                        info: UploadJSONRequest(
-                            description: "No description yet",
-                            isNSFW: self.isNSFWDefault,
-                            isPrivate: self.isPrivateDefault,
-                            isHidden: self.isHiddenDefault,
-                            url: self.pickedURL!
-                        ),
-                        file: nil
-                    )
-                )
-            }
-        }) {
+        .customSheet(isPresented: self.$isURLPickerPresented) {
             URLPickerView(pickedURL: self.$pickedURL, isPresented: self.$isURLPickerPresented)
+                .onDisappear {
+                    if self.pickedURL != nil {
+                        self.uploadRequests.append(
+                            UploadFileRequest(
+                                info: UploadJSONRequest(
+                                    description: "No description yet",
+                                    isNSFW: self.isNSFWDefault,
+                                    isPrivate: self.isPrivateDefault,
+                                    isHidden: self.isHiddenDefault,
+                                    url: self.pickedURL!
+                                ),
+                                file: nil
+                            )
+                        )
+                    }
+                }
         }
-        .sheet(isPresented: self.$isUploadingFilesListSheetPresented, onDismiss: {
-            self.dataObservable.isModalPresented = false
-        }) {
+        .customSheet(isPresented: self.$isUploadingFilesListSheetPresented) {
             UploadingFilesListView(uploadRequests: self.$uploadRequests, mode: self.$uploadMode, newCollection: self.$newCollection, isPresented: self.$isUploadingFilesListSheetPresented)
         }
-        .sheet(isPresented: self.$isNewUploadCollectionSheetPresented, onDismiss: {
-            self.dataObservable.isModalPresented = false
-            // Tiny delay for weird Mac Catalyst sheet slow dismiss.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.isUploadingFilesListSheetPresented = true
-                self.dataObservable.isModalPresented = true
-            }
-        }) {
+        .customSheet(isPresented: self.$isNewUploadCollectionSheetPresented) {
             UploadingNewCollectionView(newCollection: self.$newCollection, isPresented: self.$isNewUploadCollectionSheetPresented)
+                .onDisappear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.isUploadingFilesListSheetPresented = true
+                    }
+                }
         }
         .navigationTitle("Upload")
         #if targetEnvironment(macCatalyst)

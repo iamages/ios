@@ -137,7 +137,6 @@ struct CollectionFilesListView: View {
                     ToolbarItem(placement: .principal) {
                         Button(action: {
                             self.isInfoSheetPresented = true
-                            self.dataObservable.isModalPresented = true
                         }) {
                             Label("Info", systemImage: "info.circle")
                         }

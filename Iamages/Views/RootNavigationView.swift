@@ -87,11 +87,9 @@ fileprivate struct CommonViewModifiers: ViewModifier {
                 case "file":
                     self.fileID = id
                     self.isURLFileCollectionViewSheetPresented = true
-                    self.dataObservable.isModalPresented = true
                 case "collection":
                     self.collectionID = id
                     self.isURLFileCollectionViewSheetPresented = true
-                    self.dataObservable.isModalPresented = true
                 default:
                     self.isOpenURLInvalidAlertPresented = true
                 }
@@ -107,9 +105,7 @@ fileprivate struct CommonViewModifiers: ViewModifier {
         content
             .onOpenURL(perform: self.handleOpenURL)
             .customFixedAlert(title: "Open URL failed", message: "Provided open URL is invalid.", isPresented: self.$isOpenURLInvalidAlertPresented)
-            .sheet(isPresented: self.$isURLFileCollectionViewSheetPresented, onDismiss: {
-                self.dataObservable.isModalPresented = false
-            }) {
+            .customSheet(isPresented: self.$isURLFileCollectionViewSheetPresented) {
                 URLFileCollectionView(fileID: self.$fileID, collectionID: self.$collectionID, isPresented: self.$isURLFileCollectionViewSheetPresented)
             }
     }

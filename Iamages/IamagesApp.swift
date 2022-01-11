@@ -49,7 +49,6 @@ struct IamagesApp: App {
                 #if targetEnvironment(macCatalyst)
                 Button("Preferences...") {
                     self.isPreferencesSheetPresented = true
-                    self.dataObservable.isModalPresented = true
                 }
                 .keyboardShortcut(",")
                 .disabled(self.dataObservable.isModalPresented)

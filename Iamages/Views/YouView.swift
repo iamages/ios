@@ -142,7 +142,6 @@ struct YouView: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
                     self.isUserSearchSheetPresented = true
-                    self.dataObservable.isModalPresented = true
                 }) {
                     Label("Search", systemImage: "magnifyingglass")
                 }
@@ -152,7 +151,6 @@ struct YouView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     self.isManageUserSheetPresented = true
-                    self.dataObservable.isModalPresented = true
                 }) {
                     ProfileImageView(username: self.dataObservable.currentAppUser?.username)
                 }
@@ -177,14 +175,10 @@ struct YouView: View {
                 }
             }
         }
-        .sheet(isPresented: self.$isUserSearchSheetPresented, onDismiss: {
-            self.dataObservable.isModalPresented = false
-        }) {
+        .customSheet(isPresented: self.$isUserSearchSheetPresented) {
             UserSearchView(username: self.dataObservable.currentAppUser?.username ?? "nil", type: .privateFeed, isUserSearchSheetPresented: self.$isUserSearchSheetPresented)
         }
-        .sheet(isPresented: self.$isManageUserSheetPresented, onDismiss: {
-            self.dataObservable.isModalPresented = false
-        }) {
+        .customSheet(isPresented: self.$isManageUserSheetPresented) {
             ManageUserView(isPresented: self.$isManageUserSheetPresented)
         }
         .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
