@@ -17,10 +17,8 @@ struct CollectionInfoView: View {
                     }
                     .disabled(true)
                 }
-                if let relativeTimeString = Formatter.localRelativeTime.string(for: self.collection.created) {
-                    Section("Created") {
-                        Text(relativeTimeString.capitalized)
-                    }
+                Section("Created") {
+                    Text(self.collection.created, formatter: RelativeDateTimeFormatter())
                 }
                 if let owner = self.collection.owner {
                     Section("Owner") {

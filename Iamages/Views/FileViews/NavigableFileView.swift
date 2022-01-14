@@ -12,8 +12,8 @@ struct NavigableFileView: View {
     @Binding var feed: [IamagesFile]
     let type: FeedType
     
-    @AppStorage("isNSFWEnabled") var isNSFWEnabled: Bool = true
-    @AppStorage("isNSFWBlurred") var isNSFWBlurred: Bool = true
+    @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
+    @AppStorage("isNSFWBlurred", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWBlurred: Bool = true
     
     var body: some View {
         if self.file.isNSFW && !self.isNSFWEnabled {

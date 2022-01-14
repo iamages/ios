@@ -40,6 +40,7 @@ struct IamagesApp: App {
                             }
                             .navigationBarTitleDisplayMode(.inline)
                     }
+                    .navigationViewStyle(.stack)
                 }
             #endif
                 .environmentObject(self.dataObservable)

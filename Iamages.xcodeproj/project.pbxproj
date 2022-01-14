@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E22D5E7278F0DE300D3582D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E22D5E6278F0DE300D3582D /* WidgetKit.framework */; };
+		2E22D5E9278F0DE300D3582D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E22D5E8278F0DE300D3582D /* SwiftUI.framework */; };
+		2E22D5EC278F0DE400D3582D /* FeedWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E22D5EB278F0DE400D3582D /* FeedWidget.swift */; };
+		2E22D5EE278F0DE500D3582D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E22D5ED278F0DE500D3582D /* Assets.xcassets */; };
+		2E22D5F2278F0DE500D3582D /* FeedWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2E22D5E4278F0DE300D3582D /* FeedWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2E22D5F8278F0F4700D3582D /* Modals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16327784BE300E64446 /* Modals.swift */; };
+		2E22D5FA278F0F6500D3582D /* Formatter+dates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16C27784C0100E64446 /* Formatter+dates.swift */; };
+		2E22D5FB278F0F6500D3582D /* JSONDecoder+customISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16927784C0100E64446 /* JSONDecoder+customISO8601.swift */; };
+		2E22D6022791991500D3582D /* Iamages.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 2E22D6012791991500D3582D /* Iamages.intentdefinition */; };
+		2E22D6032791991500D3582D /* Iamages.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 2E22D6012791991500D3582D /* Iamages.intentdefinition */; };
 		2E84B16E27795E030006458A /* RemovedSuggestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16D27795E030006458A /* RemovedSuggestView.swift */; };
 		2E84B1702779B4870006458A /* TogglesHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16F2779B4870006458A /* TogglesHelpView.swift */; };
 		2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB252D5277B33B9009A17DC /* NewCollectionView.swift */; };
@@ -55,7 +65,39 @@
 		2EFB09832785768A00041F49 /* View+utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EFB09822785768A00041F49 /* View+utils.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2E22D5F0278F0DE500D3582D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2EF4F14927784B8100E64446 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2E22D5E3278F0DE300D3582D;
+			remoteInfo = FeedWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2E22D5F4278F0DE500D3582D /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2E22D5F2278F0DE500D3582D /* FeedWidgetExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		2E22D5E4278F0DE300D3582D /* FeedWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FeedWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E22D5E6278F0DE300D3582D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		2E22D5E8278F0DE300D3582D /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		2E22D5EB278F0DE400D3582D /* FeedWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedWidget.swift; sourceTree = "<group>"; };
+		2E22D5ED278F0DE500D3582D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2E22D5EF278F0DE500D3582D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2E22D5F3278F0DE500D3582D /* FeedWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FeedWidgetExtension.entitlements; sourceTree = "<group>"; };
+		2E22D6012791991500D3582D /* Iamages.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Iamages.intentdefinition; sourceTree = "<group>"; };
 		2E7344FC277A92480076E672 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2E84B16D27795E030006458A /* RemovedSuggestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedSuggestView.swift; sourceTree = "<group>"; };
 		2E84B16F2779B4870006458A /* TogglesHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglesHelpView.swift; sourceTree = "<group>"; };
@@ -108,6 +150,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2E22D5E1278F0DE300D3582D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E22D5E9278F0DE300D3582D /* SwiftUI.framework in Frameworks */,
+				2E22D5E7278F0DE300D3582D /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2EF4F14E27784B8100E64446 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -121,6 +172,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2E22D5E5278F0DE300D3582D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2E22D5E6278F0DE300D3582D /* WidgetKit.framework */,
+				2E22D5E8278F0DE300D3582D /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2E22D5EA278F0DE400D3582D /* FeedWidget */ = {
+			isa = PBXGroup;
+			children = (
+				2E22D5EB278F0DE400D3582D /* FeedWidget.swift */,
+				2E22D5ED278F0DE500D3582D /* Assets.xcassets */,
+				2E22D5EF278F0DE500D3582D /* Info.plist */,
+				2E22D5F3278F0DE500D3582D /* FeedWidgetExtension.entitlements */,
+			);
+			path = FeedWidget;
+			sourceTree = "<group>";
+		};
 		2EE3196B2781E25E005B83B0 /* UploadingViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -134,8 +205,11 @@
 			isa = PBXGroup;
 			children = (
 				2EF4F15327784B8100E64446 /* Iamages */,
+				2E22D5EA278F0DE400D3582D /* FeedWidget */,
+				2E22D6012791991500D3582D /* Iamages.intentdefinition */,
 				2EBBE6D52786BFA600BB93CB /* README.md */,
 				2EBBE6D42786BFA600BB93CB /* LICENSE.txt */,
+				2E22D5E5278F0DE300D3582D /* Frameworks */,
 				2EF4F15227784B8100E64446 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -144,6 +218,7 @@
 			isa = PBXGroup;
 			children = (
 				2EF4F15127784B8100E64446 /* Iamages.app */,
+				2E22D5E4278F0DE300D3582D /* FeedWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -275,6 +350,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2E22D5E3278F0DE300D3582D /* FeedWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2E22D5F7278F0DE500D3582D /* Build configuration list for PBXNativeTarget "FeedWidgetExtension" */;
+			buildPhases = (
+				2E22D5E0278F0DE300D3582D /* Sources */,
+				2E22D5E1278F0DE300D3582D /* Frameworks */,
+				2E22D5E2278F0DE300D3582D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FeedWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = FeedWidgetExtension;
+			productReference = 2E22D5E4278F0DE300D3582D /* FeedWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		2EF4F15027784B8100E64446 /* Iamages */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2EF4F15F27784B8300E64446 /* Build configuration list for PBXNativeTarget "Iamages" */;
@@ -282,10 +376,12 @@
 				2EF4F14D27784B8100E64446 /* Sources */,
 				2EF4F14E27784B8100E64446 /* Frameworks */,
 				2EF4F14F27784B8100E64446 /* Resources */,
+				2E22D5F4278F0DE500D3582D /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2E22D5F1278F0DE500D3582D /* PBXTargetDependency */,
 			);
 			name = Iamages;
 			packageProductDependencies = (
@@ -307,6 +403,9 @@
 				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1320;
 				TargetAttributes = {
+					2E22D5E3278F0DE300D3582D = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
 					2EF4F15027784B8100E64446 = {
 						CreatedOnToolsVersion = 13.2.1;
 					};
@@ -331,11 +430,20 @@
 			projectRoot = "";
 			targets = (
 				2EF4F15027784B8100E64446 /* Iamages */,
+				2E22D5E3278F0DE300D3582D /* FeedWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2E22D5E2278F0DE300D3582D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E22D5EE278F0DE500D3582D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2EF4F14F27784B8100E64446 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -348,6 +456,18 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2E22D5E0278F0DE300D3582D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E22D6032791991500D3582D /* Iamages.intentdefinition in Sources */,
+				2E22D5FA278F0F6500D3582D /* Formatter+dates.swift in Sources */,
+				2E22D5EC278F0DE400D3582D /* FeedWidget.swift in Sources */,
+				2E22D5FB278F0F6500D3582D /* JSONDecoder+customISO8601.swift in Sources */,
+				2E22D5F8278F0F4700D3582D /* Modals.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2EF4F14D27784B8100E64446 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -358,6 +478,7 @@
 				2EF4F1AE27784C0900E64446 /* ModifyCollectionInfoView.swift in Sources */,
 				2EF4F19627784C0900E64446 /* NavigableModifyUploadRequestView.swift in Sources */,
 				2EF4F1A627784C0900E64446 /* NavigableUserView.swift in Sources */,
+				2E22D6022791991500D3582D /* Iamages.intentdefinition in Sources */,
 				2EE3196D2781E321005B83B0 /* UploadingFilesListView.swift in Sources */,
 				2EF4F16F27784C0100E64446 /* Bundle+utils.swift in Sources */,
 				2EF4F19D27784C0900E64446 /* HelpLinksView.swift in Sources */,
@@ -398,7 +519,73 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		2E22D5F1278F0DE500D3582D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2E22D5E3278F0DE300D3582D /* FeedWidgetExtension */;
+			targetProxy = 2E22D5F0278F0DE500D3582D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		2E22D5F5278F0DE500D3582D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = FeedWidget/FeedWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2VZNUT7D2E;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FeedWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FeedWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.FeedWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2E22D5F6278F0DE500D3582D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = FeedWidget/FeedWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2VZNUT7D2E;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FeedWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FeedWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.FeedWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		2EF4F15D27784B8300E64446 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -518,6 +705,7 @@
 		2EF4F16027784B8300E64446 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -555,6 +743,7 @@
 		2EF4F16127784B8300E64446 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -592,6 +781,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2E22D5F7278F0DE500D3582D /* Build configuration list for PBXNativeTarget "FeedWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2E22D5F5278F0DE500D3582D /* Debug */,
+				2E22D5F6278F0DE500D3582D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2EF4F14C27784B8100E64446 /* Build configuration list for PBXProject "Iamages" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

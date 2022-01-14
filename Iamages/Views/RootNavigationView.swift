@@ -74,6 +74,7 @@ fileprivate struct CommonViewModifiers: ViewModifier {
     @State var type: URLViewable = .file
     @State var id: String = ""
     @State var isOpenURLInvalidAlertPresented: Bool = false
+    @State var isSheetAlreadyOpenAlertPresented: Bool = false
     @State var isURLViewerSheetPresented: Bool = false
     
     func handleOpenURL(_ url: URL) {
@@ -88,16 +89,20 @@ fileprivate struct CommonViewModifiers: ViewModifier {
             case "you":
                 self.selectedTabItem = .you
             case "view":
-                guard let components: URLComponents = URLComponents(url: url, resolvingAgainstBaseURL: true),
-                      let queryArgs: [URLQueryItem] = components.queryItems,
-                      let type: URLViewable = URLViewable(rawValue: queryArgs.first?.value ?? ""),
-                      let id: String = queryArgs[1].value else {
-                    self.isOpenURLInvalidAlertPresented = true
-                    return
+                if self.dataObservable.isModalPresented {
+                    self.isSheetAlreadyOpenAlertPresented = true
+                } else {
+                    guard let components: URLComponents = URLComponents(url: url, resolvingAgainstBaseURL: true),
+                          let queryArgs: [URLQueryItem] = components.queryItems,
+                          let type: URLViewable = URLViewable(rawValue: queryArgs.first?.value ?? ""),
+                          let id: String = queryArgs[1].value else {
+                        self.isOpenURLInvalidAlertPresented = true
+                        return
+                    }
+                    self.type = type
+                    self.id = id
+                    self.isURLViewerSheetPresented = true
                 }
-                self.type = type
-                self.id = id
-                self.isURLViewerSheetPresented = true
             default:
                 self.isOpenURLInvalidAlertPresented = true
             }
@@ -110,6 +115,7 @@ fileprivate struct CommonViewModifiers: ViewModifier {
         content
             .onOpenURL(perform: self.handleOpenURL)
             .customFixedAlert(title: "Open URL failed", message: "Provided open URL is invalid.", isPresented: self.$isOpenURLInvalidAlertPresented)
+            .customFixedAlert(title: "A sheet is already presented.", message: "Please dismiss it to open the viewer.", isPresented: self.$isSheetAlreadyOpenAlertPresented)
             .customSheet(isPresented: self.$isURLViewerSheetPresented) {
                 URLViewerView(type: self.$type, id: self.$id, isPresented: self.$isURLViewerSheetPresented)
             }
@@ -199,6 +205,7 @@ struct RootNavigationView: View {
             NavigationView {
                 PreferencesView()
             }
+            .navigationViewStyle(.stack)
             .tabItem {
                 Label("Preferences", systemImage: "gearshape")
             }

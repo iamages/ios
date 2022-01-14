@@ -135,13 +135,11 @@ struct ManageUserView: View {
                             ProfileImageView(username: self.dataObservable.currentAppUser?.username)
                             Text(self.dataObservable.currentAppUser!.username)
                         }
-                        if let relativeCreated = Formatter.localRelativeTime.string(for: self.dataObservable.currentAppUserInformation?.created) {
-                            HStack {
-                                Text("Created")
-                                    .bold()
-                                Spacer()
-                                Text(relativeCreated.capitalized)
-                            }
+                        HStack {
+                            Text("Created")
+                                .bold()
+                            Spacer()
+                            Text(self.dataObservable.currentAppUserInformation!.created, formatter: RelativeDateTimeFormatter())
                         }
                     } header: {
                         Text("Information")

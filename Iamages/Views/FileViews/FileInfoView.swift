@@ -25,10 +25,8 @@ struct FileInfoView: View {
                     }
                     .disabled(true)
                 }
-                if let relativeTimeString = Formatter.localRelativeTime.string(for: self.file.created) {
-                    Section("Created") {
-                        Text(relativeTimeString.capitalized)
-                    }
+                Section("Created") {
+                    Text(self.file.created, formatter: RelativeDateTimeFormatter())
                 }
                 Section("Image") {
                     HStack {

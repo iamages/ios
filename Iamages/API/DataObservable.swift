@@ -48,7 +48,7 @@ class APIDataObservable: ObservableObject {
     let apiRoot: String = "https://iamages.uber.space/iamages/api/v3"
     #endif
     
-    @AppStorage("isNSFWEnabled") var isNSFWEnabled: Bool = true
+    @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
 
     @Published var currentAppUser: AppUser?
     @Published var currentAppUserInformation: IamagesUser?

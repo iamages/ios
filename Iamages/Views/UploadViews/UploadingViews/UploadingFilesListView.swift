@@ -113,7 +113,7 @@ struct UploadingFilesListView: View {
                 }
             }
             .toolbar {
-                ToolbarItem {
+                ToolbarItem(placement: .cancellationAction) {
                     if self.isBusy {
                         ProgressView()
                     } else {

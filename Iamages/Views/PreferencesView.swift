@@ -2,10 +2,11 @@ import SwiftUI
 import StoreKit
 import SPConfetti
 import Kingfisher
+import WidgetKit
 
 struct PreferencesView: View {
-    @AppStorage("isNSFWEnabled") var isNSFWEnabled: Bool = true
-    @AppStorage("isNSFWBlurred") var isNSFWBlurred: Bool = true
+    @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
+    @AppStorage("isNSFWBlurred", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWBlurred: Bool = true
     
     @AppStorage("uploadDefaults.isNSFW") var isNSFWDefault: Bool = false
     @AppStorage("uploadDefaults.isHidden") var isHiddenDefault: Bool = false
@@ -141,8 +142,13 @@ struct PreferencesView: View {
             })
             #endif
         }
+        .onChange(of: self.isNSFWEnabled) { _ in
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+        .onChange(of: self.isNSFWBlurred) { _ in
+            WidgetCenter.shared.reloadAllTimelines()
+        }
         .navigationTitle("Preferences")
-        .navigationViewStyle(.stack)
         .customBindingAlert(title: "Tipping failed", message: self.$tipErrorText, isPresented: self.$isTipErrorAlertPresented)
         .customFixedAlert(title: "Thank you!", message: "Your tip will help us continue developing Iamages. Thank you for tipping!", isPresented: self.$isTipThanksAlertPresented)
         .confetti(
