@@ -68,6 +68,10 @@ struct PreferencesView: View {
         }
         self.isPurchasingProduct = false
     }
+    
+    func refreshWidgets () {
+        WidgetCenter.shared.reloadAllTimelines()
+    }
 
     var body: some View {
         Form {
@@ -113,6 +117,7 @@ struct PreferencesView: View {
                 ) {
                     Button("Reset all preferences", role: .destructive, action: self.resetAppSettings)
                 }
+                Button("Refresh widgets", action: self.refreshWidgets)
             }
             Section(content: {
                 if self.areProductsLoading {
@@ -143,10 +148,10 @@ struct PreferencesView: View {
             #endif
         }
         .onChange(of: self.isNSFWEnabled) { _ in
-            WidgetCenter.shared.reloadAllTimelines()
+            self.refreshWidgets()
         }
         .onChange(of: self.isNSFWBlurred) { _ in
-            WidgetCenter.shared.reloadAllTimelines()
+            self.refreshWidgets()
         }
         .navigationTitle("Preferences")
         .customBindingAlert(title: "Tipping failed", message: self.$tipErrorText, isPresented: self.$isTipErrorAlertPresented)
