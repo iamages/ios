@@ -177,7 +177,7 @@ struct ManageUserView: View {
                                 }
                             }
                         }
-                        Button("Mark all files as hidden", role: .destructive) {
+                        Button("Mark everything as hidden", role: .destructive) {
                             self.isHideAllAlertPresented = true
                         }
                         .confirmationDialog(
@@ -185,7 +185,7 @@ struct ManageUserView: View {
                             isPresented: self.$isHideAllAlertPresented,
                             titleVisibility: .visible
                         ) {
-                            Button("Mark all files as hidden", role: .destructive) {
+                            Button("Mark everything as hidden", role: .destructive) {
                                 Task {
                                     await self.privatize(method: .hide_all)
                                 }
