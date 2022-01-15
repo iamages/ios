@@ -8,6 +8,8 @@ fileprivate enum URLViewable: String {
 
 fileprivate struct URLViewerView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
+    @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
+
     @Binding var type: URLViewable
     @Binding var id: String
     @Binding var isPresented: Bool
@@ -22,6 +24,11 @@ fileprivate struct URLViewerView: View {
     @State var isNavigationLinkActive: Bool = false
     @State var onAppearCount: Int = 0
     
+    @State var isNSFWWarningAlertPresented: Bool = false
+    
+    @State var errorAlertText: String?
+    @State var isErrorAlertPresented: Bool = false
+    
     var body: some View {
         NavigationView {
             ProgressView("Locating \(self.type.rawValue)...")
@@ -32,16 +39,22 @@ fileprivate struct URLViewerView: View {
                             case .file:
                                 self.file = try await self.dataObservable.getFileInformation(id: self.id)
                                 self.feedFiles.append(self.file)
+                                if self.file.isNSFW && !self.isNSFWEnabled {
+                                    self.isNSFWWarningAlertPresented = true
+                                } else {
+                                    self.isNavigationLinkActive = true
+                                }
                             case .collection:
                                 self.collection = try await self.dataObservable.getCollectionInformation(id: self.id)
                                 self.feedCollections.append(self.collection)
+                                self.isNavigationLinkActive = true
                             case .user:
                                 break
                             }
                             self.onAppearCount += 1
-                            self.isNavigationLinkActive = true
                         } catch {
-                            print(error)
+                            self.errorAlertText = error.localizedDescription
+                            self.isErrorAlertPresented = true
                         }
                         self.isBusy = false
                     } else {
@@ -57,6 +70,23 @@ fileprivate struct URLViewerView: View {
                     case .user:
                         NavigationLink(destination: PublicUserView(username: self.id), isActive: self.$isNavigationLinkActive) {}
                     }
+                }
+                .alert("Locating \(self.type.rawValue) failed", isPresented: self.$isErrorAlertPresented, actions: {
+                    Button("Ok", role: .cancel) {
+                        self.isPresented = false
+                    }
+                }) {
+                    Text(self.errorAlertText ?? "Unknown error")
+                }
+                .alert("Open NSFW post?", isPresented: self.$isNSFWWarningAlertPresented, actions: {
+                    Button("View", role: .destructive) {
+                        self.isNavigationLinkActive = true
+                    }
+                    Button("Cancel", role: .cancel) {
+                        self.isPresented = false
+                    }
+                }) {
+                    Text("You have NSFW viewing disabled. Do you want to continue viewing this NSFW file?")
                 }
         }
         .interactiveDismissDisabled(self.isBusy)
