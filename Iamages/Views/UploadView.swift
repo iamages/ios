@@ -32,10 +32,22 @@ struct UploadView: View {
     var body: some View {
         List {
             ForEach(self.$uploadRequests) { uploadRequest in
-                NavigableModifyUploadRequestView(uploadRequest: uploadRequest, uploadRequests: self.$uploadRequests)
+                NavigableModifyUploadRequestView(uploadRequest: uploadRequest)
+            }
+            .onDelete { offset in
+                #if targetEnvironment(macCatalyst)
+                self.isThirdPanePresented = true
+                #endif
+                self.uploadRequests.remove(atOffsets: offset)
+            }
+            .onMove { indexSet, offset in
+                self.uploadRequests.move(fromOffsets: indexSet, toOffset: offset)
             }
         }
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                EditButton()
+            }
             ToolbarItem(placement: .navigationBarLeading) {
                 Menu(content: {
                     Button(action: {

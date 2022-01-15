@@ -4,10 +4,9 @@ struct NavigableModifyUploadRequestView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     
     @Binding var uploadRequest: UploadFileRequest
-    @Binding var uploadRequests: [UploadFileRequest]
     
     var body: some View {
-        NavigationLink(destination: ModifyUploadRequestView(uploadRequest: self.$uploadRequest, uploadRequests: self.$uploadRequests)) {
+        NavigationLink(destination: ModifyUploadRequestView(uploadRequest: self.$uploadRequest)) {
             VStack(alignment: .leading) {
                 Label(title: {
                     Text(verbatim: self.dataObservable.currentAppUser?.username ?? "Anonymous")
