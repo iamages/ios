@@ -17,6 +17,9 @@ struct UploadingFilesListView: View {
     @State var uploadedFiles: [IamagesFile] = []
     @State var createdCollection: IamagesCollection?
     
+    @State var errorAlertText: String?
+    @State var isErrorAlertPresented: Bool = false
+    
     func upload (uploadRequest: UploadFileRequest) async {
         self.isBusy = true
         do {
@@ -26,6 +29,8 @@ struct UploadingFilesListView: View {
             }
         } catch {
             print(error)
+            self.errorAlertText = error.localizedDescription
+            self.isErrorAlertPresented = true
         }
         self.isBusy = false
     }
@@ -74,22 +79,24 @@ struct UploadingFilesListView: View {
                         }
                     }
                 }
-                Section(self.isBusy ? "Uploading" : "Failed") {
-                    ForEach(self.uploadRequests) { uploadRequest in
-                        VStack(alignment: .leading) {
-                            self.pfp
-                            if uploadRequest.file != nil {
-                                Image(uiImage: UIImage(data: uploadRequest.file!.image)!)
-                                    .resizable()
-                                    .scaledToFit()
-                            } else {
-                                Label(uploadRequest.info.url!.absoluteString, systemImage: "globe")
-                                    .lineLimit(1)
+                if !self.uploadRequests.isEmpty {
+                    Section(self.isBusy ? "Uploading" : "Failed") {
+                        ForEach(self.uploadRequests) { uploadRequest in
+                            VStack(alignment: .leading) {
+                                self.pfp
+                                if uploadRequest.file != nil {
+                                    Image(uiImage: UIImage(data: uploadRequest.file!.image)!)
+                                        .resizable()
+                                        .scaledToFit()
+                                } else {
+                                    Label(uploadRequest.info.url!.absoluteString, systemImage: "globe")
+                                        .lineLimit(1)
+                                }
+                                Text(uploadRequest.info.description)
                             }
-                            Text(uploadRequest.info.description)
+                            .padding(.top, 4)
+                            .padding(.bottom, 4)
                         }
-                        .padding(.top, 4)
-                        .padding(.bottom, 4)
                     }
                 }
             }
@@ -125,6 +132,7 @@ struct UploadingFilesListView: View {
                     }
                 }
             }
+            .customBindingAlert(title: "Upload failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
             .navigationTitle(self.isBusy ? "Uploading" : "Uploaded")
             .navigationBarTitleDisplayMode(.inline)
             .interactiveDismissDisabled(self.isBusy)

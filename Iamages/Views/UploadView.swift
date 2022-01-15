@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 import UniformTypeIdentifiers
 
 struct UploadView: View {
@@ -8,6 +9,7 @@ struct UploadView: View {
     @AppStorage("uploadDefaults.isHidden") var isHiddenDefault: Bool = false
     @AppStorage("uploadDefaults.isPrivate") var isPrivateDefault: Bool = false
     
+    @State var photoPickerResults: [PHPickerResult] = []
     @State var isPhotoPickerPresented: Bool = false
     @State var isFilePickerPresented: Bool = false
     @State var isURLPickerPresented: Bool = false
@@ -79,23 +81,45 @@ struct UploadView: View {
             }
         }
         .customSheet(isPresented: self.$isPhotoPickerPresented) {
-            PhotosPickerView(imageRetrievedHandler: { image, type in
-                self.uploadRequests.append(
-                    UploadFileRequest(
-                        info: UploadJSONRequest(
-                            description: "No description yet.",
-                            isNSFW: self.isNSFWDefault,
-                            isPrivate: self.isPrivateDefault,
-                            isHidden: self.isHiddenDefault,
-                            url: nil
-                        ),
-                        file: UploadFile(
-                            image: image,
-                            type: UTType(type)!
-                        )
-                    )
-                )
-            }, isPresented: self.$isPhotoPickerPresented)
+            PhotosPickerView(pickerResults: self.$photoPickerResults, isPresented: self.$isPhotoPickerPresented)
+                .onDisappear {
+                    self.photoPickerResults.forEach { photoPickerResult in
+                        let provider = photoPickerResult.itemProvider
+                        if let typeIdentifier: String = provider.registeredTypeIdentifiers.first {
+                            if provider.canLoadObject(ofClass: UIImage.self) {
+                                provider.loadDataRepresentation(forTypeIdentifier: typeIdentifier, completionHandler: { data, error in
+                                    if let data = data {
+                                        if data.count < 50000000 {
+                                            self.uploadRequests.append(
+                                                UploadFileRequest(
+                                                    info: UploadJSONRequest(
+                                                        description: "No description yet.",
+                                                        isNSFW: self.isNSFWDefault,
+                                                        isPrivate: self.isPrivateDefault,
+                                                        isHidden: self.isHiddenDefault,
+                                                        url: nil
+                                                    ),
+                                                    file: UploadFile(
+                                                        image: data,
+                                                        type: UTType(typeIdentifier)!
+                                                    )
+                                                )
+                                            )
+                                        } else {
+                                            self.pickErrorAlertText = "Photo file size for '\(photoPickerResult.assetIdentifier ?? "unknown")' is larger than 50Mb (\(data.count)"
+                                            self.isPickErrorAlertPresented = true
+                                        }
+                                    } else if let error = error {
+                                        self.pickErrorAlertText = error.localizedDescription
+                                        self.isPickErrorAlertPresented = true
+                                    }
+                                })
+                            }
+                        }
+                    }
+                    self.photoPickerResults = []
+                }
+            
         }
         .fileImporter(
             isPresented: self.$isFilePickerPresented,
@@ -107,25 +131,33 @@ struct UploadView: View {
                 case .success(let urls):
                 do {
                     for url in urls {
-                        let image = try Data(contentsOf: url)
-                        self.uploadRequests.append(
-                            UploadFileRequest(
-                                info: UploadJSONRequest(
-                                    description: "No description yet.",
-                                    isNSFW: self.isNSFWDefault,
-                                    isPrivate: self.isPrivateDefault,
-                                    isHidden: self.isHiddenDefault,
-                                    url: nil
-                                ),
-                                file: UploadFile(
-                                    image: image,
-                                    type: UTType(filenameExtension: url.pathExtension)!
+                        if let bytes = FileManager.default.sizeOfFile(atPath: url.path) {
+                            if bytes < 50000000 {
+                                let image = try Data(contentsOf: url)
+                                self.uploadRequests.append(
+                                    UploadFileRequest(
+                                        info: UploadJSONRequest(
+                                            description: "No description yet.",
+                                            isNSFW: self.isNSFWDefault,
+                                            isPrivate: self.isPrivateDefault,
+                                            isHidden: self.isHiddenDefault,
+                                            url: nil
+                                        ),
+                                        file: UploadFile(
+                                            image: image,
+                                            type: UTType(filenameExtension: url.pathExtension)!
+                                        )
+                                    )
                                 )
-                            )
-                        )
+                            } else {
+                                self.pickErrorAlertText = "File size for '\(url.path)' is larger than 50Mb! (\(bytes) bytes)"
+                                self.isPickErrorAlertPresented = true
+                            }
+                        }
                     }
                 } catch {
-                    print(error)
+                    self.pickErrorAlertText = error.localizedDescription
+                    self.isPickErrorAlertPresented = true
                 }
                 case .failure(let error):
                 self.pickErrorAlertText = error.localizedDescription
@@ -162,6 +194,7 @@ struct UploadView: View {
                     }
                 }
         }
+        .customBindingAlert(title: "File pick failed", message: self.$pickErrorAlertText, isPresented: self.$isPickErrorAlertPresented)
         .navigationTitle("Upload")
         #if targetEnvironment(macCatalyst)
         .background {

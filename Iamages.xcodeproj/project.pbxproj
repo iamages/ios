@@ -18,6 +18,7 @@
 		2E22D6032791991500D3582D /* FeedWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 2E22D6012791991500D3582D /* FeedWidget.intentdefinition */; };
 		2E3BF3F12791C45900A6E8AB /* FeedWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 2E22D6012791991500D3582D /* FeedWidget.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
 		2E3BF3F52792B82F00A6E8AB /* UISplitViewController+viewDidLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3BF3F42792B82F00A6E8AB /* UISplitViewController+viewDidLoad.swift */; };
+		2E3BF3F72792D5BE00A6E8AB /* FileManager+sizeOfFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */; };
 		2E84B16E27795E030006458A /* RemovedSuggestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16D27795E030006458A /* RemovedSuggestView.swift */; };
 		2E84B1702779B4870006458A /* TogglesHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16F2779B4870006458A /* TogglesHelpView.swift */; };
 		2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB252D5277B33B9009A17DC /* NewCollectionView.swift */; };
@@ -100,6 +101,7 @@
 		2E22D5F3278F0DE500D3582D /* FeedWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FeedWidgetExtension.entitlements; sourceTree = "<group>"; };
 		2E22D6012791991500D3582D /* FeedWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = FeedWidget.intentdefinition; sourceTree = "<group>"; };
 		2E3BF3F42792B82F00A6E8AB /* UISplitViewController+viewDidLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UISplitViewController+viewDidLoad.swift"; sourceTree = "<group>"; };
+		2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+sizeOfFile.swift"; sourceTree = "<group>"; };
 		2E7344FC277A92480076E672 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2E84B16D27795E030006458A /* RemovedSuggestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedSuggestView.swift; sourceTree = "<group>"; };
 		2E84B16F2779B4870006458A /* TogglesHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglesHelpView.swift; sourceTree = "<group>"; };
@@ -283,6 +285,7 @@
 				2EF4F16B27784C0100E64446 /* String+urlEncode.swift */,
 				2EFB09822785768A00041F49 /* View+utils.swift */,
 				2E3BF3F42792B82F00A6E8AB /* UISplitViewController+viewDidLoad.swift */,
+				2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -520,6 +523,7 @@
 				2EE3196F2781E7B4005B83B0 /* UploadingNewCollectionView.swift in Sources */,
 				2EF4F1A827784C0900E64446 /* ManageUserView.swift in Sources */,
 				2EF4F1A927784C0900E64446 /* UserSearchView.swift in Sources */,
+				2E3BF3F72792D5BE00A6E8AB /* FileManager+sizeOfFile.swift in Sources */,
 				2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */,
 				2EF4F1AF27784C0900E64446 /* CollectionFilesListView.swift in Sources */,
 				2EF4F1AB27784C0900E64446 /* UploadView.swift in Sources */,
