@@ -36,6 +36,9 @@ struct PreferencesView: View {
     func resetAppSettings () {
         self.isNSFWEnabled = true
         self.isNSFWBlurred = true
+        self.isNSFWBlurred = false
+        self.isHiddenDefault = false
+        self.isPrivateDefault = false
     }
     
     func purchaseProduct (_ product: Product) async {
@@ -107,7 +110,8 @@ struct PreferencesView: View {
                     Button("Clear image cache", role: .destructive, action: self.clearImageCache)
                 }
                 .disabled(self.isCacheBeingCleared)
-                Button("Reset app settings", role: .destructive) {
+                Button("Refresh widgets", action: self.refreshWidgets)
+                Button("Reset app preferences", role: .destructive) {
                     self.isResetWarningAlertPresented = true
                 }
                 .confirmationDialog(
@@ -117,7 +121,6 @@ struct PreferencesView: View {
                 ) {
                     Button("Reset all preferences", role: .destructive, action: self.resetAppSettings)
                 }
-                Button("Refresh widgets", action: self.refreshWidgets)
             }
             Section(content: {
                 if self.areProductsLoading {
