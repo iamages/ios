@@ -23,10 +23,8 @@ struct YouView: View {
     
     @State var isManageUserSheetPresented: Bool = false
     @State var isUserSearchSheetPresented: Bool = false
-    
-    #if targetEnvironment(macCatalyst)
+
     @State var isThirdPanePresented: Bool = true
-    #endif
     
     func pageFeed () async {
         guard let username: String = self.dataObservable.currentAppUser?.username else {
@@ -69,6 +67,8 @@ struct YouView: View {
             self.feedFiles = []
             self.feedCollections = []
             await self.pageFeed()
+            
+            self.isThirdPanePresented = false
         } else {
             self.isFirstRefreshCompleted = false
             self.errorAlertText = "You are not logged in. Use the user button above to do so, then come back here."
@@ -101,25 +101,24 @@ struct YouView: View {
         }
         .onAppear {
             if !self.isFirstRefreshCompleted {
+                self.isThirdPanePresented = true
                 Task {
                     await self.startFeed()
                 }
                 self.isFirstRefreshCompleted = true
             }
         }
-        #if !targetEnvironment(macCatalyst)
-        .refreshable {
-            await self.startFeed()
-        }
-        #endif
         .onChange(of: self.dataObservable.isLoggedIn) { isLoggedin in
-            if isLoggedin {
-                Task {
-                    await startFeed()
+            self.isThirdPanePresented = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if isLoggedin {
+                    Task {
+                        await startFeed()
+                    }
+                } else {
+                    self.feedFiles = []
+                    self.feedCollections = []
                 }
-            } else {
-                self.feedFiles = []
-                self.feedCollections = []
             }
         }
         .toolbar {
@@ -156,11 +155,13 @@ struct YouView: View {
                 }
                 .disabled(self.isBusy)
             }
-            #if targetEnvironment(macCatalyst)
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    Task {
-                        await self.startFeed()
+                    self.isThirdPanePresented = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        Task {
+                            await self.startFeed()
+                        }
                     }
                 }) {
                     Label("Refresh", systemImage: "arrow.clockwise")
@@ -168,7 +169,6 @@ struct YouView: View {
                 .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
-            #endif
             ToolbarItem(placement: .status) {
                 if self.isBusy {
                     ProgressView()
@@ -182,13 +182,7 @@ struct YouView: View {
             ManageUserView(isPresented: self.$isManageUserSheetPresented)
         }
         .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
+        .listAndDetailViewFix(isThirdPanePresented: self.$isThirdPanePresented)
         .navigationTitle("You")
-        #if targetEnvironment(macCatalyst)
-        .background {
-            NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
-                EmptyView()
-            }
-        }
-        #endif
     }
 }

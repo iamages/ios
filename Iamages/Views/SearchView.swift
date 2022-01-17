@@ -22,10 +22,8 @@ struct SearchView: View {
     
     @State var isErrorAlertPresented: Bool = false
     @State var errorAlertText: String?
-    
-    #if targetEnvironment(macCatalyst)
+
     @State var isThirdPanePresented: Bool = true
-    #endif
     
     func pageFeed () async {
         self.isBusy = true
@@ -72,6 +70,8 @@ struct SearchView: View {
             self.feedCollections = []
             self.feedUsers = []
             await self.pageFeed()
+            
+            self.isThirdPanePresented = false
         }
     }
 
@@ -111,8 +111,11 @@ struct SearchView: View {
         }
         .searchable(text: self.$searchString)
         .onSubmit(of: .search) {
-            Task {
-                await self.startFeed()
+            self.isThirdPanePresented = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                Task {
+                    await self.startFeed()
+                }
             }
         }
         .toolbar {
@@ -139,13 +142,7 @@ struct SearchView: View {
             }
         }
         .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
+        .listAndDetailViewFix(isThirdPanePresented: self.$isThirdPanePresented)
         .navigationTitle("Search")
-        #if targetEnvironment(macCatalyst)
-        .background {
-            NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
-                EmptyView()
-            }
-        }
-        #endif
     }
 }

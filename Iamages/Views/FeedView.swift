@@ -1,4 +1,5 @@
 import SwiftUI
+import Introspect
 import StoreKit
 
 enum PublicFeed: String, CaseIterable {
@@ -23,10 +24,8 @@ struct FeedView: View {
     @State var lastFeedItemDate: Date?
     @State var feedFiles: [IamagesFile] = []
     @State var feedCollections: [IamagesCollection] = []
-    
-    #if targetEnvironment(macCatalyst)
+
     @State var isThirdPanePresented: Bool = true
-    #endif
     
     func pageFeed () async {
         self.isBusy = true
@@ -75,6 +74,8 @@ struct FeedView: View {
         self.feedFiles = []
         self.feedCollections = []
         await self.pageFeed()
+
+        self.isThirdPanePresented = false
     }
 
     var body: some View {
@@ -112,11 +113,6 @@ struct FeedView: View {
                 self.feedOpenedCount += 1
             }
         }
-        #if !targetEnvironment(macCatalyst)
-        .refreshable {
-            await self.startFeed()
-        }
-        #endif
         .onDisappear {
             if self.feedOpenedCount > 20 {
                 self.feedOpenedCount = 0
@@ -146,11 +142,13 @@ struct FeedView: View {
                     }
                 }
             }
-            #if targetEnvironment(macCatalyst)
             ToolbarItem(placement: .primaryAction) {
                 Button(action: {
-                    Task {
-                        await self.startFeed()
+                    self.isThirdPanePresented = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        Task {
+                            await self.startFeed()
+                        }
                     }
                 }) {
                     Label("Refresh", systemImage: "arrow.clockwise")
@@ -158,7 +156,6 @@ struct FeedView: View {
                 .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
-            #endif
             ToolbarItem(placement: .status) {
                 if self.isBusy {
                     ProgressView()
@@ -166,13 +163,7 @@ struct FeedView: View {
             }
         }
         .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
+        .listAndDetailViewFix(isThirdPanePresented: self.$isThirdPanePresented)
         .navigationTitle("Feed")
-        #if targetEnvironment(macCatalyst)
-        .background {
-            NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
-                EmptyView()
-            }
-        }
-        #endif
     }
 }

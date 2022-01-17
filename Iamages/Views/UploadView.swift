@@ -24,10 +24,8 @@ struct UploadView: View {
     @State var uploadRequests: [UploadFileRequest] = []
     @State var uploadMode: UploadMode = .separate
     @State var newCollection: NewCollectionRequest = NewCollectionRequest(description: "No description yet.", isPrivate: false, isHidden: false)
-    
-    #if targetEnvironment(macCatalyst)
+
     @State var isThirdPanePresented: Bool = true
-    #endif
     
     var body: some View {
         List {
@@ -35,9 +33,7 @@ struct UploadView: View {
                 NavigableModifyUploadRequestView(uploadRequest: uploadRequest)
             }
             .onDelete { offset in
-                #if targetEnvironment(macCatalyst)
                 self.isThirdPanePresented = true
-                #endif
                 self.uploadRequests.remove(atOffsets: offset)
             }
             .onMove { indexSet, offset in
@@ -207,13 +203,7 @@ struct UploadView: View {
                 }
         }
         .customBindingAlert(title: "File pick failed", message: self.$pickErrorAlertText, isPresented: self.$isPickErrorAlertPresented)
+        .listAndDetailViewFix(isThirdPanePresented: self.$isThirdPanePresented)
         .navigationTitle("Upload")
-        #if targetEnvironment(macCatalyst)
-        .background {
-            NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
-                EmptyView()
-            }
-        }
-        #endif
     }
 }

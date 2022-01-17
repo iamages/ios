@@ -17,10 +17,10 @@
 		2E22D5FB278F0F6500D3582D /* JSONDecoder+customISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16927784C0100E64446 /* JSONDecoder+customISO8601.swift */; };
 		2E22D6032791991500D3582D /* FeedWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 2E22D6012791991500D3582D /* FeedWidget.intentdefinition */; };
 		2E3BF3F12791C45900A6E8AB /* FeedWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 2E22D6012791991500D3582D /* FeedWidget.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
-		2E3BF3F52792B82F00A6E8AB /* UISplitViewController+viewDidLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3BF3F42792B82F00A6E8AB /* UISplitViewController+viewDidLoad.swift */; };
 		2E3BF3F72792D5BE00A6E8AB /* FileManager+sizeOfFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */; };
 		2E84B16E27795E030006458A /* RemovedSuggestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16D27795E030006458A /* RemovedSuggestView.swift */; };
 		2E84B1702779B4870006458A /* TogglesHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16F2779B4870006458A /* TogglesHelpView.swift */; };
+		2E9A2393279423EC00ADBB95 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 2E9A2392279423EC00ADBB95 /* Introspect */; };
 		2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB252D5277B33B9009A17DC /* NewCollectionView.swift */; };
 		2EE3196D2781E321005B83B0 /* UploadingFilesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3196C2781E321005B83B0 /* UploadingFilesListView.swift */; };
 		2EE3196F2781E7B4005B83B0 /* UploadingNewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3196E2781E7B4005B83B0 /* UploadingNewCollectionView.swift */; };
@@ -100,7 +100,6 @@
 		2E22D5EF278F0DE500D3582D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2E22D5F3278F0DE500D3582D /* FeedWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FeedWidgetExtension.entitlements; sourceTree = "<group>"; };
 		2E22D6012791991500D3582D /* FeedWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = FeedWidget.intentdefinition; sourceTree = "<group>"; };
-		2E3BF3F42792B82F00A6E8AB /* UISplitViewController+viewDidLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UISplitViewController+viewDidLoad.swift"; sourceTree = "<group>"; };
 		2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+sizeOfFile.swift"; sourceTree = "<group>"; };
 		2E7344FC277A92480076E672 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2E84B16D27795E030006458A /* RemovedSuggestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedSuggestView.swift; sourceTree = "<group>"; };
@@ -168,6 +167,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2EF4F1B627784C5300E64446 /* Kingfisher in Frameworks */,
+				2E9A2393279423EC00ADBB95 /* Introspect in Frameworks */,
 				2EF4F1B927784C6400E64446 /* SPConfetti in Frameworks */,
 				2EF4F1BC27784D1200E64446 /* KeychainAccess in Frameworks */,
 			);
@@ -284,7 +284,6 @@
 				2EF4F16A27784C0100E64446 /* Bundle+utils.swift */,
 				2EF4F16B27784C0100E64446 /* String+urlEncode.swift */,
 				2EFB09822785768A00041F49 /* View+utils.swift */,
-				2E3BF3F42792B82F00A6E8AB /* UISplitViewController+viewDidLoad.swift */,
 				2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */,
 			);
 			path = Extensions;
@@ -410,6 +409,7 @@
 				2EF4F1B527784C5300E64446 /* Kingfisher */,
 				2EF4F1B827784C6400E64446 /* SPConfetti */,
 				2EF4F1BB27784D1200E64446 /* KeychainAccess */,
+				2E9A2392279423EC00ADBB95 /* Introspect */,
 			);
 			productName = Iamages;
 			productReference = 2EF4F15127784B8100E64446 /* Iamages.app */;
@@ -446,6 +446,7 @@
 				2EF4F1B427784C5300E64446 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				2EF4F1B727784C6400E64446 /* XCRemoteSwiftPackageReference "SPConfetti" */,
 				2EF4F1BA27784D1200E64446 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				2E9A2391279423EC00ADBB95 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 			);
 			productRefGroup = 2EF4F15227784B8100E64446 /* Products */;
 			projectDirPath = "";
@@ -532,7 +533,6 @@
 				2EF4F19B27784C0900E64446 /* PhotosPickerView.swift in Sources */,
 				2EF4F1B127784C0900E64446 /* RootNavigationView.swift in Sources */,
 				2EF4F16627784BE300E64446 /* DataObservable.swift in Sources */,
-				2E3BF3F52792B82F00A6E8AB /* UISplitViewController+viewDidLoad.swift in Sources */,
 				2EF4F19F27784C0900E64446 /* URLPickerView.swift in Sources */,
 				2EF4F1A227784C0900E64446 /* ModifyFileInfoView.swift in Sources */,
 				2EF4F1A727784C0900E64446 /* PublicUserView.swift in Sources */,
@@ -835,6 +835,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2E9A2391279423EC00ADBB95 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		2EF4F1B427784C5300E64446 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
@@ -862,6 +870,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2E9A2392279423EC00ADBB95 /* Introspect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E9A2391279423EC00ADBB95 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = Introspect;
+		};
 		2EF4F1B527784C5300E64446 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2EF4F1B427784C5300E64446 /* XCRemoteSwiftPackageReference "Kingfisher" */;

@@ -89,11 +89,6 @@ struct PublicUserView: View {
                 self.isFirstRefreshCompleted = true
             }
         }
-        #if !targetEnvironment(macCatalyst)
-        .refreshable {
-            await self.startFeed()
-        }
-        #endif
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Picker("Feed", selection: self.$selectedFeed) {
@@ -125,7 +120,6 @@ struct PublicUserView: View {
                     ProgressView()
                 }
             }
-            #if targetEnvironment(macCatalyst)
             ToolbarItem(placement: .primaryAction) {
                 Button(action: {
                     Task {
@@ -137,7 +131,6 @@ struct PublicUserView: View {
                 .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
-            #endif
         }
         .customSheet(isPresented: self.$isUserSearchSheetPresented) {
             UserSearchView(username: self.username, type: .publicFeed, isUserSearchSheetPresented: self.$isUserSearchSheetPresented)

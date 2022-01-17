@@ -110,13 +110,7 @@ struct CollectionFilesListView: View {
                         self.isFirstRefreshCompleted = true
                     }
                 }
-                #if !targetEnvironment(macCatalyst)
-                .refreshable {
-                    await self.startFeed()
-                }
-                #endif
                 .toolbar {
-                    #if targetEnvironment(macCatalyst)
                     ToolbarItem(placement: .primaryAction) {
                         Button(action: {
                             Task {
@@ -128,7 +122,6 @@ struct CollectionFilesListView: View {
                         .keyboardShortcut("r")
                         .disabled(self.isBusy)
                     }
-                    #endif
                     ToolbarItem(placement: .status) {
                         if self.isBusy {
                             ProgressView()

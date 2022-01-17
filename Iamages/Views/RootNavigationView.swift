@@ -1,4 +1,5 @@
 import SwiftUI
+import Introspect
 
 fileprivate enum URLViewable: String {
     case file
@@ -190,6 +191,11 @@ struct RootNavigationView: View {
             .navigationTitle("Iamages")
             RemovedSuggestView()
             RemovedSuggestView()
+        }
+        // Fix non-visible sidebar in Catalyst.
+        .introspectSplitViewController { controller in
+            controller.maximumPrimaryColumnWidth = 210
+            controller.preferredDisplayMode = .twoBesideSecondary
         }
         // Disabling window titlebar in Catalyst.
         .withHostingWindow { window in

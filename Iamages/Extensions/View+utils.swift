@@ -68,6 +68,32 @@ struct CustomSheetModifier<V>: ViewModifier where V: View {
     }
 }
 
+struct IntrospectingFeedListModifier: ViewModifier {
+    @Binding var isThirdPanePresented: Bool
+    
+    let permittedIdioms: [UIUserInterfaceIdiom] = [.mac, .pad]
+    
+    func body(content: Content) -> some View {
+        if self.isThirdPanePresented && self.permittedIdioms.contains(UIDevice.current.userInterfaceIdiom)  {
+            content
+                .introspectTableView { tableView in
+                    if let index = tableView.indexPathForSelectedRow {
+                        tableView.deselectRow(at: index, animated: false)
+                    }
+                }
+                .background {
+                    if UIDevice.current.userInterfaceIdiom == .pad && UIApplication.shared.connectedScenes.flatMap{($0 as? UIWindowScene)?.windows ?? []}.first{$0.isKeyWindow}?.frame == UIScreen.main.bounds {
+                        NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
+                            EmptyView()
+                        }
+                    }
+                }
+        } else {
+            content
+        }
+    }
+}
+
 extension View {
     func customBindingAlert(title: String, message: Binding<String?>, isPresented: Binding<Bool>) -> some View {
         modifier(CustomBindingAlertModifier(title: title, message: message, isPresented: isPresented))
@@ -77,5 +103,8 @@ extension View {
     }
     func customSheet<V>(isPresented: Binding<Bool>, view: @escaping () -> V) -> some View where V: View {
         modifier(CustomSheetModifier(isPresented: isPresented, view: view))
+    }
+    func listAndDetailViewFix(isThirdPanePresented: Binding<Bool>) -> some View {
+        modifier(IntrospectingFeedListModifier(isThirdPanePresented: isThirdPanePresented))
     }
 }
