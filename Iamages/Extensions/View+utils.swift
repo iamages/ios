@@ -82,7 +82,7 @@ struct IntrospectingFeedListModifier: ViewModifier {
                     }
                 }
                 .background {
-                    if UIDevice.current.userInterfaceIdiom == .pad && UIApplication.shared.connectedScenes.flatMap{($0 as? UIWindowScene)?.windows ?? []}.first{$0.isKeyWindow}?.frame == UIScreen.main.bounds {
+                    if UIDevice.current.userInterfaceIdiom == .mac || (UIDevice.current.userInterfaceIdiom == .pad && UIApplication.shared.connectedScenes.flatMap{($0 as? UIWindowScene)?.windows ?? []}.first{$0.isKeyWindow}?.frame == UIScreen.main.bounds) {
                         NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
                             EmptyView()
                         }

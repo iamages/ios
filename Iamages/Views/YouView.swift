@@ -166,7 +166,6 @@ struct YouView: View {
                 }) {
                     Label("Refresh", systemImage: "arrow.clockwise")
                 }
-                .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
             ToolbarItem(placement: .status) {
