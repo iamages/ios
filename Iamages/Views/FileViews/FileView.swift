@@ -1,4 +1,5 @@
 import SwiftUI
+import Introspect
 import UniformTypeIdentifiers
 import Kingfisher
 import Photos
@@ -162,7 +163,7 @@ struct FileView: View {
         if self.isDeleted {
             RemovedSuggestView()
         } else {
-            ZoomableScrollComponent {
+            ZoomableScrollView {
                 KFAnimatedImage(self.dataObservable.getFileImageURL(id: self.file.id))
                     .placeholder {
                         ProgressView()
@@ -323,7 +324,6 @@ struct FileView: View {
             .customBindingAlert(title: "Delete failed", message: self.$deleteFileErrorText, isPresented: self.$isDeleteFileErrorAlertPresented)
             .customBindingAlert(title: "Set profile picture failed", message: self.$setProfilePictureErrorText, isPresented: self.$isSetProfilePictureErrorAlertPresented)
             .customBindingAlert(title: "Add to collection failed", message: self.$addToCollectionErrorText, isPresented: self.$isAddToCollectionErrorAlertPresented)
-            .navigationTitle(self.file.description)
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(self.isBusy)
         }

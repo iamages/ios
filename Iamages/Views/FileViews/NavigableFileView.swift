@@ -30,8 +30,12 @@ struct NavigableFileView: View {
                     })
                     if self.file.isNSFW && self.isNSFWBlurred {
                         FileThumbnailView(id: self.file.id)
-                            .blur(radius: 6.0)
-                            .colorMultiply(.red)
+                            .blur(radius: 12.0, opaque: true)
+                            .overlay {
+                                Image(systemName: "18.circle")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.white)
+                            }
                     } else {
                         FileThumbnailView(id: self.file.id)
                     }

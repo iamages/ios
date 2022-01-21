@@ -80,6 +80,7 @@ struct IamagesApp: App {
                 }
                 .keyboardShortcut("4")
             }
+            CommandGroup(replacing: .textFormatting) {}
             #if targetEnvironment(macCatalyst)
             CommandGroup(replacing: .help) {
                 HelpLinksView()

@@ -109,13 +109,18 @@ struct FeedWidgetEntryView : View {
     @AppStorage("isNSFWBlurred", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWBlurred: Bool = true
     
     var entry: Provider.Entry
+    
+    var nsfwLabel: some View {
+        Image(systemName: "18.circle")
+            .font(.largeTitle)
+            .foregroundColor(.white)
+    }
 
     var body: some View {
         if let info = self.entry.info {
             Group {
                 if info.isNSFW && !self.isNSFWEnabled {
-                    Image(systemName: "18.circle")
-                        .imageScale(.large)
+                    self.nsfwLabel
                         .widgetURL(URL(string: "iamages://feed")!)
                 } else {
                     if let thumb = self.entry.thumb {
@@ -123,8 +128,10 @@ struct FeedWidgetEntryView : View {
                             Image(uiImage: UIImage(data: thumb)!)
                                 .resizable()
                                 .scaledToFill()
-                                .blur(radius: 6.0)
-                                .colorMultiply(.red)
+                                .blur(radius: 12.0)
+                                .overlay {
+                                    self.nsfwLabel
+                                }
                         } else {
                             Image(uiImage: UIImage(data: thumb)!)
                                 .resizable()
