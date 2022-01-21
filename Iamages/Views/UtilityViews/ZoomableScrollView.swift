@@ -1,27 +1,5 @@
 import SwiftUI
 
-class CustomScrollView: UIScrollView {
-    override public var keyCommands: [UIKeyCommand]? {
-        return [
-            UIKeyCommand(input: "+", modifierFlags: .command, action: #selector(zoomIn)),
-            UIKeyCommand(input: "-", modifierFlags: .command, action: #selector(zoomOut))
-        ]
-    }
-    
-    @objc func zoomIn(sender: UIKeyCommand) {
-        print(self.zoomScale)
-        if self.zoomScale < self.maximumZoomScale {
-            self.setZoomScale(self.zoomScale + 1, animated: true)
-        }
-    }
-    
-    @objc func zoomOut(sender: UIKeyCommand) {
-        if self.zoomScale > self.minimumZoomScale {
-            self.setZoomScale(self.zoomScale - 1, animated: true)
-        }
-    }
-}
-
 // Thanks to Stack Overflow!
 struct ZoomableScrollView<Content: View>: UIViewRepresentable {
     private var content: Content
@@ -32,7 +10,7 @@ struct ZoomableScrollView<Content: View>: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIScrollView {
         // set up the UIScrollView
-        let scrollView = CustomScrollView()
+        let scrollView = UIScrollView()
         scrollView.delegate = context.coordinator  // for viewForZooming(in:)
         scrollView.maximumZoomScale = 20
         scrollView.minimumZoomScale = 1

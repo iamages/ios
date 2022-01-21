@@ -1,5 +1,4 @@
 import SwiftUI
-import Introspect
 import UniformTypeIdentifiers
 import Kingfisher
 import Photos
