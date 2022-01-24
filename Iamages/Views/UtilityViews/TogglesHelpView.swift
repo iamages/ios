@@ -14,5 +14,6 @@ struct TogglesHelpView: View {
             }
         }
         .frame(width: 300, height: 250)
+        .padding(.top)
     }
 }

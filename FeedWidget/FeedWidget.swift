@@ -5,10 +5,6 @@ struct IamagesFileEntry: TimelineEntry {
     let date: Date
     var info: IamagesFile?
     var thumb: Data?
-    
-    init(date: Date) {
-        self.date = date
-    }
 }
 
 struct Provider: IntentTimelineProvider {
@@ -34,7 +30,7 @@ struct Provider: IntentTimelineProvider {
         let currentDate: Date = Date()
         var entry: IamagesFileEntry = IamagesFileEntry(date: currentDate)
         
-        var url: String = "\(apiRoot)/feed/files"
+        var url: String = "\(self.apiRoot)/feed/files"
         var httpMethod: String = "GET"
         switch configuration.feed {
         case .unknown, .latestFiles:
@@ -105,50 +101,10 @@ struct Provider: IntentTimelineProvider {
 }
 
 struct FeedWidgetEntryView : View {
-    @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
-    @AppStorage("isNSFWBlurred", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWBlurred: Bool = true
-    
     var entry: Provider.Entry
-    
-    var nsfwLabel: some View {
-        Image(systemName: "18.circle")
-            .font(.largeTitle)
-            .foregroundColor(.white)
-    }
 
     var body: some View {
-        if let info = self.entry.info {
-            Group {
-                if info.isNSFW && !self.isNSFWEnabled {
-                    self.nsfwLabel
-                        .widgetURL(URL(string: "iamages://feed")!)
-                } else {
-                    if let thumb = self.entry.thumb {
-                        if info.isNSFW && self.isNSFWBlurred {
-                            Image(uiImage: UIImage(data: thumb)!)
-                                .resizable()
-                                .scaledToFill()
-                                .blur(radius: 12.0)
-                                .overlay {
-                                    self.nsfwLabel
-                                }
-                        } else {
-                            Image(uiImage: UIImage(data: thumb)!)
-                                .resizable()
-                                .scaledToFill()
-                        }
-                    } else {
-                        Image(systemName: "questionmark.app.dashed")
-                            .imageScale(.large)
-                    }
-                }
-            }
-            .widgetURL(URL(string: "iamages://view?type=file&id=\(info.id)"))
-        } else {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .imageScale(.large)
-                .widgetURL(URL(string: "iamages://feed")!)
-        }
+        WidgetFileThumbnailView(file: entry.info, thumb: entry.thumb)
     }
 }
 
@@ -164,7 +120,7 @@ struct FeedWidget: Widget {
         ) { entry in
             FeedWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("Feed")
+        .configurationDisplayName("Public feed files")
         .description("Shows the latest files in the selected public feed.")
     }
 }

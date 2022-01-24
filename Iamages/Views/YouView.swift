@@ -83,7 +83,7 @@ struct YouView: View {
                 ForEach(self.$feedFiles) { file in
                     NavigableFileView(file: file, feed: self.$feedFiles, type: .privateFeed)
                         .task {
-                            if !self.isBusy && !self.isEndOfFeed && self.feedFiles.last == file.wrappedValue {
+                            if !self.isBusy && !self.isEndOfFeed && !self.feedFiles.isEmpty && self.feedFiles.last == file.wrappedValue {
                                 await self.pageFeed()
                             }
                         }
@@ -92,7 +92,7 @@ struct YouView: View {
                 ForEach(self.$feedCollections) { collection in
                     NavigableCollectionFilesListView(collection: collection, feedCollections: self.$feedCollections, type: .privateFeed)
                         .task {
-                            if !self.isBusy && !self.isEndOfFeed && self.feedCollections.last == collection.wrappedValue {
+                            if !self.isBusy && !self.isEndOfFeed && !self.feedFiles.isEmpty && self.feedCollections.last == collection.wrappedValue {
                                 await self.pageFeed()
                             }
                         }
@@ -113,7 +113,7 @@ struct YouView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 if isLoggedin {
                     Task {
-                        await startFeed()
+                        await self.startFeed()
                     }
                 } else {
                     self.feedFiles = []

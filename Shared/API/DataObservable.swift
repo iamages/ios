@@ -1,6 +1,6 @@
 import Foundation
 import SwiftUI
-import KeychainAccess
+import KeychainSwift
 import Kingfisher
 
 struct AppUser: Encodable {
@@ -8,7 +8,7 @@ struct AppUser: Encodable {
     var password: String
 }
 
-enum APICommunicationErrors: Error {
+fileprivate enum APICommunicationErrors: Error {
     case invalidURL(String)
     case badResponse(Int)
     case invalidUploadRequest
@@ -27,18 +27,22 @@ extension APICommunicationErrors: LocalizedError {
     }
 }
 
-enum HTTPMethod: String {
-    case get = "GET"
-    case post = "POST"
-    case patch = "PATCH"
-    case delete = "DELETE"
+fileprivate struct KeychainError: Error {
+    var localizedDescription: String
 }
 
 @MainActor
 class APIDataObservable: ObservableObject {
+    enum HTTPMethod: String {
+        case get = "GET"
+        case post = "POST"
+        case patch = "PATCH"
+        case delete = "DELETE"
+    }
+
     private let jsond: JSONDecoder = JSONDecoder()
     private let jsone: JSONEncoder = JSONEncoder()
-    private let keychain: Keychain = Keychain()
+    private let keychain: KeychainSwift = KeychainSwift(keyPrefix: "iamages_")
 
     let loadLimit: Int = 5
 
@@ -50,7 +54,13 @@ class APIDataObservable: ObservableObject {
     
     @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
 
-    @Published var currentAppUser: AppUser?
+    @Published var currentAppUser: AppUser? {
+        didSet {
+            if let user = currentAppUser {
+                self.currentAppUserAuthHeader = "Basic " + "\(user.username):\(user.password)".data(using: .utf8)!.base64EncodedString()
+            }
+        }
+    }
     @Published var currentAppUserInformation: IamagesUser?
     @Published var currentAppUserAuthHeader: String?
     @Published var isLoggedIn: Bool = false
@@ -58,11 +68,12 @@ class APIDataObservable: ObservableObject {
     @Published var isModalPresented: Bool = false
     
     init () {
+        self.keychain.accessGroup = "group.me.jkelol111.Iamages"
         self.jsond.dateDecodingStrategy = .customISO8601
         self.jsone.dateEncodingStrategy = .customISO8601
 
-        if let username = self.keychain["iamages_username"],
-           let password = self.keychain["iamages_password"] {
+        if let username = self.keychain.get("username"),
+           let password = self.keychain.get("password") {
             let user = AppUser(
                 username: username,
                 password: password
@@ -446,18 +457,27 @@ class APIDataObservable: ObservableObject {
         }
     }
     
+    private func checkKeychainError() throws {
+        if self.keychain.lastResultCode != noErr {
+            throw KeychainError(localizedDescription: (SecCopyErrorMessageString(self.keychain.lastResultCode, nil) as String?) ?? "Unknown keychain error.")
+        }
+    }
+    
     func logoutAppUser () throws {
-        try keychain.remove("iamages_username")
-        try keychain.remove("iamages_password")
+        self.keychain.delete("username")
+        try self.checkKeychainError()
+        self.keychain.delete("password")
+        try self.checkKeychainError()
         self.currentAppUser = nil
         self.currentAppUserInformation = nil
-        self.currentAppUserAuthHeader = nil
         self.isLoggedIn = false
     }
     
     func setKeychain (username: String, password: String) throws {
-        try self.keychain.set(username, key: "iamages_username")
-        try self.keychain.set(password, key: "iamages_password")
+        self.keychain.set(username, forKey: "username")
+        try self.checkKeychainError()
+        self.keychain.set(password, forKey: "password")
+        try self.checkKeychainError()
     }
     
     func checkAppUser(user: AppUser) async throws {
@@ -469,7 +489,6 @@ class APIDataObservable: ObservableObject {
             auth: authHeader
         )
         self.currentAppUser = user
-        self.currentAppUserAuthHeader = authHeader
         self.currentAppUserInformation = try await self.getUserInformation(username: currentAppUser!.username)
         self.isLoggedIn = true
     }
@@ -494,9 +513,7 @@ class APIDataObservable: ObservableObject {
             )
         )
         self.currentAppUser = user
-        self.currentAppUserAuthHeader = "Basic " + "\(user.username):\(user.password)".data(using: .utf8)!.base64EncodedString()
         self.currentAppUserInformation = userInformation
-
         self.isLoggedIn = true
 
         try self.setKeychain(username: username, password: password)

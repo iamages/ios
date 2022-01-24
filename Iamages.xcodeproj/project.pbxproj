@@ -20,10 +20,24 @@
 		2E3BF3F72792D5BE00A6E8AB /* FileManager+sizeOfFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */; };
 		2E84B16E27795E030006458A /* RemovedSuggestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16D27795E030006458A /* RemovedSuggestView.swift */; };
 		2E84B1702779B4870006458A /* TogglesHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E84B16F2779B4870006458A /* TogglesHelpView.swift */; };
+		2E8AC2FA279E3BB0001D6770 /* YouWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2EEE1D00279BA37C00ADFDB1 /* YouWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2E8AC2FF279E404F001D6770 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8AC2FE279E404F001D6770 /* KeychainSwift */; };
+		2E8AC301279E4075001D6770 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8AC300279E4075001D6770 /* KeychainSwift */; };
 		2E9A2393279423EC00ADBB95 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 2E9A2392279423EC00ADBB95 /* Introspect */; };
 		2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB252D5277B33B9009A17DC /* NewCollectionView.swift */; };
 		2EE3196D2781E321005B83B0 /* UploadingFilesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3196C2781E321005B83B0 /* UploadingFilesListView.swift */; };
 		2EE3196F2781E7B4005B83B0 /* UploadingNewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3196E2781E7B4005B83B0 /* UploadingNewCollectionView.swift */; };
+		2EEE1D01279BA37C00ADFDB1 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E22D5E6278F0DE300D3582D /* WidgetKit.framework */; };
+		2EEE1D02279BA37C00ADFDB1 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E22D5E8278F0DE300D3582D /* SwiftUI.framework */; };
+		2EEE1D05279BA37C00ADFDB1 /* YouWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EEE1D04279BA37C00ADFDB1 /* YouWidget.swift */; };
+		2EEE1D07279BA37E00ADFDB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EEE1D06279BA37E00ADFDB1 /* Assets.xcassets */; };
+		2EEE1D10279BA45700ADFDB1 /* JSONDecoder+customISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16927784C0100E64446 /* JSONDecoder+customISO8601.swift */; };
+		2EEE1D11279BA45700ADFDB1 /* Formatter+dates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16C27784C0100E64446 /* Formatter+dates.swift */; };
+		2EEE1D12279BA93D00ADFDB1 /* Modals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16327784BE300E64446 /* Modals.swift */; };
+		2EEE1D1B279D7E4D00ADFDB1 /* WelcomeSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 2EEE1D1A279D7E4D00ADFDB1 /* WelcomeSheet */; };
+		2EEE1D1F279D869F00ADFDB1 /* WidgetFileThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EEE1D1D279D869400ADFDB1 /* WidgetFileThumbnailView.swift */; };
+		2EEE1D20279D869F00ADFDB1 /* WidgetFileThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EEE1D1D279D869400ADFDB1 /* WidgetFileThumbnailView.swift */; };
+		2EEE1D25279D88C200ADFDB1 /* String+urlEncode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16B27784C0100E64446 /* String+urlEncode.swift */; };
 		2EF4F15927784B8300E64446 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EF4F15827784B8300E64446 /* Assets.xcassets */; };
 		2EF4F15C27784B8300E64446 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EF4F15B27784B8300E64446 /* Preview Assets.xcassets */; };
 		2EF4F16527784BE300E64446 /* Modals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16327784BE300E64446 /* Modals.swift */; };
@@ -63,7 +77,6 @@
 		2EF4F1B327784C1500E64446 /* IamagesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F1B227784C1400E64446 /* IamagesApp.swift */; };
 		2EF4F1B627784C5300E64446 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2EF4F1B527784C5300E64446 /* Kingfisher */; };
 		2EF4F1B927784C6400E64446 /* SPConfetti in Frameworks */ = {isa = PBXBuildFile; productRef = 2EF4F1B827784C6400E64446 /* SPConfetti */; };
-		2EF4F1BC27784D1200E64446 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 2EF4F1BB27784D1200E64446 /* KeychainAccess */; };
 		2EFB09832785768A00041F49 /* View+utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EFB09822785768A00041F49 /* View+utils.swift */; };
 /* End PBXBuildFile section */
 
@@ -75,6 +88,13 @@
 			remoteGlobalIDString = 2E22D5E3278F0DE300D3582D;
 			remoteInfo = FeedWidgetExtension;
 		};
+		2E8AC2FB279E3BB0001D6770 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2EF4F14927784B8100E64446 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2EEE1CFF279BA37C00ADFDB1;
+			remoteInfo = YouWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -84,6 +104,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				2E8AC2FA279E3BB0001D6770 /* YouWidgetExtension.appex in Embed App Extensions */,
 				2E22D5F2278F0DE500D3582D /* FeedWidgetExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -109,6 +130,12 @@
 		2EBBE6D52786BFA600BB93CB /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2EE3196C2781E321005B83B0 /* UploadingFilesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadingFilesListView.swift; sourceTree = "<group>"; };
 		2EE3196E2781E7B4005B83B0 /* UploadingNewCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadingNewCollectionView.swift; sourceTree = "<group>"; };
+		2EEE1D00279BA37C00ADFDB1 /* YouWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = YouWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		2EEE1D04279BA37C00ADFDB1 /* YouWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouWidget.swift; sourceTree = "<group>"; };
+		2EEE1D06279BA37E00ADFDB1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2EEE1D08279BA37E00ADFDB1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2EEE1D0C279BA37E00ADFDB1 /* YouWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YouWidgetExtension.entitlements; sourceTree = "<group>"; };
+		2EEE1D1D279D869400ADFDB1 /* WidgetFileThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetFileThumbnailView.swift; sourceTree = "<group>"; };
 		2EF4F15127784B8100E64446 /* Iamages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Iamages.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EF4F15827784B8300E64446 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2EF4F15B27784B8300E64446 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -162,14 +189,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2EEE1CFD279BA37C00ADFDB1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E8AC301279E4075001D6770 /* KeychainSwift in Frameworks */,
+				2EEE1D02279BA37C00ADFDB1 /* SwiftUI.framework in Frameworks */,
+				2EEE1D01279BA37C00ADFDB1 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2EF4F14E27784B8100E64446 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E8AC2FF279E404F001D6770 /* KeychainSwift in Frameworks */,
 				2EF4F1B627784C5300E64446 /* Kingfisher in Frameworks */,
+				2EEE1D1B279D7E4D00ADFDB1 /* WelcomeSheet in Frameworks */,
 				2E9A2393279423EC00ADBB95 /* Introspect in Frameworks */,
 				2EF4F1B927784C6400E64446 /* SPConfetti in Frameworks */,
-				2EF4F1BC27784D1200E64446 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +240,7 @@
 			children = (
 				2E3BF3F32792B4D300A6E8AB /* Extensions */,
 				2EF4F16227784BE300E64446 /* API */,
+				2EEE1D1C279D867900ADFDB1 /* Views */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -209,6 +248,7 @@
 		2E3BF3F32792B4D300A6E8AB /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				2EF4F16B27784C0100E64446 /* String+urlEncode.swift */,
 				2EF4F16927784C0100E64446 /* JSONDecoder+customISO8601.swift */,
 				2EF4F16C27784C0100E64446 /* Formatter+dates.swift */,
 			);
@@ -224,12 +264,32 @@
 			path = UploadingViews;
 			sourceTree = "<group>";
 		};
+		2EEE1D03279BA37C00ADFDB1 /* YouWidget */ = {
+			isa = PBXGroup;
+			children = (
+				2EEE1D04279BA37C00ADFDB1 /* YouWidget.swift */,
+				2EEE1D06279BA37E00ADFDB1 /* Assets.xcassets */,
+				2EEE1D08279BA37E00ADFDB1 /* Info.plist */,
+				2EEE1D0C279BA37E00ADFDB1 /* YouWidgetExtension.entitlements */,
+			);
+			path = YouWidget;
+			sourceTree = "<group>";
+		};
+		2EEE1D1C279D867900ADFDB1 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2EEE1D1D279D869400ADFDB1 /* WidgetFileThumbnailView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		2EF4F14827784B8100E64446 = {
 			isa = PBXGroup;
 			children = (
 				2E3BF3F22792B4C700A6E8AB /* Shared */,
 				2EF4F15327784B8100E64446 /* Iamages */,
 				2E22D5EA278F0DE400D3582D /* FeedWidget */,
+				2EEE1D03279BA37C00ADFDB1 /* YouWidget */,
 				2EBBE6D52786BFA600BB93CB /* README.md */,
 				2EBBE6D42786BFA600BB93CB /* LICENSE.txt */,
 				2E22D5E5278F0DE300D3582D /* Frameworks */,
@@ -242,6 +302,7 @@
 			children = (
 				2EF4F15127784B8100E64446 /* Iamages.app */,
 				2E22D5E4278F0DE300D3582D /* FeedWidgetExtension.appex */,
+				2EEE1D00279BA37C00ADFDB1 /* YouWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -282,7 +343,6 @@
 			isa = PBXGroup;
 			children = (
 				2EF4F16A27784C0100E64446 /* Bundle+utils.swift */,
-				2EF4F16B27784C0100E64446 /* String+urlEncode.swift */,
 				2EFB09822785768A00041F49 /* View+utils.swift */,
 				2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */,
 			);
@@ -390,6 +450,26 @@
 			productReference = 2E22D5E4278F0DE300D3582D /* FeedWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		2EEE1CFF279BA37C00ADFDB1 /* YouWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2EEE1D0F279BA37E00ADFDB1 /* Build configuration list for PBXNativeTarget "YouWidgetExtension" */;
+			buildPhases = (
+				2EEE1CFC279BA37C00ADFDB1 /* Sources */,
+				2EEE1CFD279BA37C00ADFDB1 /* Frameworks */,
+				2EEE1CFE279BA37C00ADFDB1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = YouWidgetExtension;
+			packageProductDependencies = (
+				2E8AC300279E4075001D6770 /* KeychainSwift */,
+			);
+			productName = YouWidgetExtension;
+			productReference = 2EEE1D00279BA37C00ADFDB1 /* YouWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		2EF4F15027784B8100E64446 /* Iamages */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2EF4F15F27784B8300E64446 /* Build configuration list for PBXNativeTarget "Iamages" */;
@@ -403,13 +483,15 @@
 			);
 			dependencies = (
 				2E22D5F1278F0DE500D3582D /* PBXTargetDependency */,
+				2E8AC2FC279E3BB0001D6770 /* PBXTargetDependency */,
 			);
 			name = Iamages;
 			packageProductDependencies = (
 				2EF4F1B527784C5300E64446 /* Kingfisher */,
 				2EF4F1B827784C6400E64446 /* SPConfetti */,
-				2EF4F1BB27784D1200E64446 /* KeychainAccess */,
 				2E9A2392279423EC00ADBB95 /* Introspect */,
+				2EEE1D1A279D7E4D00ADFDB1 /* WelcomeSheet */,
+				2E8AC2FE279E404F001D6770 /* KeychainSwift */,
 			);
 			productName = Iamages;
 			productReference = 2EF4F15127784B8100E64446 /* Iamages.app */;
@@ -426,6 +508,9 @@
 				LastUpgradeCheck = 1320;
 				TargetAttributes = {
 					2E22D5E3278F0DE300D3582D = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+					2EEE1CFF279BA37C00ADFDB1 = {
 						CreatedOnToolsVersion = 13.2.1;
 					};
 					2EF4F15027784B8100E64446 = {
@@ -445,8 +530,9 @@
 			packageReferences = (
 				2EF4F1B427784C5300E64446 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				2EF4F1B727784C6400E64446 /* XCRemoteSwiftPackageReference "SPConfetti" */,
-				2EF4F1BA27784D1200E64446 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				2E9A2391279423EC00ADBB95 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
+				2EEE1D19279D7E4D00ADFDB1 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */,
+				2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
 			productRefGroup = 2EF4F15227784B8100E64446 /* Products */;
 			projectDirPath = "";
@@ -454,6 +540,7 @@
 			targets = (
 				2EF4F15027784B8100E64446 /* Iamages */,
 				2E22D5E3278F0DE300D3582D /* FeedWidgetExtension */,
+				2EEE1CFF279BA37C00ADFDB1 /* YouWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -464,6 +551,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E22D5EE278F0DE500D3582D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2EEE1CFE279BA37C00ADFDB1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2EEE1D07279BA37E00ADFDB1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -488,6 +583,20 @@
 				2E22D5EC278F0DE400D3582D /* FeedWidget.swift in Sources */,
 				2E22D5FB278F0F6500D3582D /* JSONDecoder+customISO8601.swift in Sources */,
 				2E22D5F8278F0F4700D3582D /* Modals.swift in Sources */,
+				2EEE1D1F279D869F00ADFDB1 /* WidgetFileThumbnailView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2EEE1CFC279BA37C00ADFDB1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2EEE1D11279BA45700ADFDB1 /* Formatter+dates.swift in Sources */,
+				2EEE1D10279BA45700ADFDB1 /* JSONDecoder+customISO8601.swift in Sources */,
+				2EEE1D25279D88C200ADFDB1 /* String+urlEncode.swift in Sources */,
+				2EEE1D20279D869F00ADFDB1 /* WidgetFileThumbnailView.swift in Sources */,
+				2EEE1D05279BA37C00ADFDB1 /* YouWidget.swift in Sources */,
+				2EEE1D12279BA93D00ADFDB1 /* Modals.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,6 +658,11 @@
 			target = 2E22D5E3278F0DE300D3582D /* FeedWidgetExtension */;
 			targetProxy = 2E22D5F0278F0DE500D3582D /* PBXContainerItemProxy */;
 		};
+		2E8AC2FC279E3BB0001D6770 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2EEE1CFF279BA37C00ADFDB1 /* YouWidgetExtension */;
+			targetProxy = 2E8AC2FB279E3BB0001D6770 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -601,6 +715,64 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.FeedWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		2EEE1D0D279BA37E00ADFDB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = YouWidget/YouWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2VZNUT7D2E;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = YouWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = YouWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.YouWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2EEE1D0E279BA37E00ADFDB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = YouWidget/YouWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2VZNUT7D2E;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = YouWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = YouWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.YouWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -814,6 +986,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		2EEE1D0F279BA37E00ADFDB1 /* Build configuration list for PBXNativeTarget "YouWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2EEE1D0D279BA37E00ADFDB1 /* Debug */,
+				2EEE1D0E279BA37E00ADFDB1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2EF4F14C27784B8100E64446 /* Build configuration list for PBXProject "Iamages" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -835,12 +1016,28 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 20.0.0;
+			};
+		};
 		2E9A2391279423EC00ADBB95 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
 			requirement = {
 				branch = master;
 				kind = branch;
+			};
+		};
+		2EEE1D19279D7E4D00ADFDB1 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MAJKFL/Welcome-Sheet.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		2EF4F1B427784C5300E64446 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
@@ -859,21 +1056,28 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		2EF4F1BA27784D1200E64446 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2E8AC2FE279E404F001D6770 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		2E8AC300279E4075001D6770 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
 		2E9A2392279423EC00ADBB95 /* Introspect */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2E9A2391279423EC00ADBB95 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
 			productName = Introspect;
+		};
+		2EEE1D1A279D7E4D00ADFDB1 /* WelcomeSheet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2EEE1D19279D7E4D00ADFDB1 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */;
+			productName = WelcomeSheet;
 		};
 		2EF4F1B527784C5300E64446 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -884,11 +1088,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2EF4F1B727784C6400E64446 /* XCRemoteSwiftPackageReference "SPConfetti" */;
 			productName = SPConfetti;
-		};
-		2EF4F1BB27784D1200E64446 /* KeychainAccess */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2EF4F1BA27784D1200E64446 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
-			productName = KeychainAccess;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,5 +1,4 @@
 import SwiftUI
-import Introspect
 import StoreKit
 
 enum PublicFeed: String, CaseIterable {
@@ -12,6 +11,7 @@ enum PublicFeed: String, CaseIterable {
 struct FeedView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     @AppStorage("feedOpenedCount") var feedOpenedCount: Int = 0
+    @AppStorage("isWelcomeSheetPresentable") var isWelcomeSheetPresentable: Bool = true
 
     @State var errorAlertText: String?
     @State var isErrorAlertPresented: Bool = false
@@ -163,6 +163,7 @@ struct FeedView: View {
         }
         .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
         .listAndDetailViewFix(isThirdPanePresented: self.$isThirdPanePresented)
+        .appWelcomeSheet(isPresented: self.$isWelcomeSheetPresentable)
         .navigationTitle("Feed")
     }
 }
