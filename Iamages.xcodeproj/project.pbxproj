@@ -23,6 +23,11 @@
 		2E8AC2FA279E3BB0001D6770 /* YouWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2EEE1D00279BA37C00ADFDB1 /* YouWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2E8AC2FF279E404F001D6770 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8AC2FE279E404F001D6770 /* KeychainSwift */; };
 		2E8AC301279E4075001D6770 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8AC300279E4075001D6770 /* KeychainSwift */; };
+		2E8E94F227A027070053AA75 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8E94F127A027070053AA75 /* ShareViewController.swift */; };
+		2E8E94F527A027070053AA75 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E8E94F327A027070053AA75 /* MainInterface.storyboard */; };
+		2E8E94F927A027070053AA75 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2E8E94EF27A027070053AA75 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2E8E950127A034DB0053AA75 /* Modals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16327784BE300E64446 /* Modals.swift */; };
+		2E8E950527A037060053AA75 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8E950427A037060053AA75 /* KeychainSwift */; };
 		2E9A2393279423EC00ADBB95 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 2E9A2392279423EC00ADBB95 /* Introspect */; };
 		2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB252D5277B33B9009A17DC /* NewCollectionView.swift */; };
 		2EE3196D2781E321005B83B0 /* UploadingFilesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3196C2781E321005B83B0 /* UploadingFilesListView.swift */; };
@@ -95,6 +100,13 @@
 			remoteGlobalIDString = 2EEE1CFF279BA37C00ADFDB1;
 			remoteInfo = YouWidgetExtension;
 		};
+		2E8E94F727A027070053AA75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2EF4F14927784B8100E64446 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2E8E94EE27A027070053AA75;
+			remoteInfo = ShareExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -104,6 +116,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				2E8E94F927A027070053AA75 /* ShareExtension.appex in Embed App Extensions */,
 				2E8AC2FA279E3BB0001D6770 /* YouWidgetExtension.appex in Embed App Extensions */,
 				2E22D5F2278F0DE500D3582D /* FeedWidgetExtension.appex in Embed App Extensions */,
 			);
@@ -125,6 +138,11 @@
 		2E7344FC277A92480076E672 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2E84B16D27795E030006458A /* RemovedSuggestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedSuggestView.swift; sourceTree = "<group>"; };
 		2E84B16F2779B4870006458A /* TogglesHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglesHelpView.swift; sourceTree = "<group>"; };
+		2E8E94EF27A027070053AA75 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E8E94F127A027070053AA75 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		2E8E94F427A027070053AA75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		2E8E94F627A027070053AA75 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2E8E94FA27A027070053AA75 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
 		2EB252D5277B33B9009A17DC /* NewCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCollectionView.swift; sourceTree = "<group>"; };
 		2EBBE6D42786BFA600BB93CB /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		2EBBE6D52786BFA600BB93CB /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -186,6 +204,14 @@
 			files = (
 				2E22D5E9278F0DE300D3582D /* SwiftUI.framework in Frameworks */,
 				2E22D5E7278F0DE300D3582D /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2E8E94EC27A027070053AA75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E8E950527A037060053AA75 /* KeychainSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,6 +281,17 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		2E8E94F027A027070053AA75 /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				2E8E94F127A027070053AA75 /* ShareViewController.swift */,
+				2E8E94F327A027070053AA75 /* MainInterface.storyboard */,
+				2E8E94F627A027070053AA75 /* Info.plist */,
+				2E8E94FA27A027070053AA75 /* ShareExtension.entitlements */,
+			);
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
 		2EE3196B2781E25E005B83B0 /* UploadingViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -290,6 +327,7 @@
 				2EF4F15327784B8100E64446 /* Iamages */,
 				2E22D5EA278F0DE400D3582D /* FeedWidget */,
 				2EEE1D03279BA37C00ADFDB1 /* YouWidget */,
+				2E8E94F027A027070053AA75 /* ShareExtension */,
 				2EBBE6D52786BFA600BB93CB /* README.md */,
 				2EBBE6D42786BFA600BB93CB /* LICENSE.txt */,
 				2E22D5E5278F0DE300D3582D /* Frameworks */,
@@ -303,6 +341,7 @@
 				2EF4F15127784B8100E64446 /* Iamages.app */,
 				2E22D5E4278F0DE300D3582D /* FeedWidgetExtension.appex */,
 				2EEE1D00279BA37C00ADFDB1 /* YouWidgetExtension.appex */,
+				2E8E94EF27A027070053AA75 /* ShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -450,6 +489,26 @@
 			productReference = 2E22D5E4278F0DE300D3582D /* FeedWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		2E8E94EE27A027070053AA75 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2E8E94FD27A027070053AA75 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				2E8E94EB27A027070053AA75 /* Sources */,
+				2E8E94EC27A027070053AA75 /* Frameworks */,
+				2E8E94ED27A027070053AA75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShareExtension;
+			packageProductDependencies = (
+				2E8E950427A037060053AA75 /* KeychainSwift */,
+			);
+			productName = ShareExtension;
+			productReference = 2E8E94EF27A027070053AA75 /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		2EEE1CFF279BA37C00ADFDB1 /* YouWidgetExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2EEE1D0F279BA37E00ADFDB1 /* Build configuration list for PBXNativeTarget "YouWidgetExtension" */;
@@ -484,6 +543,7 @@
 			dependencies = (
 				2E22D5F1278F0DE500D3582D /* PBXTargetDependency */,
 				2E8AC2FC279E3BB0001D6770 /* PBXTargetDependency */,
+				2E8E94F827A027070053AA75 /* PBXTargetDependency */,
 			);
 			name = Iamages;
 			packageProductDependencies = (
@@ -508,6 +568,9 @@
 				LastUpgradeCheck = 1320;
 				TargetAttributes = {
 					2E22D5E3278F0DE300D3582D = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+					2E8E94EE27A027070053AA75 = {
 						CreatedOnToolsVersion = 13.2.1;
 					};
 					2EEE1CFF279BA37C00ADFDB1 = {
@@ -541,6 +604,7 @@
 				2EF4F15027784B8100E64446 /* Iamages */,
 				2E22D5E3278F0DE300D3582D /* FeedWidgetExtension */,
 				2EEE1CFF279BA37C00ADFDB1 /* YouWidgetExtension */,
+				2E8E94EE27A027070053AA75 /* ShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -551,6 +615,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E22D5EE278F0DE500D3582D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2E8E94ED27A027070053AA75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E8E94F527A027070053AA75 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -584,6 +656,15 @@
 				2E22D5FB278F0F6500D3582D /* JSONDecoder+customISO8601.swift in Sources */,
 				2E22D5F8278F0F4700D3582D /* Modals.swift in Sources */,
 				2EEE1D1F279D869F00ADFDB1 /* WidgetFileThumbnailView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2E8E94EB27A027070053AA75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E8E94F227A027070053AA75 /* ShareViewController.swift in Sources */,
+				2E8E950127A034DB0053AA75 /* Modals.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -663,7 +744,23 @@
 			target = 2EEE1CFF279BA37C00ADFDB1 /* YouWidgetExtension */;
 			targetProxy = 2E8AC2FB279E3BB0001D6770 /* PBXContainerItemProxy */;
 		};
+		2E8E94F827A027070053AA75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2E8E94EE27A027070053AA75 /* ShareExtension */;
+			targetProxy = 2E8E94F727A027070053AA75 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		2E8E94F327A027070053AA75 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2E8E94F427A027070053AA75 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		2E22D5F5278F0DE500D3582D /* Debug */ = {
@@ -715,6 +812,60 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.FeedWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		2E8E94FB27A027070053AA75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2VZNUT7D2E;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Upload to Iamages";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.ShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2E8E94FC27A027070053AA75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2VZNUT7D2E;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Upload to Iamages";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -986,6 +1137,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		2E8E94FD27A027070053AA75 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2E8E94FB27A027070053AA75 /* Debug */,
+				2E8E94FC27A027070053AA75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2EEE1D0F279BA37E00ADFDB1 /* Build configuration list for PBXNativeTarget "YouWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1065,6 +1225,11 @@
 			productName = KeychainSwift;
 		};
 		2E8AC300279E4075001D6770 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		2E8E950427A037060053AA75 /* KeychainSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */;
 			productName = KeychainSwift;
