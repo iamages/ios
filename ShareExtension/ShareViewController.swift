@@ -11,7 +11,7 @@ extension ShareErrors: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .fileTooBig(let size):
-            return NSLocalizedString("Photo file size is larger than 50Mb (\(size))", comment: "")
+            return NSLocalizedString("Photo file size is larger than 50Mb (\(size)).", comment: "")
         }
     }
 }
@@ -20,8 +20,11 @@ class ShareViewController: SLComposeServiceViewController {
     private var uploadRequest: UploadFileRequest = UploadFileRequest(info: UploadJSONRequest(description: "", isNSFW: false, isPrivate: false, isHidden: false, url: nil), file: nil)
     
     override func viewDidLoad() {
+        self.placeholder = "Description"
+        
         let navigationBar = self.navigationController?.navigationBar
-        navigationBar?.tintColor = .systemOrange
+        navigationBar?.tintColor = .white
+        navigationBar?.backgroundColor = .systemOrange
         for item in (navigationBar?.items)! {
             if let rightItem = item.rightBarButtonItem {
                 rightItem.title = "Upload"

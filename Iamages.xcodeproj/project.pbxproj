@@ -25,7 +25,7 @@
 		2E8AC301279E4075001D6770 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8AC300279E4075001D6770 /* KeychainSwift */; };
 		2E8E94F227A027070053AA75 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8E94F127A027070053AA75 /* ShareViewController.swift */; };
 		2E8E94F527A027070053AA75 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E8E94F327A027070053AA75 /* MainInterface.storyboard */; };
-		2E8E94F927A027070053AA75 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2E8E94EF27A027070053AA75 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2E8E94F927A027070053AA75 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2E8E94EF27A027070053AA75 /* ShareExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2E8E950127A034DB0053AA75 /* Modals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16327784BE300E64446 /* Modals.swift */; };
 		2E8E950527A037060053AA75 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8E950427A037060053AA75 /* KeychainSwift */; };
 		2E9A2393279423EC00ADBB95 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 2E9A2392279423EC00ADBB95 /* Introspect */; };
@@ -746,6 +746,7 @@
 		};
 		2E8E94F827A027070053AA75 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 2E8E94EE27A027070053AA75 /* ShareExtension */;
 			targetProxy = 2E8E94F727A027070053AA75 /* PBXContainerItemProxy */;
 		};
@@ -841,7 +842,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -868,7 +869,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
