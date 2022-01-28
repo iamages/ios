@@ -61,6 +61,8 @@ struct SearchView: View {
     }
     
     func startFeed () async {
+        self.isThirdPanePresented = true
+
         if !self.searchString.isEmpty {
             self.isBusy = true
 
@@ -70,8 +72,6 @@ struct SearchView: View {
             self.feedCollections = []
             self.feedUsers = []
             await self.pageFeed()
-            
-            self.isThirdPanePresented = false
         }
     }
 
@@ -111,11 +111,8 @@ struct SearchView: View {
         }
         .searchable(text: self.$searchString)
         .onSubmit(of: .search) {
-            self.isThirdPanePresented = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                Task {
-                    await self.startFeed()
-                }
+            Task {
+                await self.startFeed()
             }
         }
         .toolbar {

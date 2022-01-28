@@ -28,7 +28,6 @@
 		2E8E94F927A027070053AA75 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2E8E94EF27A027070053AA75 /* ShareExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2E8E950127A034DB0053AA75 /* Modals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16327784BE300E64446 /* Modals.swift */; };
 		2E8E950527A037060053AA75 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8E950427A037060053AA75 /* KeychainSwift */; };
-		2E9A2393279423EC00ADBB95 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 2E9A2392279423EC00ADBB95 /* Introspect */; };
 		2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB252D5277B33B9009A17DC /* NewCollectionView.swift */; };
 		2EE3196D2781E321005B83B0 /* UploadingFilesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3196C2781E321005B83B0 /* UploadingFilesListView.swift */; };
 		2EE3196F2781E7B4005B83B0 /* UploadingNewCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3196E2781E7B4005B83B0 /* UploadingNewCollectionView.swift */; };
@@ -232,7 +231,6 @@
 				2E8AC2FF279E404F001D6770 /* KeychainSwift in Frameworks */,
 				2EF4F1B627784C5300E64446 /* Kingfisher in Frameworks */,
 				2EEE1D1B279D7E4D00ADFDB1 /* WelcomeSheet in Frameworks */,
-				2E9A2393279423EC00ADBB95 /* Introspect in Frameworks */,
 				2EF4F1B927784C6400E64446 /* SPConfetti in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -549,7 +547,6 @@
 			packageProductDependencies = (
 				2EF4F1B527784C5300E64446 /* Kingfisher */,
 				2EF4F1B827784C6400E64446 /* SPConfetti */,
-				2E9A2392279423EC00ADBB95 /* Introspect */,
 				2EEE1D1A279D7E4D00ADFDB1 /* WelcomeSheet */,
 				2E8AC2FE279E404F001D6770 /* KeychainSwift */,
 			);
@@ -593,7 +590,6 @@
 			packageReferences = (
 				2EF4F1B427784C5300E64446 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				2EF4F1B727784C6400E64446 /* XCRemoteSwiftPackageReference "SPConfetti" */,
-				2E9A2391279423EC00ADBB95 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 				2EEE1D19279D7E4D00ADFDB1 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */,
 				2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
@@ -1084,7 +1080,7 @@
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1122,7 +1118,7 @@
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1185,14 +1181,6 @@
 				minimumVersion = 20.0.0;
 			};
 		};
-		2E9A2391279423EC00ADBB95 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		2EEE1D19279D7E4D00ADFDB1 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MAJKFL/Welcome-Sheet.git";
@@ -1234,11 +1222,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */;
 			productName = KeychainSwift;
-		};
-		2E9A2392279423EC00ADBB95 /* Introspect */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2E9A2391279423EC00ADBB95 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
-			productName = Introspect;
 		};
 		2EEE1D1A279D7E4D00ADFDB1 /* WelcomeSheet */ = {
 			isa = XCSwiftPackageProductDependency;

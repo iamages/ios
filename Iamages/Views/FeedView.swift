@@ -67,6 +67,8 @@ struct FeedView: View {
     }
     
     func startFeed () async {
+        self.isThirdPanePresented = true
+
         self.isBusy = true
 
         self.isEndOfFeed = false
@@ -144,15 +146,13 @@ struct FeedView: View {
             }
             ToolbarItem(placement: .primaryAction) {
                 Button(action: {
-                    self.isThirdPanePresented = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        Task {
-                            await self.startFeed()
-                        }
+                    Task {
+                        await self.startFeed()
                     }
                 }) {
                     Label("Refresh", systemImage: "arrow.clockwise")
                 }
+                .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
             ToolbarItem(placement: .status) {

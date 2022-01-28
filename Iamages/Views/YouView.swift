@@ -59,6 +59,8 @@ struct YouView: View {
     }
     
     func startFeed () async {
+        self.isThirdPanePresented = true
+
         if self.dataObservable.isLoggedIn {
             self.isBusy = true
 
@@ -109,16 +111,14 @@ struct YouView: View {
             }
         }
         .onChange(of: self.dataObservable.isLoggedIn) { isLoggedin in
-            self.isThirdPanePresented = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                if isLoggedin {
-                    Task {
-                        await self.startFeed()
-                    }
-                } else {
-                    self.feedFiles = []
-                    self.feedCollections = []
+            if isLoggedin {
+                Task {
+                    await self.startFeed()
                 }
+            } else {
+                self.isThirdPanePresented = true
+                self.feedFiles = []
+                self.feedCollections = []
             }
         }
         .toolbar {
@@ -157,15 +157,13 @@ struct YouView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    self.isThirdPanePresented = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        Task {
-                            await self.startFeed()
-                        }
+                    Task {
+                        await self.startFeed()
                     }
                 }) {
                     Label("Refresh", systemImage: "arrow.clockwise")
                 }
+                .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
             ToolbarItem(placement: .status) {

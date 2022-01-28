@@ -1,5 +1,4 @@
 import SwiftUI
-import Introspect
 
 fileprivate enum URLViewable: String {
     case file
@@ -97,11 +96,7 @@ fileprivate struct URLViewerView: View {
 fileprivate struct CommonViewModifiers: ViewModifier {
     @EnvironmentObject var dataObservable: APIDataObservable
 
-    #if targetEnvironment(macCatalyst)
-    @Binding var selectedTabItem: AppNavigationView?
-    #else
     @Binding var selectedTabItem: AppNavigationView
-    #endif
     @State var type: URLViewable = .file
     @State var id: String = ""
     @State var isOpenURLInvalidAlertPresented: Bool = false
@@ -156,55 +151,9 @@ fileprivate struct CommonViewModifiers: ViewModifier {
 struct RootNavigationView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
 
-    #if targetEnvironment(macCatalyst)
-    @Binding var selectedTabItem: AppNavigationView?
-    #else
     @Binding var selectedTabItem: AppNavigationView
-    #endif
 
     var body: some View {
-        #if targetEnvironment(macCatalyst)
-        NavigationView {
-            List {
-                NavigationLink(tag: AppNavigationView.feed, selection: self.$selectedTabItem, destination: {
-                    FeedView()
-                }) {
-                    Label("Feed", systemImage: "newspaper")
-                }
-                NavigationLink(tag: AppNavigationView.search, selection: self.$selectedTabItem, destination: {
-                    SearchView()
-                }) {
-                    Label("Search", systemImage: "magnifyingglass")
-                }
-                NavigationLink(tag: AppNavigationView.upload, selection: self.$selectedTabItem, destination: {
-                    UploadView()
-                }) {
-                    Label("Upload", systemImage: "square.and.arrow.up.on.square")
-                }
-                NavigationLink(tag: AppNavigationView.you, selection: self.$selectedTabItem, destination: {
-                    YouView()
-                }) {
-                    Label("You", systemImage: "person")
-                }
-            }
-            .listStyle(.sidebar)
-            .navigationTitle("Iamages")
-            RemovedSuggestView()
-            RemovedSuggestView()
-        }
-        // Fix non-visible sidebar in Catalyst.
-        .introspectSplitViewController { controller in
-            controller.maximumPrimaryColumnWidth = 210
-            controller.preferredDisplayMode = .twoBesideSecondary
-        }
-        // Disabling window titlebar in Catalyst.
-        .withHostingWindow { window in
-            if let titlebar = window?.windowScene?.titlebar {
-                titlebar.titleVisibility = .hidden
-            }
-        }
-        .modifier(CommonViewModifiers(selectedTabItem: self.$selectedTabItem))
-        #else
         TabView(selection: self.$selectedTabItem) {
             NavigationView {
                 FeedView()
@@ -248,6 +197,12 @@ struct RootNavigationView: View {
             .tag(AppNavigationView.preferences)
         }
         .modifier(CommonViewModifiers(selectedTabItem: self.$selectedTabItem))
+        #if targetEnvironment(macCatalyst)
+        .withHostingWindow { window in
+            if let titlebar = window?.windowScene?.titlebar {
+                titlebar.titleVisibility = .hidden
+            }
+        }
         #endif
     }
 }

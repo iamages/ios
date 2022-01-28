@@ -72,18 +72,12 @@ struct CustomSheetModifier<V>: ViewModifier where V: View {
 struct IntrospectingFeedListModifier: ViewModifier {
     @Binding var isThirdPanePresented: Bool
     
-    let permittedIdioms: [UIUserInterfaceIdiom] = [.mac, .pad]
-    
     func body(content: Content) -> some View {
-        if self.isThirdPanePresented && self.permittedIdioms.contains(UIDevice.current.userInterfaceIdiom)  {
+        if self.isThirdPanePresented {
             content
-                .introspectTableView { tableView in
-                    if let index = tableView.indexPathForSelectedRow {
-                        tableView.deselectRow(at: index, animated: false)
-                    }
-                }
                 .background {
-                    if UIDevice.current.userInterfaceIdiom == .mac || (UIDevice.current.userInterfaceIdiom == .pad && UIApplication.shared.connectedScenes.flatMap{($0 as? UIWindowScene)?.windows ?? []}.first{$0.isKeyWindow}?.frame == UIScreen.main.bounds) {
+                    // Weird conditions because Mac Catalyst and iPad split view/slide over.
+                    if UIDevice.current.userInterfaceIdiom == .pad || (UIDevice.current.userInterfaceIdiom == .pad && UIApplication.shared.connectedScenes.flatMap{($0 as? UIWindowScene)?.windows ?? []}.first{$0.isKeyWindow}?.frame == UIScreen.main.bounds) {
                         NavigationLink(destination: RemovedSuggestView(), isActive: self.$isThirdPanePresented) {
                             EmptyView()
                         }

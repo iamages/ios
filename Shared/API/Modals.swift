@@ -29,7 +29,7 @@ struct IamagesFile: Decodable, Identifiable, Equatable, Hashable {
     }
 }
 
-struct IamagesCollection: Decodable, Identifiable, Equatable {
+struct IamagesCollection: Decodable, Identifiable, Equatable, Hashable {
     let id: String
     var description: String
     var isPrivate: Bool
