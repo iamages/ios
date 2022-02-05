@@ -389,11 +389,11 @@
 		2EF4F17227784C0900E64446 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				2EF4F17827784C0900E64446 /* UtilityViews */,
-				2EF4F18E27784C0900E64446 /* CollectionViews */,
-				2EF4F18627784C0900E64446 /* UserViews */,
-				2EF4F18027784C0900E64446 /* FileViews */,
-				2EF4F17327784C0900E64446 /* UploadViews */,
+				2EF4F17827784C0900E64446 /* Utility */,
+				2EF4F18E27784C0900E64446 /* Collection */,
+				2EF4F18627784C0900E64446 /* User */,
+				2EF4F18027784C0900E64446 /* File */,
+				2EF4F17327784C0900E64446 /* Upload */,
 				2EF4F19327784C0900E64446 /* FeedView.swift */,
 				2EF4F17727784C0900E64446 /* SearchView.swift */,
 				2EF4F18D27784C0900E64446 /* UploadView.swift */,
@@ -404,7 +404,7 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		2EF4F17327784C0900E64446 /* UploadViews */ = {
+		2EF4F17327784C0900E64446 /* Upload */ = {
 			isa = PBXGroup;
 			children = (
 				2EE3196B2781E25E005B83B0 /* UploadingViews */,
@@ -413,10 +413,10 @@
 				2EF4F17F27784C0900E64446 /* URLPickerView.swift */,
 				2EF4F17B27784C0900E64446 /* PhotosPickerView.swift */,
 			);
-			path = UploadViews;
+			path = Upload;
 			sourceTree = "<group>";
 		};
-		2EF4F17827784C0900E64446 /* UtilityViews */ = {
+		2EF4F17827784C0900E64446 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
 				2EF4F17927784C0900E64446 /* FileThumbnailView.swift */,
@@ -427,10 +427,10 @@
 				2E84B16D27795E030006458A /* RemovedSuggestView.swift */,
 				2E84B16F2779B4870006458A /* TogglesHelpView.swift */,
 			);
-			path = UtilityViews;
+			path = Utility;
 			sourceTree = "<group>";
 		};
-		2EF4F18027784C0900E64446 /* FileViews */ = {
+		2EF4F18027784C0900E64446 /* File */ = {
 			isa = PBXGroup;
 			children = (
 				2EF4F18127784C0900E64446 /* NavigableFileView.swift */,
@@ -438,10 +438,10 @@
 				2EF4F18327784C0900E64446 /* ModifyFileInfoView.swift */,
 				2EF4F18427784C0900E64446 /* FileView.swift */,
 			);
-			path = FileViews;
+			path = File;
 			sourceTree = "<group>";
 		};
-		2EF4F18627784C0900E64446 /* UserViews */ = {
+		2EF4F18627784C0900E64446 /* User */ = {
 			isa = PBXGroup;
 			children = (
 				2EF4F18727784C0900E64446 /* UserCollectionPickerView.swift */,
@@ -450,10 +450,10 @@
 				2EF4F18A27784C0900E64446 /* ManageUserView.swift */,
 				2EF4F18B27784C0900E64446 /* UserSearchView.swift */,
 			);
-			path = UserViews;
+			path = User;
 			sourceTree = "<group>";
 		};
-		2EF4F18E27784C0900E64446 /* CollectionViews */ = {
+		2EF4F18E27784C0900E64446 /* Collection */ = {
 			isa = PBXGroup;
 			children = (
 				2EF4F18F27784C0900E64446 /* CollectionInfoView.swift */,
@@ -462,7 +462,7 @@
 				2EF4F19227784C0900E64446 /* CollectionFilesListView.swift */,
 				2EB252D5277B33B9009A17DC /* NewCollectionView.swift */,
 			);
-			path = CollectionViews;
+			path = Collection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
