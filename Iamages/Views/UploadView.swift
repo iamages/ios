@@ -194,19 +194,12 @@ struct UploadView: View {
         .customSheet(isPresented: self.$isUploadingFilesListSheetPresented) {
             UploadingFilesListView(uploadRequests: self.$uploadRequests, mode: self.$uploadMode, newCollection: self.$newCollection, isPresented: self.$isUploadingFilesListSheetPresented)
         }
-        .sheet(isPresented: self.$isNewUploadCollectionSheetPresented, onDismiss: {
-            self.isUploadingFilesListSheetPresented = true
-        }) {
+        .customSheet(isPresented: self.$isNewUploadCollectionSheetPresented) {
             UploadingNewCollectionView(newCollection: self.$newCollection, isPresented: self.$isNewUploadCollectionSheetPresented)
+                .onDisappear {
+                    self.isUploadingFilesListSheetPresented = true
+                }
         }
-//        .customSheet(isPresented: self.$isNewUploadCollectionSheetPresented) {
-//            UploadingNewCollectionView(newCollection: self.$newCollection, isPresented: self.$isNewUploadCollectionSheetPresented)
-//                .onDisappear {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                        self.isUploadingFilesListSheetPresented = true
-//                    }
-//                }
-//        }
         .customBindingAlert(title: "File pick failed", message: self.$pickErrorAlertText, isPresented: self.$isPickErrorAlertPresented)
         .listAndDetailViewFix(isThirdPanePresented: self.$isThirdPanePresented)
         .navigationTitle("Upload")
