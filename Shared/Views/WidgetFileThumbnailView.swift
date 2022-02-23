@@ -11,6 +11,7 @@ struct WidgetFileThumbnailView: View {
         Image(systemName: "18.circle")
             .font(.largeTitle)
             .foregroundColor(.white)
+            .privacySensitive(false)
     }
     
     var body: some View {
@@ -45,6 +46,7 @@ struct WidgetFileThumbnailView: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.largeTitle)
                 .widgetURL(URL(string: "iamages://feed")!)
+                .privacySensitive(false)
         }
     }
 }
