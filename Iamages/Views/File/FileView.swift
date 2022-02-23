@@ -318,7 +318,7 @@ struct FileView: View {
                     self.isSaveFileFailAlertPresented = true
                 }
             }
-            .customFixedAlert(title: "File save successfully", message: "The file has been saved to your selected destination.", isPresented: self.$isSaveFileSuccessAlertPresented)
+            .customFixedAlert(title: "File saved successfully", message: "The file has been saved to your selected destination.", isPresented: self.$isSaveFileSuccessAlertPresented)
             .customBindingAlert(title: "File save failed", message: self.$saveFileFailMessage, isPresented: self.$isSaveFileFailAlertPresented)
             .customBindingAlert(title: "Delete failed", message: self.$deleteFileErrorText, isPresented: self.$isDeleteFileErrorAlertPresented)
             .customBindingAlert(title: "Set profile picture failed", message: self.$setProfilePictureErrorText, isPresented: self.$isSetProfilePictureErrorAlertPresented)
