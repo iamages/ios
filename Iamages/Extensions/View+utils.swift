@@ -1,5 +1,4 @@
 import SwiftUI
-import WelcomeSheet
 
 #if targetEnvironment(macCatalyst)
 // Thanks to Stack Overflow!
@@ -89,42 +88,6 @@ struct IntrospectingFeedListModifier: ViewModifier {
     }
 }
 
-struct AppWelcomeSheetModifier: ViewModifier {
-    @Binding var isPresented: Bool
-    
-    func body(content: Content) -> some View {
-        content
-            .welcomeSheet(isPresented: self.$isPresented, isSlideToDismissDisabled: true, pages: [
-                WelcomeSheetPage(
-                    title: "Welcome to Iamages!",
-                    rows: [
-                        WelcomeSheetPageRow(
-                            imageSystemName: "newspaper",
-                            title: "Public feeds",
-                            content: "View images uploaded by others."
-                        ),
-                        WelcomeSheetPageRow(
-                            imageSystemName: "magnifyingglass",
-                            title: "Search",
-                            content: "Search for files, collections and users."
-                        ),
-                        WelcomeSheetPageRow(
-                            imageSystemName: "square.and.arrow.up.on.square",
-                            title: "Upload",
-                            content: "Upload new files anonymously or to your user."
-                        ),
-                        WelcomeSheetPageRow(
-                            imageSystemName: "person",
-                            title: "You",
-                            content: "View your files nad manage your account."
-                        )
-                    ],
-                    mainButtonTitle: "Let's go!"
-                )
-            ])
-    }
-}
-
 extension View {
     func customBindingAlert(title: String, message: Binding<String?>, isPresented: Binding<Bool>) -> some View {
         modifier(CustomBindingAlertModifier(title: title, message: message, isPresented: isPresented))
@@ -137,8 +100,5 @@ extension View {
     }
     func listAndDetailViewFix(isThirdPanePresented: Binding<Bool>) -> some View {
         modifier(IntrospectingFeedListModifier(isThirdPanePresented: isThirdPanePresented))
-    }
-    func appWelcomeSheet(isPresented: Binding<Bool>) -> some View {
-        modifier(AppWelcomeSheetModifier(isPresented: isPresented))
     }
 }

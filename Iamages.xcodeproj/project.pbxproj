@@ -38,7 +38,6 @@
 		2EEE1D10279BA45700ADFDB1 /* JSONDecoder+customISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16927784C0100E64446 /* JSONDecoder+customISO8601.swift */; };
 		2EEE1D11279BA45700ADFDB1 /* Formatter+dates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16C27784C0100E64446 /* Formatter+dates.swift */; };
 		2EEE1D12279BA93D00ADFDB1 /* Modals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16327784BE300E64446 /* Modals.swift */; };
-		2EEE1D1B279D7E4D00ADFDB1 /* WelcomeSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 2EEE1D1A279D7E4D00ADFDB1 /* WelcomeSheet */; };
 		2EEE1D1F279D869F00ADFDB1 /* WidgetFileThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EEE1D1D279D869400ADFDB1 /* WidgetFileThumbnailView.swift */; };
 		2EEE1D20279D869F00ADFDB1 /* WidgetFileThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EEE1D1D279D869400ADFDB1 /* WidgetFileThumbnailView.swift */; };
 		2EEE1D25279D88C200ADFDB1 /* String+urlEncode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF4F16B27784C0100E64446 /* String+urlEncode.swift */; };
@@ -230,7 +229,6 @@
 			files = (
 				2E8AC2FF279E404F001D6770 /* KeychainSwift in Frameworks */,
 				2EF4F1B627784C5300E64446 /* Kingfisher in Frameworks */,
-				2EEE1D1B279D7E4D00ADFDB1 /* WelcomeSheet in Frameworks */,
 				2EF4F1B927784C6400E64446 /* SPConfetti in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -547,7 +545,6 @@
 			packageProductDependencies = (
 				2EF4F1B527784C5300E64446 /* Kingfisher */,
 				2EF4F1B827784C6400E64446 /* SPConfetti */,
-				2EEE1D1A279D7E4D00ADFDB1 /* WelcomeSheet */,
 				2E8AC2FE279E404F001D6770 /* KeychainSwift */,
 			);
 			productName = Iamages;
@@ -590,7 +587,6 @@
 			packageReferences = (
 				2EF4F1B427784C5300E64446 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				2EF4F1B727784C6400E64446 /* XCRemoteSwiftPackageReference "SPConfetti" */,
-				2EEE1D19279D7E4D00ADFDB1 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */,
 				2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
 			productRefGroup = 2EF4F15227784B8100E64446 /* Products */;
@@ -1055,7 +1051,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Iamages/Iamages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"Iamages/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
@@ -1093,7 +1089,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Iamages/Iamages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"Iamages/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
@@ -1181,14 +1177,6 @@
 				minimumVersion = 20.0.0;
 			};
 		};
-		2EEE1D19279D7E4D00ADFDB1 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/MAJKFL/Welcome-Sheet.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		2EF4F1B427784C5300E64446 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
@@ -1222,11 +1210,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2E8AC2FD279E404F001D6770 /* XCRemoteSwiftPackageReference "keychain-swift" */;
 			productName = KeychainSwift;
-		};
-		2EEE1D1A279D7E4D00ADFDB1 /* WelcomeSheet */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2EEE1D19279D7E4D00ADFDB1 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */;
-			productName = WelcomeSheet;
 		};
 		2EF4F1B527784C5300E64446 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;

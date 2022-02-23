@@ -26,8 +26,6 @@ struct PreferencesView: View {
     @State var isTipThanksAlertPresented: Bool = false
     @State var isTipConfettiPresented: Bool = false
     
-    @State var isWelcomeSheetPresented: Bool = false
-    
     func clearImageCache () {
         self.isCacheBeingCleared = true
         KingfisherManager.shared.cache.clearCache {
@@ -123,9 +121,6 @@ struct PreferencesView: View {
                 ) {
                     Button("Reset all preferences", role: .destructive, action: self.resetAppSettings)
                 }
-                Button("Show welcome sheet") {
-                    self.isWelcomeSheetPresented = true
-                }
             }
             Section(content: {
                 if self.areProductsLoading {
@@ -164,7 +159,6 @@ struct PreferencesView: View {
         .navigationTitle("Preferences")
         .customBindingAlert(title: "Tipping failed", message: self.$tipErrorText, isPresented: self.$isTipErrorAlertPresented)
         .customFixedAlert(title: "Thank you!", message: "Your tip will help us continue developing Iamages. Thank you for tipping!", isPresented: self.$isTipThanksAlertPresented)
-        .appWelcomeSheet(isPresented: self.$isWelcomeSheetPresented)
         .confetti(
             isPresented: self.$isTipConfettiPresented,
             animation: .fullWidthToDown,
