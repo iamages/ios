@@ -15,7 +15,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "me.jkelol111.Iamages.tips.small",
+      "productID" : "me.jkelol111.Iamages.Tips.Small",
       "referenceName" : "Small Tip",
       "type" : "Consumable"
     },
@@ -30,7 +30,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "me.jkelol111.Iamages.tips.medium",
+      "productID" : "me.jkelol111.Iamages.Tips.Medium",
       "referenceName" : "Medium Tip",
       "type" : "Consumable"
     },
@@ -45,7 +45,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "me.jkelol111.Iamages.tips.large",
+      "productID" : "me.jkelol111.Iamages.Tips.Large",
       "referenceName" : "Large Tip",
       "type" : "Consumable"
     }

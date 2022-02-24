@@ -23,6 +23,7 @@
 		2E8AC2FA279E3BB0001D6770 /* YouWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2EEE1D00279BA37C00ADFDB1 /* YouWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2E8AC2FF279E404F001D6770 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8AC2FE279E404F001D6770 /* KeychainSwift */; };
 		2E8AC301279E4075001D6770 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8AC300279E4075001D6770 /* KeychainSwift */; };
+		2E8AF0CE27C70F2C002A90C2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E8AF0CD27C70F2C002A90C2 /* StoreKit.framework */; };
 		2E8E94F227A027070053AA75 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8E94F127A027070053AA75 /* ShareViewController.swift */; };
 		2E8E94F527A027070053AA75 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E8E94F327A027070053AA75 /* MainInterface.storyboard */; };
 		2E8E94F927A027070053AA75 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2E8E94EF27A027070053AA75 /* ShareExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -136,6 +137,7 @@
 		2E7344FC277A92480076E672 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2E84B16D27795E030006458A /* RemovedSuggestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedSuggestView.swift; sourceTree = "<group>"; };
 		2E84B16F2779B4870006458A /* TogglesHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglesHelpView.swift; sourceTree = "<group>"; };
+		2E8AF0CD27C70F2C002A90C2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		2E8E94EF27A027070053AA75 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E8E94F127A027070053AA75 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		2E8E94F427A027070053AA75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -230,6 +232,7 @@
 				2E8AC2FF279E404F001D6770 /* KeychainSwift in Frameworks */,
 				2EF4F1B627784C5300E64446 /* Kingfisher in Frameworks */,
 				2EF4F1B927784C6400E64446 /* SPConfetti in Frameworks */,
+				2E8AF0CE27C70F2C002A90C2 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +242,7 @@
 		2E22D5E5278F0DE300D3582D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2E8AF0CD27C70F2C002A90C2 /* StoreKit.framework */,
 				2E22D5E6278F0DE300D3582D /* WidgetKit.framework */,
 				2E22D5E8278F0DE300D3582D /* SwiftUI.framework */,
 			);
@@ -763,7 +767,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = FeedWidget/FeedWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FeedWidget/Info.plist;
@@ -792,7 +796,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = FeedWidget/FeedWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FeedWidget/Info.plist;
@@ -819,7 +823,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -846,7 +850,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -875,7 +879,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = YouWidget/YouWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YouWidget/Info.plist;
@@ -904,7 +908,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = YouWidget/YouWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YouWidget/Info.plist;
@@ -1051,7 +1055,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Iamages/Iamages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"Iamages/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
@@ -1089,7 +1093,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Iamages/Iamages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"Iamages/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;

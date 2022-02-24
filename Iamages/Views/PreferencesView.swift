@@ -171,9 +171,9 @@ struct PreferencesView: View {
             Task {
                 do {
                     self.products = try await Product.products(for: [
-                        "me.jkelol111.Iamages.tips.small",
-                        "me.jkelol111.Iamages.tips.medium",
-                        "me.jkelol111.Iamages.tips.large"
+                        "me.jkelol111.Iamages.Tips.Small",
+                        "me.jkelol111.Iamages.Tips.Medium",
+                        "me.jkelol111.Iamages.Tips.Large"
                     ])
                 } catch {
                     print(error)
