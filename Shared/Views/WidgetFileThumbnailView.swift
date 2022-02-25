@@ -10,7 +10,6 @@ struct WidgetFileThumbnailView: View {
     var nsfwLabel: some View {
         Image(systemName: "18.circle")
             .font(.largeTitle)
-            .foregroundColor(.white)
             .privacySensitive(false)
     }
     
@@ -37,7 +36,7 @@ struct WidgetFileThumbnailView: View {
                         }
                     } else {
                         Image(systemName: "questionmark.app.dashed")
-                            .imageScale(.large)
+                            .font(.largeTitle)
                     }
                 }
                 .widgetURL(URL(string: "iamages://view?type=file&id=\(file.id)"))

@@ -114,7 +114,8 @@ struct YouWidgetEntryView : View {
                 }
             } else {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .imageScale(.large)
+                    .font(.largeTitle)
+                    .privacySensitive(false)
             }
         }
         .widgetURL(URL(string: "iamages://you")!)
