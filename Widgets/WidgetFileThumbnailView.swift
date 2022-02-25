@@ -45,8 +45,8 @@ struct WidgetFileThumbnailView: View {
         } else {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.largeTitle)
-                .widgetURL(URL(string: "iamages://feed")!)
                 .privacySensitive(false)
+                .widgetURL(URL(string: "iamages://feed")!)
         }
     }
 }

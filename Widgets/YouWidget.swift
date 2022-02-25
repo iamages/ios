@@ -116,9 +116,9 @@ struct YouWidgetEntryView : View {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.largeTitle)
                     .privacySensitive(false)
+                    .widgetURL(URL(string: "iamages://you")!)
             }
         }
-        .widgetURL(URL(string: "iamages://you")!)
     }
 }
 
