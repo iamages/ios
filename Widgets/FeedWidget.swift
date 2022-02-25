@@ -7,7 +7,7 @@ struct IamagesFileEntry: TimelineEntry {
     var thumb: Data?
 }
 
-struct Provider: IntentTimelineProvider {
+struct FeedWidgetProvider: IntentTimelineProvider {
     #if DEBUG
     let apiRoot: String = "http://localhost:9999/iamages/api/v3"
     #else
@@ -101,14 +101,13 @@ struct Provider: IntentTimelineProvider {
 }
 
 struct FeedWidgetEntryView : View {
-    var entry: Provider.Entry
+    var entry: FeedWidgetProvider.Entry
 
     var body: some View {
         WidgetFileThumbnailView(file: entry.info, thumb: entry.thumb)
     }
 }
 
-@main
 struct FeedWidget: Widget {
     let kind: String = "me.jkelol111.Iamages.FeedWidget"
 
@@ -116,7 +115,7 @@ struct FeedWidget: Widget {
         IntentConfiguration(
             kind: self.kind,
             intent: ConfigureFeedWidgetIntent.self,
-            provider: Provider()
+            provider: FeedWidgetProvider()
         ) { entry in
             FeedWidgetEntryView(entry: entry)
         }

@@ -12,7 +12,7 @@ struct IamagesUserEntry: TimelineEntry {
     var files: [IamagesFileAndThumb]?
 }
 
-struct Provider: TimelineProvider {
+struct YouWidgetProvider: TimelineProvider {
     #if DEBUG
     let apiRoot: String = "http://localhost:9999/iamages/api/v3"
     #else
@@ -98,7 +98,7 @@ struct Provider: TimelineProvider {
 }
 
 struct YouWidgetEntryView : View {
-    var entry: Provider.Entry
+    var entry: YouWidgetProvider.Entry
 
     var body: some View {
         Group {
@@ -122,12 +122,11 @@ struct YouWidgetEntryView : View {
     }
 }
 
-@main
 struct YouWidget: Widget {
     let kind: String = "me.jkelol111.Iamages.YouWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+        StaticConfiguration(kind: kind, provider: YouWidgetProvider()) { entry in
             YouWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Your files")

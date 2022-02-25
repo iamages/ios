@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 struct WidgetFileThumbnailView: View {
     @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
