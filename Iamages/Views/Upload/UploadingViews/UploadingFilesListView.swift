@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 enum UploadMode {
     case separate
@@ -117,6 +118,7 @@ struct UploadingFilesListView: View {
                         self.newCollection = NewCollectionRequest(description: "No description yet.", isPrivate: false, isHidden: false)
                         self.isBusy = false
                     }
+                    WidgetCenter.shared.reloadAllTimelines()
                 }
             }
             .toolbar {
