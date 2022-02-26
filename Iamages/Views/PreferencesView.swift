@@ -125,7 +125,10 @@ struct PreferencesView: View {
             }
             Section(content: {
                 if self.areProductsLoading {
-                    ProgressView("Loading tips...")
+                    HStack {
+                        ProgressView()
+                        Text("Loading tips...")
+                    }
                 } else {
                     if let productsLoadingErrorText: String = self.productsLoadingErrorText {
                         Text("Loading tips failed: \(productsLoadingErrorText). Please relaunch the app to retry.")

@@ -18,9 +18,8 @@ struct WidgetFileThumbnailView: View {
         if let file = self.file {
             if file.isNSFW && !self.isNSFWEnabled {
                 self.nsfwLabel
-                    .widgetURL(URL(string: "iamages://feed")!)
             } else {
-                Group {
+                Link(destination: URL(string: "iamages://view?type=file&id=\(file.id)")!) {
                     if let thumb = self.thumb {
                         if file.isNSFW && self.isNSFWBlurred {
                             Image(uiImage: UIImage(data: thumb)!)
@@ -40,13 +39,11 @@ struct WidgetFileThumbnailView: View {
                             .font(.largeTitle)
                     }
                 }
-                .widgetURL(URL(string: "iamages://view?type=file&id=\(file.id)"))
             }
         } else {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.largeTitle)
                 .privacySensitive(false)
-                .widgetURL(URL(string: "iamages://feed")!)
         }
     }
 }
