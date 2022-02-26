@@ -37,6 +37,7 @@ struct WidgetFileThumbnailView: View {
                     } else {
                         Image(systemName: "questionmark.app.dashed")
                             .font(.largeTitle)
+                            .privacySensitive(false)
                     }
                 }
             }
