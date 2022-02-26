@@ -127,11 +127,12 @@ struct PreferencesView: View {
                 if self.areProductsLoading {
                     HStack {
                         ProgressView()
+                            .padding(.trailing, 4)
                         Text("Loading tips...")
                     }
                 } else {
                     if let productsLoadingErrorText: String = self.productsLoadingErrorText {
-                        Text("Loading tips failed: \(productsLoadingErrorText). Please relaunch the app to retry.")
+                        Text("**Loading tips failed!**\n\n\(productsLoadingErrorText)\n\nPlease relaunch the app to retry.")
                     } else {
                         ForEach(self.products) { product in
                             Button("\(product.displayName) (\(product.displayPrice))") {
