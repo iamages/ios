@@ -19,6 +19,7 @@ struct PreferencesView: View {
 
     @State var isTransactionSubscribeCompleted: Bool = false
     @State var areProductsLoading: Bool = false
+    @State var productsLoadingErrorText: String?
     @State var products: [Product] = []
     @State var isPurchasingProduct: Bool = false
     @State var tipErrorText: String?
@@ -124,21 +125,29 @@ struct PreferencesView: View {
             }
             Section(content: {
                 if self.areProductsLoading {
-                    ProgressView()
+                    ProgressView("Loading tips...")
                 } else {
-                    ForEach(self.products) { product in
-                        Button("\(product.displayName) (\(product.displayPrice))") {
-                            Task {
-                                await self.purchaseProduct(product)
+                    if let productsLoadingErrorText: String = self.productsLoadingErrorText {
+                        Text("Loading tips failed: \(productsLoadingErrorText). Please relaunch the app to retry.")
+                    } else {
+                        ForEach(self.products) { product in
+                            Button("\(product.displayName) (\(product.displayPrice))") {
+                                Task {
+                                    await self.purchaseProduct(product)
+                                }
                             }
+                            .disabled(self.isPurchasingProduct)
                         }
-                        .disabled(self.isPurchasingProduct)
                     }
                 }
             }, header: {
                 Text("Tip Jar")
             }, footer: {
+                #if targetEnvironment(macCatalyst)
+                Text("Your support helps us maintain Iamages for you and many others! Thank you!\n\nEvery:\n- **Small tip** can keep our servers running for 1 month, courtesy of Uberspace.\n- **Medium tip** will keep our developers fed and motivated to create new features.\n- **Large tip** will help us afford devices to test our apps on.\n\n**Note:** In App Purchases may fail to appear on Mac due to a known bug in StoreKit 2: https://developer.apple.com/forums/thread/690242")
+                #else
                 Text("Your support helps us maintain Iamages for you and many others! Thank you!\n\nEvery:\n- **Small tip** can keep our servers running for 1 month, courtesy of Uberspace.\n- **Medium tip** will keep our developers fed and motivated to create new features.\n- **Large tip** will help us afford devices to test our apps on.")
+                #endif
             })
             #if !targetEnvironment(macCatalyst)
             Section(content: {
@@ -176,10 +185,10 @@ struct PreferencesView: View {
                         "me.jkelol111.Iamages.Tips.Large"
                     ])
                 } catch {
-                    print(error)
+                    self.productsLoadingErrorText = error.localizedDescription
                 }
+                self.areProductsLoading = false
             }
-            self.areProductsLoading = false
             if !self.isTransactionSubscribeCompleted {
                 Task.detached {
                     for await verificationResult in Transaction.updates {
