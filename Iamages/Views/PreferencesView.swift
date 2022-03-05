@@ -12,6 +12,7 @@ struct PreferencesView: View {
     @AppStorage("uploadDefaults.isHidden") var isHiddenDefault: Bool = false
     @AppStorage("uploadDefaults.isPrivate") var isPrivateDefault: Bool = false
     
+    @State var isTermsAlertPresented: Bool = false
     @State var isClearCacheAlertPresented: Bool = false
     @State var isResetWarningAlertPresented: Bool = false
     
@@ -147,11 +148,7 @@ struct PreferencesView: View {
             }, header: {
                 Text("Tip Jar")
             }, footer: {
-                #if targetEnvironment(macCatalyst)
-                Text("Your support helps us maintain Iamages for you and many others! Thank you!\n\nEvery:\n- **Small tip** can keep our servers running for 1 month, courtesy of Uberspace.\n- **Medium tip** will keep our developers fed and motivated to create new features.\n- **Large tip** will help us afford devices to test our apps on.\n\n**Note:** In App Purchases may fail to appear on Mac due to a known bug in StoreKit 2: https://developer.apple.com/forums/thread/690242")
-                #else
                 Text("Your support helps us maintain Iamages for you and many others! Thank you!\n\nEvery:\n- **Small tip** can keep our servers running for 1 month, courtesy of Uberspace.\n- **Medium tip** will keep our developers fed and motivated to create new features.\n- **Large tip** will help us afford devices to test our apps on.")
-                #endif
             })
             #if !targetEnvironment(macCatalyst)
             Section(content: {
@@ -163,7 +160,10 @@ struct PreferencesView: View {
             })
             #endif
         }
-        .onChange(of: self.isNSFWEnabled) { _ in
+        .onChange(of: self.isNSFWEnabled) { isNSFWEnabled in
+            if isNSFWEnabled {
+                self.isTermsAlertPresented = true
+            }
             self.refreshWidgets()
         }
         .onChange(of: self.isNSFWBlurred) { _ in
@@ -172,6 +172,16 @@ struct PreferencesView: View {
         .navigationTitle("Preferences")
         .customBindingAlert(title: "Tipping failed", message: self.$tipErrorText, isPresented: self.$isTipErrorAlertPresented)
         .customFixedAlert(title: "Thank you!", message: "Your tip will help us continue developing Iamages. Thank you for tipping!", isPresented: self.$isTipThanksAlertPresented)
+        .alert("Enabling NSFW", isPresented: self.$isTermsAlertPresented, actions: {
+            Button("Enable NSFW", role: .destructive) {
+                self.isNSFWEnabled = true
+            }
+            Button("Cancel", role: .cancel) {
+                self.isNSFWEnabled = false
+            }
+        }) {
+            Text("By enabling NSFW content viewing, you're agreeing to our Terms of Service.")
+        }
         .confetti(
             isPresented: self.$isTipConfettiPresented,
             animation: .fullWidthToDown,
@@ -180,18 +190,22 @@ struct PreferencesView: View {
         )
         .confettiParticle(\.velocity, 600)
         .onAppear {
-            self.areProductsLoading = true
-            Task {
-                do {
-                    self.products = try await Product.products(for: [
-                        "me.jkelol111.Iamages.Tips.Small",
-                        "me.jkelol111.Iamages.Tips.Medium",
-                        "me.jkelol111.Iamages.Tips.Large"
-                    ])
-                } catch {
-                    self.productsLoadingErrorText = error.localizedDescription
+            if self.products.count != 3 {
+                self.areProductsLoading = true
+                Task {
+                    do {
+                        self.products = try await Product.products(for: [
+                            "me.jkelol111.Iamages.Tips.Small",
+                            "me.jkelol111.Iamages.Tips.Medium",
+                            "me.jkelol111.Iamages.Tips.Large"
+                        ])
+                    } catch {
+                        self.productsLoadingErrorText = error.localizedDescription
+                    }
+                    self.areProductsLoading = false
                 }
-                self.areProductsLoading = false
+            } else {
+                print(self.products.count)
             }
             if !self.isTransactionSubscribeCompleted {
                 Task.detached {
@@ -199,8 +213,10 @@ struct PreferencesView: View {
                         guard case .verified(let transaction) = verificationResult else {
                             continue
                         }
-                        self.isTipThanksAlertPresented = true
-                        self.isTipConfettiPresented = true
+                        DispatchQueue.main.async {
+                            self.isTipThanksAlertPresented = true
+                            self.isTipConfettiPresented = true
+                        }
                         await transaction.finish()
                     }
                 }
