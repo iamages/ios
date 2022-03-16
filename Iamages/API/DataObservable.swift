@@ -51,8 +51,6 @@ class APIDataObservable: ObservableObject {
     #else
     let apiRoot: String = "https://iamages.uber.space/iamages/api/v3"
     #endif
-    
-    @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
 
     @Published var currentAppUser: AppUser? {
         didSet {
@@ -124,6 +122,10 @@ class APIDataObservable: ObservableObject {
         }
     }
     
+    func checkUserNSFWEnabled() -> Bool {
+        return self.currentAppUserInformation?.isNSFWEnabled ?? false
+    }
+    
     func upload (request: UploadFileRequest) async throws -> IamagesFile {
         var response: Data = Data()
         if request.info.url != nil {
@@ -160,7 +162,7 @@ class APIDataObservable: ObservableObject {
         return try self.jsond.decode(
             [IamagesFile].self,
             from: try await makeRequest(
-                "/feed/files/latest",
+                "/feed/files/latest?nsfw=\(self.checkUserNSFWEnabled().intValue)",
                 method: .post,
                 body: try self.jsone.encode(
                     DatePaginationRequest(
@@ -177,7 +179,7 @@ class APIDataObservable: ObservableObject {
         return try self.jsond.decode(
             [IamagesFile].self,
             from: try await makeRequest(
-                "/feed/files/popular",
+                "/feed/files/popular?nsfw=\(self.checkUserNSFWEnabled().intValue)",
                 method: .get,
                 body: nil,
                 auth: nil
@@ -189,7 +191,7 @@ class APIDataObservable: ObservableObject {
         return try self.jsond.decode(
             IamagesFile.self,
             from: try await self.makeRequest(
-                "/feed/files/random?nsfw=\(self.isNSFWEnabled ? "1" : "0")",
+                "/feed/files/random?nsfw=\(self.checkUserNSFWEnabled().intValue)",
                 method: .get,
                 body: nil,
                 auth: nil
@@ -281,7 +283,7 @@ class APIDataObservable: ObservableObject {
         return try self.jsond.decode(
             [IamagesFile].self,
             from: try await self.makeRequest(
-                "/collection/\(id)/files",
+                "/collection/\(id)/files?nsfw=\(self.checkUserNSFWEnabled().intValue)",
                 method: .post,
                 body: try self.jsone.encode(
                     DatePaginationRequest(
@@ -333,7 +335,7 @@ class APIDataObservable: ObservableObject {
         return try self.jsond.decode(
             [IamagesFile].self,
             from: try await self.makeRequest(
-                "/search/files\((username != nil) ? "?username=\(username!.urlEncode())" : "")",
+                "/search/files\((username != nil) ? "?username=\(username!.urlEncode())" : "")&nsfw=\(self.checkUserNSFWEnabled().intValue)",
                 method: .post,
                 body: try self.jsone.encode(
                     FileCollectionSearchRequest(
@@ -403,7 +405,7 @@ class APIDataObservable: ObservableObject {
         return try self.jsond.decode(
             [IamagesFile].self,
             from: try await self.makeRequest(
-                "/user/\(username.urlEncode())/files",
+                "/user/\(username.urlEncode())/files?nsfw=\(self.checkUserNSFWEnabled().intValue)",
                 method: .post,
                 body: try self.jsone.encode(
                     DatePaginationRequest(

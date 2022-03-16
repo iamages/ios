@@ -37,7 +37,7 @@ struct YouWidgetProvider: TimelineProvider {
         let currentDate: Date = Date()
         var entry: IamagesUserEntry = IamagesUserEntry(date: currentDate)
         if let username = self.keychain.get("username"), let password = self.keychain.get("password") {
-            var request = URLRequest(url: URL(string: "\(self.apiRoot)/user/\(username.urlEncode())/files")!)
+            var request = URLRequest(url: URL(string: "\(self.apiRoot)/user/\(username.urlEncode())/files?nsfw=0")!)
             request.httpMethod = "POST"
             request.addValue("Basic " + "\(username):\(password)".data(using: .utf8)!.base64EncodedString(), forHTTPHeaderField: "Authorization")
             request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
@@ -129,6 +129,7 @@ struct YouWidget: Widget {
         StaticConfiguration(kind: kind, provider: YouWidgetProvider()) { entry in
             YouWidgetEntryView(entry: entry)
         }
+        .supportedFamilies([.systemMedium, .systemLarge, .systemExtraLarge])
         .configurationDisplayName("Your files")
         .description("Shows up to 6 files you have uploaded recently.")
     }

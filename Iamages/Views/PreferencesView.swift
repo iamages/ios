@@ -5,7 +5,8 @@ import Kingfisher
 import WidgetKit
 
 struct PreferencesView: View {
-    @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
+    @EnvironmentObject var dataObservable: APIDataObservable
+    
     @AppStorage("isNSFWBlurred", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWBlurred: Bool = true
     
     @AppStorage("uploadDefaults.isNSFW") var isNSFWDefault: Bool = false
@@ -36,7 +37,6 @@ struct PreferencesView: View {
     }
     
     func resetAppSettings () {
-        self.isNSFWEnabled = true
         self.isNSFWBlurred = true
         self.isNSFWBlurred = false
         self.isHiddenDefault = false
@@ -80,11 +80,13 @@ struct PreferencesView: View {
 
     var body: some View {
         Form {
-            Section("Viewing") {
-                Toggle("Enable NSFW viewing", isOn: self.$isNSFWEnabled)
+            Section(content: {
                 Toggle("Blur NSFW Content", isOn: self.$isNSFWBlurred)
-                    .disabled(!self.isNSFWEnabled)
-            }
+            }, header: {
+                Text("Viewing")
+            }, footer: {
+                Text("NSFW options here will not take effect until you have explicitly enabled NSFW viewing [on our website](\(self.dataObservable.apiRoot)/user/nsfw_toggle)")
+            })
             Section {
                 Toggle(isOn: self.$isNSFWDefault) {
                     Text("NSFW (18+)")
@@ -160,28 +162,12 @@ struct PreferencesView: View {
             })
             #endif
         }
-        .onChange(of: self.isNSFWEnabled) { isNSFWEnabled in
-            if isNSFWEnabled {
-                self.isTermsAlertPresented = true
-            }
-            self.refreshWidgets()
-        }
         .onChange(of: self.isNSFWBlurred) { _ in
             self.refreshWidgets()
         }
         .navigationTitle("Preferences")
         .customBindingAlert(title: "Tipping failed", message: self.$tipErrorText, isPresented: self.$isTipErrorAlertPresented)
         .customFixedAlert(title: "Thank you!", message: "Your tip will help us continue developing Iamages. Thank you for tipping!", isPresented: self.$isTipThanksAlertPresented)
-        .alert("Enabling NSFW", isPresented: self.$isTermsAlertPresented, actions: {
-            Button("Enable NSFW", role: .destructive) {
-                self.isNSFWEnabled = true
-            }
-            Button("Cancel", role: .cancel) {
-                self.isNSFWEnabled = false
-            }
-        }) {
-            Text("By enabling NSFW content viewing, you're agreeing to our Terms of Service.")
-        }
         .confetti(
             isPresented: self.$isTipConfettiPresented,
             animation: .fullWidthToDown,

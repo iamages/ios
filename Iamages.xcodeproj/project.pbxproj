@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2E3BF3F12791C45900A6E8AB /* FeedWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 2E22D6012791991500D3582D /* FeedWidget.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
 		2E3BF3F72792D5BE00A6E8AB /* FileManager+sizeOfFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */; };
+		2E535CA127E030D900B0EE4F /* Bool+intValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E535CA027E030D900B0EE4F /* Bool+intValue.swift */; };
+		2E535CA227E030D900B0EE4F /* Bool+intValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E535CA027E030D900B0EE4F /* Bool+intValue.swift */; };
 		2E6F8DE227C912F70088338C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E22D5E6278F0DE300D3582D /* WidgetKit.framework */; };
 		2E6F8DE327C912F70088338C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E22D5E8278F0DE300D3582D /* SwiftUI.framework */; };
 		2E6F8DE627C912F70088338C /* AllWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6F8DE527C912F70088338C /* AllWidgets.swift */; };
@@ -115,6 +117,7 @@
 		2E22D5EB278F0DE400D3582D /* FeedWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedWidget.swift; sourceTree = "<group>"; };
 		2E22D6012791991500D3582D /* FeedWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = FeedWidget.intentdefinition; sourceTree = "<group>"; };
 		2E3BF3F62792D5BE00A6E8AB /* FileManager+sizeOfFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+sizeOfFile.swift"; sourceTree = "<group>"; };
+		2E535CA027E030D900B0EE4F /* Bool+intValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+intValue.swift"; sourceTree = "<group>"; };
 		2E6F8DE127C912F70088338C /* WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E6F8DE527C912F70088338C /* AllWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllWidgets.swift; sourceTree = "<group>"; };
 		2E6F8DE727C912F90088338C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -237,6 +240,7 @@
 				2EF4F16B27784C0100E64446 /* String+urlEncode.swift */,
 				2EF4F16927784C0100E64446 /* JSONDecoder+customISO8601.swift */,
 				2EF4F16C27784C0100E64446 /* Formatter+dates.swift */,
+				2E535CA027E030D900B0EE4F /* Bool+intValue.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -578,6 +582,7 @@
 			files = (
 				2E6F8DF527C914500088338C /* FeedWidget.intentdefinition in Sources */,
 				2E6F8DE627C912F70088338C /* AllWidgets.swift in Sources */,
+				2E535CA227E030D900B0EE4F /* Bool+intValue.swift in Sources */,
 				2E6F8DF627C9145F0088338C /* FeedWidget.swift in Sources */,
 				2E6F8DFA27C9149F0088338C /* Formatter+dates.swift in Sources */,
 				2E6F8DF727C9147F0088338C /* YouWidget.swift in Sources */,
@@ -633,6 +638,7 @@
 				2E3BF3F72792D5BE00A6E8AB /* FileManager+sizeOfFile.swift in Sources */,
 				2EB252D6277B33B9009A17DC /* NewCollectionView.swift in Sources */,
 				2EF4F1AF27784C0900E64446 /* CollectionFilesListView.swift in Sources */,
+				2E535CA127E030D900B0EE4F /* Bool+intValue.swift in Sources */,
 				2EF4F1AB27784C0900E64446 /* UploadView.swift in Sources */,
 				2EF4F16527784BE300E64446 /* Modals.swift in Sources */,
 				2EF4F16E27784C0100E64446 /* JSONDecoder+customISO8601.swift in Sources */,
@@ -682,12 +688,13 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = Widgets/WidgetsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widgets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Widgets;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -711,12 +718,13 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = Widgets/WidgetsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widgets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Widgets;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -738,12 +746,13 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Upload to Iamages";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -765,12 +774,13 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Upload to Iamages";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -838,7 +848,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -893,7 +903,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -912,7 +922,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Iamages/Iamages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_ASSET_PATHS = "\"Iamages/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
@@ -927,6 +937,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -950,7 +961,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Iamages/Iamages.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_ASSET_PATHS = "\"Iamages/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
@@ -965,6 +976,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

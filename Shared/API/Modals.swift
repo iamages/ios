@@ -50,11 +50,13 @@ struct IamagesCollection: Decodable, Identifiable, Equatable, Hashable {
 struct IamagesUser: Decodable, Hashable {
     let username: String
     var created: Date
+    let isNSFWEnabled: Bool
     var pfp: String?
     
     enum CodingKeys: String, CodingKey {
         case username
         case created
+        case isNSFWEnabled = "nsfw_enabled"
         case pfp
     }
 }

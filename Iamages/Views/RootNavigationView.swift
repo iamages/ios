@@ -8,7 +8,6 @@ fileprivate enum URLViewable: String {
 
 fileprivate struct URLViewerView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
-    @AppStorage("isNSFWEnabled", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWEnabled: Bool = true
 
     @Binding var type: URLViewable
     @Binding var id: String
@@ -39,7 +38,7 @@ fileprivate struct URLViewerView: View {
                             case .file:
                                 self.file = try await self.dataObservable.getFileInformation(id: self.id)
                                 self.feedFiles.append(self.file)
-                                if self.file.isNSFW && !self.isNSFWEnabled {
+                                if self.file.isNSFW && !(self.dataObservable.currentAppUserInformation?.isNSFWEnabled ?? false) {
                                     self.isNSFWWarningAlertPresented = true
                                 } else {
                                     self.isNavigationLinkActive = true

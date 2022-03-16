@@ -30,7 +30,7 @@ struct FeedWidgetProvider: IntentTimelineProvider {
         let currentDate: Date = Date()
         var entry: IamagesFileEntry = IamagesFileEntry(date: currentDate)
         
-        var url: String = "\(self.apiRoot)/feed/files"
+        var url: String = "\(self.apiRoot)/feed/files?nsfw=0"
         var httpMethod: String = "GET"
         switch configuration.feed {
         case .unknown, .latestFiles:

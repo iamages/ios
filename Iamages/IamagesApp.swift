@@ -10,9 +10,13 @@ enum AppNavigationView: Int {
 
 @main
 struct IamagesApp: App {
-    @StateObject var dataObservable: APIDataObservable = APIDataObservable()
+    @StateObject var dataObservable: APIDataObservable
 
     @State var selectedTabItem: AppNavigationView = .feed
+    
+    init() {
+        self._dataObservable = StateObject(wrappedValue: APIDataObservable())
+    }
     
     var body: some Scene {
         WindowGroup {
