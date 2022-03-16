@@ -30,7 +30,7 @@ struct FeedWidgetProvider: IntentTimelineProvider {
         let currentDate: Date = Date()
         var entry: IamagesFileEntry = IamagesFileEntry(date: currentDate)
         
-        var url: String = "\(self.apiRoot)/feed/files?nsfw=0"
+        var url: String = "\(self.apiRoot)/feed/files"
         var httpMethod: String = "GET"
         switch configuration.feed {
         case .unknown, .latestFiles:
@@ -41,6 +41,7 @@ struct FeedWidgetProvider: IntentTimelineProvider {
         case .randomFile:
             url += "/random"
         }
+        url += "?nsfw=0"
         
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = httpMethod

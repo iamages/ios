@@ -85,7 +85,7 @@ struct PreferencesView: View {
             }, header: {
                 Text("Viewing")
             }, footer: {
-                Text("NSFW options here will not take effect until you have explicitly enabled NSFW viewing [on our website](\(self.dataObservable.apiRoot)/user/nsfw_toggle)")
+                Text("NSFW options here will not take effect until you have explicitly enabled NSFW viewing on our website. (\(self.dataObservable.apiRoot)/user/nsfw_toggle)")
             })
             Section {
                 Toggle(isOn: self.$isNSFWDefault) {
