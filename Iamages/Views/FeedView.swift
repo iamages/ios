@@ -11,6 +11,7 @@ enum PublicFeed: String, CaseIterable {
 struct FeedView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     @AppStorage("feedOpenedCount") var feedOpenedCount: Int = 0
+    @AppStorage("areTermsAgreed") var areTermsAgreed: Bool = false
 
     @State var errorAlertText: String?
     @State var isErrorAlertPresented: Bool = false
@@ -25,6 +26,8 @@ struct FeedView: View {
     @State var feedCollections: [IamagesCollection] = []
 
     @State var isThirdPanePresented: Bool = true
+    
+    @State var isTermsAgreeAlertPresented: Bool = false
     
     func pageFeed () async {
         self.isBusy = true
@@ -109,6 +112,9 @@ struct FeedView: View {
             if !self.isFirstRefreshCompleted {
                 Task {
                     await self.startFeed()
+                    if !self.areTermsAgreed {
+                        self.isTermsAgreeAlertPresented = true
+                    }
                 }
                 self.isFirstRefreshCompleted = true
                 self.feedOpenedCount += 1
@@ -162,6 +168,14 @@ struct FeedView: View {
         }
         .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
         .listAndDetailViewFix(isThirdPanePresented: self.$isThirdPanePresented)
+        .alert("Terms agreement", isPresented: self.$isTermsAgreeAlertPresented, actions: {
+            Button("Agree") {
+                self.areTermsAgreed = true
+                self.isTermsAgreeAlertPresented = false
+            }
+        }) {
+            Text("By using this app and related services, you agree to our Terms of Service and Privacy Policy.")
+        }
         .navigationTitle("Feed")
     }
 }

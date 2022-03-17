@@ -7,7 +7,7 @@ import WidgetKit
 struct PreferencesView: View {
     @EnvironmentObject var dataObservable: APIDataObservable
     
-    @AppStorage("isNSFWBlurred", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWBlurred: Bool = true
+    @AppStorage("isNSFWBlurred", store: UserDefaults(suiteName: "group.me.jkelol111.Iamages")) var isNSFWBlurred: Bool = false
     
     @AppStorage("uploadDefaults.isNSFW") var isNSFWDefault: Bool = false
     @AppStorage("uploadDefaults.isHidden") var isHiddenDefault: Bool = false
@@ -82,10 +82,11 @@ struct PreferencesView: View {
         Form {
             Section(content: {
                 Toggle("Blur NSFW Content", isOn: self.$isNSFWBlurred)
+                    .disabled(!self.dataObservable.isLoggedIn)
             }, header: {
                 Text("Viewing")
             }, footer: {
-                Text("NSFW options here will not take effect until you have explicitly enabled NSFW viewing on our website. (\(self.dataObservable.apiRoot)/user/nsfw_toggle)")
+                Text("\(!self.dataObservable.isLoggedIn ? "You're not logged in. These settings will not be applied.\n\n" : "")NSFW options here will not take effect until you have explicitly enabled NSFW viewing on our website. (\(self.dataObservable.apiRoot)/user/nsfw_toggle)")
             })
             Section {
                 Toggle(isOn: self.$isNSFWDefault) {
