@@ -106,29 +106,39 @@ struct ManageUserView: View {
         NavigationView {
             Form {
                 if !self.dataObservable.isLoggedIn {
-                    TextField("Username", text: self.$username)
-                        .textInputAutocapitalization(.none)
-                        .disableAutocorrection(true)
-                    SecureField("Password", text: self.$password)
-                        .onSubmit {
+                    Section {
+                        TextField("Username", text: self.$username)
+                            .textInputAutocapitalization(.none)
+                            .disableAutocorrection(true)
+                        SecureField("Password", text: self.$password)
+                            .onSubmit {
+                                Task {
+                                    await self.login()
+                                }
+                            }
+
+                        Button("Log in") {
                             Task {
                                 await self.login()
                             }
                         }
-
-                    Button("Log in") {
-                        Task {
-                            await self.login()
+                        .disabled(self.isBusy)
+        
+                        Button("Sign up") {
+                            Task {
+                                await self.signup()
+                            }
                         }
+                        .disabled(self.isBusy)
+                    } header: {
+                        
+                    } footer: {
+                        Text("By logging in, you agree to our Terms of Service and Privacy Policy.")
                     }
-                    .disabled(self.isBusy)
-    
-                    Button("Sign up") {
-                        Task {
-                            await self.signup()
-                        }
+                    Section("Policies") {
+                        Link("Terms of Service", destination: URL(string: "\(self.dataObservable.apiRoot)/legal/tos")!)
+                        Link("Privacy Policy", destination: URL(string: "\(self.dataObservable.apiRoot)/legal/privacy")!)
                     }
-                    .disabled(self.isBusy)
                 } else {
                     Section {
                         HStack(alignment: .center) {

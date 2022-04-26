@@ -169,6 +169,14 @@ struct FeedView: View {
         .customBindingAlert(title: "Feed loading failed", message: self.$errorAlertText, isPresented: self.$isErrorAlertPresented)
         .listAndDetailViewFix(isThirdPanePresented: self.$isThirdPanePresented)
         .alert("Terms agreement", isPresented: self.$isTermsAgreeAlertPresented, actions: {
+            Button("Terms of Service") {
+                UIApplication.shared.open(URL(string: "\(self.dataObservable.apiRoot)/legal/tos")!)
+                self.isTermsAgreeAlertPresented = true
+            }
+            Button("Privacy Policy") {
+                UIApplication.shared.open(URL(string: "\(self.dataObservable.apiRoot)/legal/privacy")!)
+                self.isTermsAgreeAlertPresented = true
+            }
             Button("Agree") {
                 self.areTermsAgreed = true
                 self.isTermsAgreeAlertPresented = false
