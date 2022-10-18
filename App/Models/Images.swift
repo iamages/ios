@@ -1,5 +1,6 @@
 import Foundation
 import CryptoKit
+import UniformTypeIdentifiers
 
 struct Thumbnail: Codable {
     let is_computing: Bool
@@ -64,10 +65,10 @@ extension IamagesImageMetadata: RawRepresentable {
 
 struct IamagesUploadInformation: Codable, Identifiable {
     let id: UUID = UUID()
-    var description: String
-    var isPrivate: Bool
-    var isLocked: Bool
-    var lockKey: String
+    var description: String = NSLocalizedString("No description provided.", comment: "")
+    var isPrivate: Bool = false
+    var isLocked: Bool = false
+    var lockKey: String = ""
     
     enum CodingKeys: String, CodingKey {
         case description
@@ -75,4 +76,16 @@ struct IamagesUploadInformation: Codable, Identifiable {
         case isLocked = "is_locked"
         case lockKey = "lock_key"
     }
+}
+
+struct IamagesUploadFile {
+    var filename: String
+    var data: Data
+    var type: UTType
+}
+
+struct IamagesUploadContainer: Identifiable {
+    let id: UUID = UUID()
+    var information: IamagesUploadInformation = IamagesUploadInformation()
+    var file: IamagesUploadFile
 }

@@ -10,6 +10,28 @@ struct SettingsView: View {
     @State private var isDeleteAccountAlertPresented: Bool = false
     @State private var isLoginSheetPresented: Bool = false
     
+    func logout() {
+        do {
+            try self.viewModel.logout()
+        } catch {
+            
+        }
+    }
+    
+    @ViewBuilder
+    private var changeUserPasswordButton: some View {
+        Button("Change password") {
+            
+        }
+    }
+    
+    @ViewBuilder
+    private var deleteUserAccountButton: some View {
+        Button("Delete account", role: .destructive) {
+            self.isDeleteAccountAlertPresented = true
+        }
+    }
+    
     @ViewBuilder
     private var account: some View {
         if let userInformation: IamagesUser = self.viewModel.userInformation {
@@ -21,11 +43,24 @@ struct SettingsView: View {
                     Text(userInformation.createdOn, format: .dateTime)
                 }
             }
-            Button("Change password") {
-                
+            #if os(macOS)
+            HStack {
+                self.changeUserPasswordButton
+                Spacer()
+                self.deleteUserAccountButton
             }
-            Button("Delete account", role: .destructive) {
-                self.isDeleteAccountAlertPresented = true
+            #else
+            self.changeUserPasswordButton
+            self.deleteUserAccountButton
+            #endif
+            Button(action: self.logout) {
+                #if os(macOS)
+                Spacer()
+                #endif
+                Text("Log out")
+                #if os(macOS)
+                Spacer()
+                #endif
             }
         } else {
             Button("Login/signup") {
@@ -54,13 +89,32 @@ struct SettingsView: View {
     var body: some View {
         #if os(macOS)
         TabView {
-            Form {
-                self.uploadDefaults
+            Group {
+                Form {
+                    self.account
+                }
+                
+                .tabItem {
+                    Label("Accounts", systemImage: "person.2")
+                }
+                
+                Form {
+                    self.uploadDefaults
+                }
+                .tabItem {
+                    Label("Upload", systemImage: "square.and.arrow.up.on.square")
+                }
+                
+                Form {
+                    self.tip
+                }
+                .tabItem {
+                    Label("Tip Jar", systemImage: "cup.and.saucer")
+                }
             }
-            .tabItem {
-                Label("Accounts", systemImage: "person.2")
-            }
+            .formStyle(.grouped)
         }
+        .frame(width: 350, height: 200)
         #else
         NavigationStack {
             Form {

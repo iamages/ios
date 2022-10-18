@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E00889F28FD6D0900607E0B /* UploadInformationEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E00889E28FD6D0900607E0B /* UploadInformationEditorView.swift */; };
+		2E0088A128FD76A700607E0B /* UploadImportErrorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E0088A028FD76A700607E0B /* UploadImportErrorsView.swift */; };
+		2E0088A328FD8B1F00607E0B /* NavigableUploadInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E0088A228FD8B1F00607E0B /* NavigableUploadInformationView.swift */; };
 		2E0424D228DAACD50023CE41 /* LoginSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E0424D128DAACD50023CE41 /* LoginSheetView.swift */; };
 		2E0424D428DAAE2D0023CE41 /* HelpLinksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E0424D328DAAE2D0023CE41 /* HelpLinksView.swift */; };
 		2E0424D628DB469B0023CE41 /* ImagesGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E0424D528DB469B0023CE41 /* ImagesGridView.swift */; };
@@ -25,8 +28,8 @@
 		2E5E699728B5C3D200CFCA3C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E5E699628B5C3D200CFCA3C /* Preview Assets.xcassets */; };
 		2E5E699F28B5C79F00CFCA3C /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 2E5E699E28B5C79F00CFCA3C /* KeychainAccess */; };
 		2E5E69A228B5CDD700CFCA3C /* MultipartFormData in Frameworks */ = {isa = PBXBuildFile; productRef = 2E5E69A128B5CDD700CFCA3C /* MultipartFormData */; };
+		2E61E90028F97581007B6A9E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E61E8FF28F97581007B6A9E /* StoreKit.framework */; };
 		2E73DF9A28BA22DF009DDC24 /* Argon2Swift in Frameworks */ = {isa = PBXBuildFile; productRef = 2E73DF9928BA22DF009DDC24 /* Argon2Swift */; };
-		2E73DF9C28BB0A4B009DDC24 /* KeychainAccess+PropertyWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E73DF9B28BB0A4B009DDC24 /* KeychainAccess+PropertyWrapper.swift */; };
 		2E8B2FA028B5D0A80071780B /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 2E8B2F9F28B5D0A80071780B /* NukeUI */; };
 		2E8B2FA328B5D0D90071780B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8B2FA228B5D0D90071780B /* SettingsView.swift */; };
 		2E8B2FA728B5D4D20071780B /* Images.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8B2FA628B5D4D20071780B /* Images.swift */; };
@@ -36,6 +39,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E00889E28FD6D0900607E0B /* UploadInformationEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadInformationEditorView.swift; sourceTree = "<group>"; };
+		2E0088A028FD76A700607E0B /* UploadImportErrorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImportErrorsView.swift; sourceTree = "<group>"; };
+		2E0088A228FD8B1F00607E0B /* NavigableUploadInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigableUploadInformationView.swift; sourceTree = "<group>"; };
 		2E0424D128DAACD50023CE41 /* LoginSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSheetView.swift; sourceTree = "<group>"; };
 		2E0424D328DAAE2D0023CE41 /* HelpLinksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpLinksView.swift; sourceTree = "<group>"; };
 		2E0424D528DB469B0023CE41 /* ImagesGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesGridView.swift; sourceTree = "<group>"; };
@@ -53,7 +59,7 @@
 		2E5E699228B5C3D200CFCA3C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2E5E699428B5C3D200CFCA3C /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		2E5E699628B5C3D200CFCA3C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2E73DF9B28BB0A4B009DDC24 /* KeychainAccess+PropertyWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeychainAccess+PropertyWrapper.swift"; sourceTree = "<group>"; };
+		2E61E8FF28F97581007B6A9E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		2E8B2FA228B5D0D90071780B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		2E8B2FA628B5D4D20071780B /* Images.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
 		2E8B2FAB28B5E1150071780B /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
@@ -67,6 +73,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E8B2FA028B5D0A80071780B /* NukeUI in Frameworks */,
+				2E61E90028F97581007B6A9E /* StoreKit.framework in Frameworks */,
 				2E509E7E28F15AD900ABC072 /* GRDB in Frameworks */,
 				2E509E8128F15AF600ABC072 /* GRDBQuery in Frameworks */,
 				2E73DF9A28BA22DF009DDC24 /* Argon2Swift in Frameworks */,
@@ -78,11 +85,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2E00889D28FD6CEF00607E0B /* Upload */ = {
+			isa = PBXGroup;
+			children = (
+				2E0424D928DC92540023CE41 /* UploadView.swift */,
+				2E00889E28FD6D0900607E0B /* UploadInformationEditorView.swift */,
+				2E0088A028FD76A700607E0B /* UploadImportErrorsView.swift */,
+				2E0088A228FD8B1F00607E0B /* NavigableUploadInformationView.swift */,
+			);
+			path = Upload;
+			sourceTree = "<group>";
+		};
+		2E0088A428FE570D00607E0B /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				2E509E7A28F154E600ABC072 /* OwnerlessSheetView.swift */,
+				2E0424D528DB469B0023CE41 /* ImagesGridView.swift */,
+				2E0424DB28DF4B430023CE41 /* ImageNavigationLink.swift */,
+				2E0424D728DC81170023CE41 /* ImageDetailView.swift */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
+		2E0088A528FE571C00607E0B /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				2E0424D128DAACD50023CE41 /* LoginSheetView.swift */,
+				2E0424D328DAAE2D0023CE41 /* HelpLinksView.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		2E5E698228B5C3D100CFCA3C = {
 			isa = PBXGroup;
 			children = (
 				2E5E698D28B5C3D100CFCA3C /* App */,
 				2E5E698C28B5C3D100CFCA3C /* Products */,
+				2E61E8FE28F97581007B6A9E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -117,18 +156,22 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		2E61E8FE28F97581007B6A9E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2E61E8FF28F97581007B6A9E /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		2E8B2FA128B5D0C70071780B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2E0088A528FE571C00607E0B /* Utilities */,
+				2E00889D28FD6CEF00607E0B /* Upload */,
+				2E0088A428FE570D00607E0B /* Images */,
 				2E8B2FA228B5D0D90071780B /* SettingsView.swift */,
 				2E8B2FAF28B72D7F0071780B /* RootNavigationView.swift */,
-				2E0424D128DAACD50023CE41 /* LoginSheetView.swift */,
-				2E0424D328DAAE2D0023CE41 /* HelpLinksView.swift */,
-				2E0424D528DB469B0023CE41 /* ImagesGridView.swift */,
-				2E0424D728DC81170023CE41 /* ImageDetailView.swift */,
-				2E0424D928DC92540023CE41 /* UploadView.swift */,
-				2E0424DB28DF4B430023CE41 /* ImageNavigationLink.swift */,
-				2E509E7A28F154E600ABC072 /* OwnerlessSheetView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -136,7 +179,6 @@
 		2E8B2FA428B5D1A10071780B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				2E73DF9B28BB0A4B009DDC24 /* KeychainAccess+PropertyWrapper.swift */,
 				2E509E7628EEE98800ABC072 /* View+Utils.swift */,
 				2E509E8228F15C8F00ABC072 /* EnvironmentValues+GRDB.swift */,
 				2E509E8428F15DC200ABC072 /* Bundle+About.swift */,
@@ -191,7 +233,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1400;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 1410;
 				TargetAttributes = {
 					2E5E698A28B5C3D100CFCA3C = {
 						CreatedOnToolsVersion = 14.0;
@@ -241,7 +283,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E73DF9C28BB0A4B009DDC24 /* KeychainAccess+PropertyWrapper.swift in Sources */,
 				2E0424DA28DC92540023CE41 /* UploadView.swift in Sources */,
 				2E509E8328F15C8F00ABC072 /* EnvironmentValues+GRDB.swift in Sources */,
 				2E8B2FA328B5D0D90071780B /* SettingsView.swift in Sources */,
@@ -249,12 +290,15 @@
 				2E509E7728EEE98800ABC072 /* View+Utils.swift in Sources */,
 				2E0424D828DC81170023CE41 /* ImageDetailView.swift in Sources */,
 				2E8B2FAC28B5E1150071780B /* ViewModel.swift in Sources */,
+				2E00889F28FD6D0900607E0B /* UploadInformationEditorView.swift in Sources */,
 				2E0424D228DAACD50023CE41 /* LoginSheetView.swift in Sources */,
 				2E0424DC28DF4B430023CE41 /* ImageNavigationLink.swift in Sources */,
+				2E0088A328FD8B1F00607E0B /* NavigableUploadInformationView.swift in Sources */,
 				2E509E7B28F154E600ABC072 /* OwnerlessSheetView.swift in Sources */,
 				2E8B2FAE28B5E1520071780B /* Users.swift in Sources */,
 				2E0424D428DAAE2D0023CE41 /* HelpLinksView.swift in Sources */,
 				2E509E8528F15DC200ABC072 /* Bundle+About.swift in Sources */,
+				2E0088A128FD76A700607E0B /* UploadImportErrorsView.swift in Sources */,
 				2E0424D628DB469B0023CE41 /* ImagesGridView.swift in Sources */,
 				2E509E7928EEE9BE00ABC072 /* AppErrors.swift in Sources */,
 				2E8B2FB028B72D7F0071780B /* RootNavigationView.swift in Sources */,
@@ -298,6 +342,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -356,6 +401,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -380,8 +426,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -390,6 +440,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2022-present Nam Thanh Nguyen (jkelol111) et al.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -421,8 +472,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -431,6 +486,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2022-present Nam Thanh Nguyen (jkelol111) et al.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

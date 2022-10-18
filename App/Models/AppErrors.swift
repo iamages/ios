@@ -1,4 +1,5 @@
 import Foundation
+import UniformTypeIdentifiers
 
 // Credits:
 // https://www.avanderlee.com/swiftui/error-alert-presenting/
@@ -21,7 +22,7 @@ struct LocalizedAlertError: LocalizedError {
 enum APICommunicationErrors: Error {
     case invalidURL(URL)
     case invalidResponse(URL?)
-    case badResponse(Int, String?)
+    case badResponse(Int, String)
     case invalidUploadRequest
     case notLoggedIn
 }
@@ -34,7 +35,7 @@ extension APICommunicationErrors: LocalizedError {
         case .invalidResponse(let url):
             return NSLocalizedString("Could not parse response for '\(url?.absoluteString ?? "Unknown")'.", comment: "")
         case .badResponse(let code, let detail):
-            return NSLocalizedString("Bad response code '\(code)' outside of range 200-299 (\(detail ?? "Unknown error")).", comment: "")
+            return NSLocalizedString("Bad response code '\(code)' outside of range 200-299 (\(detail)).", comment: "")
         case .invalidUploadRequest:
             return NSLocalizedString("Upload request doesn't have an attached file.", comment: "")
         case .notLoggedIn:
@@ -82,4 +83,47 @@ extension LoginErrors: LocalizedError {
             return NSLocalizedString("Login to use your new account.", comment: "")
         }
     }
+}
+
+enum FileImportErrors: Error {
+    case tooLarge(String, Int)
+    case noSize(String)
+    case unsupportedType(String, UTType)
+    case noType(String)
+    case loadPhotoFromLibraryFailure
+}
+
+extension FileImportErrors: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .tooLarge(let name, let size):
+            return NSLocalizedString("'\(name)' is too large to be uploaded (\(ByteCountFormatter.string(from: Measurement(value: Double(size), unit: .bytes), countStyle: .decimal))MB > 30MB).", comment: "")
+        case .noSize(let name):
+            return NSLocalizedString("'\(name)' does not have file size information.", comment: "")
+        case .unsupportedType(let name, let type):
+            return NSLocalizedString("'\(name)' does not have a supported file type (\(type)).", comment: "")
+        case .noType(let name):
+            return NSLocalizedString("'\(name)' does not have file type information.", comment: "")
+        case .loadPhotoFromLibraryFailure:
+            return NSLocalizedString("Cannot load a file from your photo library.", comment: "")
+        }
+    }
+    
+    public var recoverySuggestion: String? {
+        switch self {
+        case .tooLarge(_, _):
+            return NSLocalizedString("Pick an image smaller than 30MB.", comment: "")
+        case .unsupportedType(_, _):
+            return NSLocalizedString("Pick an image that is a JPEG, PNG, GIF or WebP file.", comment: "")
+        case .loadPhotoFromLibraryFailure:
+            return NSLocalizedString("Check your internet connection, or iCloud system status.", comment: "")
+        default:
+            return nil
+        }
+    }
+}
+
+struct IdentifiableLocalizedError: Identifiable {
+    let id: UUID = UUID()
+    var error: LocalizedError
 }

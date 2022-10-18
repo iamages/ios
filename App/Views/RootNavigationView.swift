@@ -3,9 +3,10 @@ import SwiftUI
 struct RootNavigationView: View {
     @EnvironmentObject var viewModel: ViewModel
     @Environment(\.openWindow) var openWindow
-    
+
     #if !os(macOS)
     @State private var isSettingsSheetPresented: Bool = false
+    @State private var isUploadsCoverPresented: Bool = false
     #endif
     
     var body: some View {
@@ -23,36 +24,37 @@ struct RootNavigationView: View {
                     #endif
                     ToolbarItem(placement: .primaryAction) {
                         Button(action: {
-                            #if os(macOS)
-                            self.openWindow(id: "upload")
-                            #else
-                            self.viewModel.isUploadDetailVisible = true
-                            #endif
+                            NotificationCenter.default.post(name: Notification.Name("openUploads"), object: nil)
                         }) {
                             Label("Upload", systemImage: "plus")
                         }
-                        #if os(iOS)
-                        .disabled(self.viewModel.isUploadDetailVisible)
-                        #endif
                     }
                 }
         } detail: {
-            if self.viewModel.isUploadDetailVisible {
-                UploadView()
+            if let selectedImage: IamagesImage = self.viewModel.selectedImage {
+                ImageDetailView(image: selectedImage)
             } else {
-                if let selectedImage: IamagesImage = self.viewModel.selectedImage {
-                    ImageDetailView(image: selectedImage)
-                } else {
-                    Text("Select something on the sidebar")
-                        .navigationTitle("") // BUGFIX: UploadView's title sticks even though view is gone.
-                }
+                Text("Select something on the sidebar")
             }
         }
-        #if !os(macOS)
+        #if os(iOS)
         .sheet(isPresented: self.$isSettingsSheetPresented) {
             SettingsView(isPresented: self.$isSettingsSheetPresented)
         }
+        .fullScreenCover(isPresented: self.$isUploadsCoverPresented) {
+            UploadView(isPresented: self.$isUploadsCoverPresented)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("openSettings"))) { _ in
+            self.isSettingsSheetPresented = true
+        }
         #endif
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("openUploads"))) { _ in
+            #if os(macOS)
+            openWindow(id: "uploads")
+            #else
+            self.isUploadsCoverPresented = true
+            #endif
+        }
     }
 }
 

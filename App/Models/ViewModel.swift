@@ -4,6 +4,7 @@ import MultipartFormData
 import CryptoKit
 import Argon2Swift
 import GRDB
+import UniformTypeIdentifiers
 
 fileprivate struct EncryptedBlob {
     let salt: Data
@@ -25,6 +26,10 @@ fileprivate enum HTTPContentType: String {
     case multipart = "multipart/form-data"
 }
 
+fileprivate struct APIErrorDetails: Codable {
+    let detail: String
+}
+
 class ViewModel: ObservableObject {
     private let jsone = JSONEncoder()
     private let jsond = JSONDecoder()
@@ -36,12 +41,34 @@ class ViewModel: ObservableObject {
     #else
     private let apiBaseURL: URL = URL(string: "https://api.iamages.app")!
     #endif
+    
+    let acceptedFileTypes: [UTType] = [
+        .jpeg,
+        .png,
+        .gif,
+        .webP
+    ]
 
-    @KeychainStorage("userInformation") var userInformation: IamagesUser?
-    @KeychainStorage("lastUserToken") var lastUserToken: LastIamagesUserToken?
-    @Published var isUploadDetailVisible: Bool = false
+    @Published var userInformation: IamagesUser?
+    @Published var lastUserToken: LastIamagesUserToken?
     @Published var isNewCollectionSheetVisible: Bool = false
     @Published var selectedImage: IamagesImage?
+    
+    init() {
+        self.jsone.dateEncodingStrategy = .iso8601
+        self.jsond.dateDecodingStrategy = .iso8601
+        do {
+            if let userInformation = try self.keychain.getData("userInformation") {
+                self.userInformation = try self.jsond.decode(IamagesUser.self, from: userInformation)
+            }
+            if let lastUserToken = try self.keychain.getData("lastUserToken") {
+                self.lastUserToken = try self.jsond.decode(LastIamagesUserToken.self, from: lastUserToken)
+            }
+        } catch {
+            print("Error fetching logged in user information. Maybe you're not logged in yet?")
+            print(error)
+        }
+    }
     
     private func fetchData(
         _ endpoint: String,
@@ -52,35 +79,32 @@ class ViewModel: ObservableObject {
         requiresAuth: Bool = false
     ) async throws -> Data {
         var request = URLRequest(
-            url: self.apiBaseURL.appending(path: endpoint)
+            url: self.apiBaseURL.appendingPathComponent(endpoint)
         )
         request.httpMethod = method.rawValue
 
         request.httpBody = body
-        request.addValue("Content-Type", forHTTPHeaderField: contentType.rawValue)
+        request.addValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
 
         if requiresAuth {
-            guard let lastUserToken = self.lastUserToken else {
-                try await fetchUserToken()
-                return try await fetchData(
-                    endpoint,
-                    method: method,
-                    body: body,
-                    headers: headers,
-                    requiresAuth: requiresAuth
-                )
+            if self.lastUserToken == nil || Date.now.timeIntervalSince(self.lastUserToken!.date) > 1800 {
+                try await self.fetchUserToken()
             }
-            if Date.now.timeIntervalSince(lastUserToken.date) > 1800 {
-                try await fetchUserToken()
-            }
-            request.addValue("Bearer \(lastUserToken.token.accessToken)", forHTTPHeaderField: "Authorization")
+            
+            request.addValue("Bearer \(self.lastUserToken!.token.accessToken)", forHTTPHeaderField: "Authorization")
         }
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let response = response as? HTTPURLResponse else {
             throw APICommunicationErrors.invalidResponse(request.url)
         }
         if response.statusCode < 200 || response.statusCode > 299 {
-            throw APICommunicationErrors.badResponse(response.statusCode, String(data: data, encoding: .utf8))
+            let detail: String
+            do {
+                detail = try self.jsond.decode(APIErrorDetails.self, from: data).detail
+            } catch {
+                detail = String(decoding: data, as: UTF8.self)
+            }
+            throw APICommunicationErrors.badResponse(response.statusCode, detail)
         }
         return data
     }
@@ -94,20 +118,23 @@ class ViewModel: ObservableObject {
                     from: try await fetchData(
                         "/users/token",
                         method: .post,
-                        body: "username=\(username)&password=\(password)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?.data(using: .utf8),
+                        body: "username=\(username)&password=\(password)&grant_type=password".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?.data(using: .utf8),
                         contentType: .encodedForm
                     )
                 ),
                 date: Date.now
             )
-            self.lastUserToken = newLastUserToken
+            try self.keychain[data: "lastUserToken"] = self.jsone.encode(newLastUserToken)
+            DispatchQueue.main.sync {
+                self.lastUserToken = newLastUserToken
+            }
         } else {
             throw APICommunicationErrors.notLoggedIn
         }
     }
     
     private func getUserInformation() async throws {
-        self.userInformation = try self.jsond.decode(
+        let userInformation: IamagesUser = try self.jsond.decode(
             IamagesUser.self,
             from: try await self.fetchData(
                 "/users/",
@@ -115,6 +142,10 @@ class ViewModel: ObservableObject {
                 requiresAuth: true
             )
         )
+        try self.keychain[data: "userInformation"] = self.jsone.encode(userInformation)
+        DispatchQueue.main.sync {
+            self.userInformation = userInformation
+        }
     }
     
     func login(username: String, password: String) async throws {
@@ -141,6 +172,12 @@ class ViewModel: ObservableObject {
                 )
             )
         )
+    }
+    
+    func logout() throws {
+        try self.keychain.removeAll()
+        self.userInformation = nil
+        self.lastUserToken = nil
     }
     
     private func decryptAndVerify(
@@ -194,6 +231,10 @@ class ViewModel: ObservableObject {
     }
     
     func getImageMetadata(id: String) async throws {
+        
+    }
+    
+    func uploadImage(information: IamagesUploadInformation) async throws {
         
     }
 }

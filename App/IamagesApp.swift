@@ -14,19 +14,23 @@ struct IamagesApp: App {
                 .environment(\.dbQueue, try! DatabaseQueue()) // FIXME: Use local DbQueue.
         }
         .commands {
+            #if os(iOS)
+            CommandGroup(replacing: .appSettings) {
+                Button("Settings") {
+                    NotificationCenter.default.post(name: Notification.Name("openSettings"), object: nil)
+                }
+                .keyboardShortcut(",")
+            }
+            #endif
             CommandGroup(replacing: .newItem) {
                 Button("New images upload") {
-                    #if os(macOS)
-                    openWindow(id: "upload")
-                    #else
-                    self.viewModel.isUploadDetailVisible = true
-                    #endif
+                    NotificationCenter.default.post(name: Notification.Name("openUploads"), object: nil)
                 }
                 .keyboardShortcut("n")
 
                 Button("New images collection") {
                     #if os(macOS)
-                    openWindow("newCollection")
+                    openWindow(id: "newCollection")
                     #else
                     self.viewModel.isNewCollectionSheetVisible = true
                     #endif
@@ -36,7 +40,7 @@ struct IamagesApp: App {
         }
         
         #if os(macOS)
-        WindowGroup(id: "upload") {
+        Window("Uploads", id: "uploads") {
             UploadView()
                 .environmentObject(self.viewModel)
         }
