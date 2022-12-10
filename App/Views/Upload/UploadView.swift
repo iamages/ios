@@ -2,15 +2,15 @@ import SwiftUI
 import PhotosUI
 
 struct UploadView: View {
-    @EnvironmentObject var viewModel: ViewModel
-    
-    #if !os(macOS)
+    @EnvironmentObject private var globalViewModel: GlobalViewModel
+
+    #if !targetEnvironment(macCatalyst)
     @Binding var isPresented: Bool
     #endif
     
-    @State private var pendingUploads: [IamagesUploadContainer] = []
+    @State private var uploadContainers: [IamagesUploadContainer] = []
 
-    @State private var images: [PhotosPickerItem] = []
+    @State private var photoPickerItems: [PhotosPickerItem] = []
     
     @State private var isFilePickerPresented: Bool = false
     @State private var error: LocalizedAlertError?
@@ -19,6 +19,10 @@ struct UploadView: View {
 
     @State private var fileImportErrors: [IdentifiableLocalizedError] = []
     @State private var isImportErrorsSheetPresented: Bool = false
+    
+    // TODO: Collection information
+    @State private var isNewCollectionSheetPresented: Bool = false
+    @State private var isNavigatedToUploading: Bool = false
     
     private func handleImagesPicked(_ images: [PhotosPickerItem]) async {
         self.isBusy = true
@@ -30,28 +34,32 @@ struct UploadView: View {
                 guard let data: Data = try await image.loadTransferable(type: Data.self) else {
                     throw FileImportErrors.loadPhotoFromLibraryFailure
                 }
-                guard let type: UTType = image.supportedContentTypes.first else {
+                guard let type: UTType = image.supportedContentTypes.first,
+                      let mime: String = type.preferredMIMEType else {
                     throw FileImportErrors.noType("Photo library file")
                 }
                 
-                if !self.viewModel.acceptedFileTypes.contains(type) {
-                    throw FileImportErrors.unsupportedType("Photo library file", type)
+                if !self.globalViewModel.acceptedFileTypes.contains(mime) {
+                    throw FileImportErrors.unsupportedType("Photo library file", mime)
                 }
                 
-                self.pendingUploads.append(
+                self.uploadContainers.append(
                     IamagesUploadContainer(
                         file: IamagesUploadFile(
-                            filename: "\(image.itemIdentifier ?? UUID().uuidString).\(type.preferredFilenameExtension ?? ".bin")",
+                            name: "\(image.itemIdentifier ?? UUID().uuidString).\(type.preferredFilenameExtension ?? ".bin")",
                             data: data,
-                            type: type
+                            type: mime
                         )
                     )
                 )
             } catch {
-                self.fileImportErrors.append(IdentifiableLocalizedError(error: error as! LocalizedError))
+                if let error = error as? LocalizedError {
+                    self.fileImportErrors.append(IdentifiableLocalizedError(error: error))
+                }
+                
             }
 
-            self.images.remove(at: i)
+            self.photoPickerItems.remove(at: i)
         }
         
         self.isBusy = false
@@ -73,17 +81,17 @@ struct UploadView: View {
                         throw FileImportErrors.tooLarge(url.lastPathComponent, size)
                     }
 
-                    guard let type: UTType = meta.contentType else {
+                    guard let type: String = meta.contentType?.preferredMIMEType else {
                         throw FileImportErrors.noType(url.lastPathComponent)
                     }
-                    if !self.viewModel.acceptedFileTypes.contains(type) {
+                    if !self.globalViewModel.acceptedFileTypes.contains(type) {
                         throw FileImportErrors.unsupportedType(url.lastPathComponent, type)
                     }
 
-                    self.pendingUploads.append(
+                    self.uploadContainers.append(
                         IamagesUploadContainer(
                             file: IamagesUploadFile(
-                                filename: url.lastPathComponent,
+                                name: url.lastPathComponent,
                                 data: try Data(contentsOf: url),
                                 type: type
                             )
@@ -103,7 +111,7 @@ struct UploadView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if self.pendingUploads.isEmpty {
+                if self.uploadContainers.isEmpty {
                     VStack(spacing: 8) {
                         Image(systemName: "questionmark.folder")
                             .font(.largeTitle)
@@ -113,24 +121,23 @@ struct UploadView: View {
                     }
                 } else {
                     List {
-                        ForEach(self.$pendingUploads) { pendingUpload in
+                        ForEach(self.$uploadContainers) { pendingUpload in
                             NavigableUploadInformationView(
-                                information: pendingUpload.information,
-                                image: pendingUpload.file.data.wrappedValue
+                                uploadContainer: pendingUpload
                             )
                             .listRowSeparator(.visible)
                         }
                         .onDelete { offset in
-                            self.pendingUploads.remove(atOffsets: offset)
+                            self.uploadContainers.remove(atOffsets: offset)
                         }
                     }
                 }
             }
             .navigationTitle("Uploads")
-            #if os(macOS)
-            .navigationSubtitle("\(self.pendingUploads.count) image\(self.pendingUploads.count > 1 || self.pendingUploads.isEmpty ? "s" : "")")
+            #if targetEnvironment(macCatalyst)
+            .navigationSubtitle("\(self.uploadContainers.count) image\(self.uploadContainers.count > 1 || self.uploadContainers.isEmpty ? "s" : "")")
             #endif
-            .onChange(of: self.images) { images in
+            .onChange(of: self.photoPickerItems) { images in
                 Task {
                     await self.handleImagesPicked(images)
                 }
@@ -147,8 +154,16 @@ struct UploadView: View {
                     isPresented: self.$isImportErrorsSheetPresented
                 )
             }
+            .sheet(isPresented: self.$isNewCollectionSheetPresented, onDismiss: {
+                self.isNavigatedToUploading = true
+            }) {
+                
+            }
+            .navigationDestination(isPresented: self.$isNavigatedToUploading) {
+                UploadingView(uploadContainers: self.$uploadContainers)
+            }
             .toolbar {
-                #if !os(macOS)
+                #if !targetEnvironment(macCatalyst)
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         self.isPresented = false
@@ -168,14 +183,12 @@ struct UploadView: View {
                         .badge(self.fileImportErrors.count)
                     }
                 }
-                #if os(iOS)
                 ToolbarItem(placement: .navigationBarLeading) {
                     EditButton()
-                        .disabled(self.pendingUploads.isEmpty)
+                        .disabled(self.uploadContainers.isEmpty)
                 }
-                #endif
                 ToolbarItem(placement: .primaryAction) {
-                    PhotosPicker(selection: self.$images, matching: .images) {
+                    PhotosPicker(selection: self.$photoPickerItems, matching: .images) {
                         Label("Choose photos", systemImage: "rectangle.stack.badge.plus")
                     }
                 }
@@ -189,19 +202,19 @@ struct UploadView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button(action: {
-                            
+                            self.isNavigatedToUploading = true
                         }) {
                             Label("Upload separately", systemImage: "square.and.arrow.up.on.square")
                         }
                         Button(action: {
-                            
+                            self.isNewCollectionSheetPresented = true
                         }) {
                             Label("Upload into collection", systemImage: "square.grid.3x1.folder.badge.plus")
                         }
                     } label: {
                         Label("Upload", systemImage: "square.and.arrow.up.on.square")
                     }
-                    .disabled(self.images.isEmpty)
+                    .disabled(self.uploadContainers.isEmpty)
                 }
             }
             .errorAlert(error: self.$error)
@@ -212,12 +225,12 @@ struct UploadView: View {
 #if DEBUG
 struct UploadView_Previews: PreviewProvider {
     static var previews: some View {
-        #if os(macOS)
+        #if targetEnvironment(macCatalyst)
         UploadView()
-            .environmentObject(ViewModel())
+            .environmentObject(GlobalViewModel())
         #else
         UploadView(isPresented: .constant(true))
-            .environmentObject(ViewModel())
+            .environmentObject(GlobalViewModel())
         #endif
     }
 }

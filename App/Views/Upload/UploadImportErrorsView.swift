@@ -41,7 +41,7 @@ struct UploadImportErrorsView_Previews: PreviewProvider {
     static var previews: some View {
         UploadImportErrorsView(
             errors: .constant([
-                IdentifiableLocalizedError(error: FileImportErrors.unsupportedType("test.mov", .quickTimeMovie)),
+                IdentifiableLocalizedError(error: FileImportErrors.unsupportedType("test.mov", "video/mov")),
                 IdentifiableLocalizedError(error: FileImportErrors.tooLarge("test.jpg", 4000000))
             ]),
             isPresented: .constant(true)

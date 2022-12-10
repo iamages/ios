@@ -1,60 +1,88 @@
 import SwiftUI
 
 struct RootNavigationView: View {
-    @EnvironmentObject var viewModel: ViewModel
-    @Environment(\.openWindow) var openWindow
+    @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @Environment(\.openWindow) private var openWindow
 
-    #if !os(macOS)
-    @State private var isSettingsSheetPresented: Bool = false
-    @State private var isUploadsCoverPresented: Bool = false
-    #endif
+    @State private var isWelcomeSheetPresented: Bool = false
+    
+    @StateObject private var splitViewModel: SplitViewModel = SplitViewModel()
+    @State private var selectedView: AppUserViews = .images
     
     var body: some View {
         NavigationSplitView {
-            ImagesGridView()
+            NavigationStack {
+                Group {
+                    switch self.selectedView {
+                    case .images:
+                        ImagesListView(splitViewModel: self.splitViewModel)
+                    case .collections:
+                        IconAndInformationView(
+                            icon: "shippingbox",
+                            heading: "Coming soon!",
+                            subheading: "We're working hard to bring this into fruition.\nCheck back in a future update."
+                        )
+                        .navigationTitle("Collections")
+                    }
+                }
                 .toolbar {
-                    #if !os(macOS)
+                    #if !targetEnvironment(macCatalyst)
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: {
-                            self.isSettingsSheetPresented = true
+                            self.globalViewModel.isSettingsPresented = true
                         }) {
                             Label("Settings", systemImage: "gear")
                         }
                     }
                     #endif
+                    ToolbarItem {
+                        Picker("View", selection: self.$selectedView) {
+                            ForEach(AppUserViews.allCases) { view in
+                                Label(view.localizedName, systemImage: view.icon)
+                            }
+                        }
+                    }
+                    #if !targetEnvironment(macCatalyst)
                     ToolbarItem(placement: .primaryAction) {
                         Button(action: {
-                            NotificationCenter.default.post(name: Notification.Name("openUploads"), object: nil)
+                            self.globalViewModel.isUploadsPresented = true
                         }) {
                             Label("Upload", systemImage: "plus")
                         }
+                        .keyboardShortcut("n")
                     }
+                    #endif
                 }
+            }
+            .navigationDestination(for: IamagesCollection.self) { collection in
+
+            }
         } detail: {
-            if let selectedImage: IamagesImage = self.viewModel.selectedImage {
-                ImageDetailView(image: selectedImage)
-            } else {
-                Text("Select something on the sidebar")
+            ImageDetailView(splitViewModel: self.splitViewModel)
+        }
+        .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
+            if !isLoggedIn {
+                self.splitViewModel.selectedImage = nil
+                self.splitViewModel.selectedCollection = nil
             }
         }
-        #if os(iOS)
-        .sheet(isPresented: self.$isSettingsSheetPresented) {
-            SettingsView(isPresented: self.$isSettingsSheetPresented)
+        .onChange(of: self.selectedView) { _ in
+            self.splitViewModel.selectedImage = nil
+            self.splitViewModel.selectedCollection = nil
         }
-        .fullScreenCover(isPresented: self.$isUploadsCoverPresented) {
-            UploadView(isPresented: self.$isUploadsCoverPresented)
+        // Welcome sheet
+        .modifier(AppWelcomeSheetModifier(isPresented: self.$isWelcomeSheetPresented))
+        #if targetEnvironment(macCatalyst)
+        .hideMacTitlebar()
+        #else
+        .fullScreenCover(isPresented: self.$globalViewModel.isSettingsPresented) {
+            SettingsView(isPresented: self.$globalViewModel.isSettingsPresented)
         }
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("openSettings"))) { _ in
-            self.isSettingsSheetPresented = true
+        .fullScreenCover(isPresented: self.$globalViewModel.isUploadsPresented) {
+            UploadView(isPresented: self.$globalViewModel.isUploadsPresented)
         }
         #endif
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("openUploads"))) { _ in
-            #if os(macOS)
-            openWindow(id: "uploads")
-            #else
-            self.isUploadsCoverPresented = true
-            #endif
-        }
+        
     }
 }
 
@@ -62,7 +90,7 @@ struct RootNavigationView: View {
 struct RootNavigationView_Previews: PreviewProvider {
     static var previews: some View {
         RootNavigationView()
-            .environmentObject(ViewModel())
+            .environmentObject(GlobalViewModel())
     }
 }
 #endif

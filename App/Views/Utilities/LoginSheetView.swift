@@ -1,7 +1,8 @@
 import SwiftUI
+import WidgetKit
 
 struct LoginSheetView: View {
-    @EnvironmentObject var viewModel: ViewModel
+    @EnvironmentObject var globalViewModel: GlobalViewModel
 
     @Binding var isPresented: Bool
     
@@ -26,10 +27,11 @@ struct LoginSheetView: View {
         self.isBusy = true
         do {
             try self.validateCredentials()
-            try await self.viewModel.login(
+            try await self.globalViewModel.login(
                 username: self.usernameInput,
                 password: self.passwordInput
             )
+            WidgetCenter.shared.reloadAllTimelines()
             self.isPresented = false
         } catch {
             print(error)
@@ -42,7 +44,7 @@ struct LoginSheetView: View {
         self.isBusy = true
         do {
             try self.validateCredentials()
-            try await self.viewModel.signup(
+            try await self.globalViewModel.signup(
                 username: self.usernameInput,
                 password: self.passwordInput
             )
@@ -53,35 +55,23 @@ struct LoginSheetView: View {
         self.isBusy = false
     }
     
-    @ViewBuilder
-    private var loginButton: some View {
-        Button("Login") {
-            Task {
-                await self.login()
-            }
-        }
-        .disabled(self.isBusy)
-    }
-    
-    @ViewBuilder
-    private var signupButton: some View {
-        Button("Sign up") {
-            Task {
-                await self.signup()
-            }
-        }
-        .disabled(self.isBusy)
-    }
-    
     var body: some View {
         NavigationStack {
             Form {
                 TextField("Username", text: self.$usernameInput)
                 SecureField("Password", text: self.$passwordInput)
-                #if !os(macOS)
-                self.loginButton
-                self.signupButton
-                #endif
+                Button("Login") {
+                    Task {
+                        await self.login()
+                    }
+                }
+                .disabled(self.isBusy)
+                Button("Sign up") {
+                    Task {
+                        await self.signup()
+                    }
+                }
+                .disabled(self.isBusy)
             }
             .formStyle(.grouped)
             .toolbar {
@@ -91,14 +81,6 @@ struct LoginSheetView: View {
                     }
                     .disabled(self.isBusy)
                 }
-                #if os(macOS)
-                ToolbarItem(placement: .primaryAction) {
-                    self.loginButton
-                }
-                ToolbarItem {
-                    self.signupButton
-                }
-                #endif
                 ToolbarItem(placement: .status) {
                     if self.isBusy {
                         ProgressView()
@@ -106,9 +88,7 @@ struct LoginSheetView: View {
                 }
             }
             .navigationTitle("Authenticate")
-            #if !os(macOS)
             .navigationBarTitleDisplayMode(.inline)
-            #endif
             .errorAlert(error: self.$error)
 
             Button("Forgot your password?", role: .destructive) {
@@ -123,7 +103,7 @@ struct LoginSheetView: View {
 struct LoginSheetView_Previews: PreviewProvider {
     static var previews: some View {
         LoginSheetView(isPresented: .constant(true))
-            .environmentObject(ViewModel())
+            .environmentObject(GlobalViewModel())
     }
 }
 #endif

@@ -1,57 +1,96 @@
 import SwiftUI
 import GRDB
+import Nuke
 
 @main
 struct IamagesApp: App {
-    @Environment(\.openWindow) var openWindow
+    @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
+    @Environment(\.openWindow) private var openWindow
     
-    @StateObject var viewModel: ViewModel = ViewModel()
+    @StateObject private var globalViewModel: GlobalViewModel = GlobalViewModel()
+    
+    private func openSettings() {
+        #if targetEnvironment(macCatalyst)
+        if !self.globalViewModel.isSettingsPresented {
+            openWindow(id: "settings")
+        }
+        #endif
+        self.globalViewModel.isSettingsPresented = true
+    }
     
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: "main") {
             RootNavigationView()
-                .environmentObject(self.viewModel)
+                .environmentObject(self.globalViewModel)
                 .environment(\.dbQueue, try! DatabaseQueue()) // FIXME: Use local DbQueue.
         }
         .commands {
-            #if os(iOS)
-            CommandGroup(replacing: .appSettings) {
-                Button("Settings") {
-                    NotificationCenter.default.post(name: Notification.Name("openSettings"), object: nil)
+            #if targetEnvironment(macCatalyst)
+            CommandGroup(replacing: .appInfo) {
+                Button("About Iamages") {
+                    self.globalViewModel.selectedSettingsView = .about
+                    self.openSettings()
                 }
-                .keyboardShortcut(",")
+                .disabled(self.globalViewModel.selectedSettingsView == .about)
             }
             #endif
+            CommandGroup(replacing: .appSettings) {
+                Button("Settings...", action: self.openSettings)
+                    .keyboardShortcut(",")
+                    .disabled(self.globalViewModel.isSettingsPresented)
+            }
             CommandGroup(replacing: .newItem) {
-                Button("New images upload") {
-                    NotificationCenter.default.post(name: Notification.Name("openUploads"), object: nil)
+                Button("New images upload...") {
+                    #if targetEnvironment(macCatalyst)
+                    if !self.globalViewModel.isUploadsPresented {
+                        openWindow(id: "uploads")
+                    }
+                    #endif
+                    self.globalViewModel.isUploadsPresented = true
                 }
                 .keyboardShortcut("n")
+                .disabled(self.globalViewModel.isUploadsPresented)
 
-                Button("New images collection") {
-                    #if os(macOS)
-                    openWindow(id: "newCollection")
-                    #else
-                    self.viewModel.isNewCollectionSheetVisible = true
-                    #endif
+                Button("New images collection...") {
+                    
                 }
                 .keyboardShortcut("n", modifiers: [.command, .shift])
+                if self.supportsMultipleWindows {
+                    Divider()
+                    Button("New window") {
+                        openWindow(id: "main")
+                    }
+                    .keyboardShortcut("t", modifiers: [.command, .shift])
+                }
+            }
+            CommandGroup(replacing: .help) {
+                AboutLinksView()
+                    .environmentObject(self.globalViewModel)
             }
         }
         
-        #if os(macOS)
-        Window("Uploads", id: "uploads") {
-            UploadView()
-                .environmentObject(self.viewModel)
+        #if targetEnvironment(macCatalyst)
+        WindowGroup("Settings", id: "settings") {
+            SettingsView()
+                .hideMacTitlebar()
+                .environmentObject(self.globalViewModel)
+                .onDisappear {
+                    self.globalViewModel.isSettingsPresented = false
+                }
+                .withHostingWindow { window in
+                    let size: CGSize = CGSize(width: 900, height: 700)
+                    window?.windowScene?.sizeRestrictions?.minimumSize = size
+                    window?.windowScene?.sizeRestrictions?.maximumSize = size
+                }
         }
         
-        WindowGroup(id: "newCollection") {
-            EmptyView()
-        }
-
-        Settings {
-            SettingsView()
-                .environmentObject(self.viewModel)
+        WindowGroup("Uploads", id: "uploads") {
+            UploadView()
+                .hideMacTitlebar()
+                .environmentObject(self.globalViewModel)
+                .onDisappear {
+                    self.globalViewModel.isUploadsPresented = false
+                }
         }
         #endif
     }

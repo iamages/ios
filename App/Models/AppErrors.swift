@@ -1,10 +1,9 @@
 import Foundation
-import UniformTypeIdentifiers
 
 // Credits:
 // https://www.avanderlee.com/swiftui/error-alert-presenting/
 
-struct LocalizedAlertError: LocalizedError {
+struct LocalizedAlertError: LocalizedError, Equatable {
     let underlyingError: LocalizedError
     var errorDescription: String? {
         underlyingError.errorDescription
@@ -17,21 +16,27 @@ struct LocalizedAlertError: LocalizedError {
         guard let localizedError = error as? LocalizedError else { return nil }
         underlyingError = localizedError
     }
+    
+    static func ==(lhs: LocalizedAlertError, rhs: LocalizedAlertError) -> Bool {
+        return lhs.localizedDescription == rhs.localizedDescription && lhs.recoverySuggestion == rhs.recoverySuggestion
+    }
 }
 
 enum APICommunicationErrors: Error {
-    case invalidURL(URL)
+    case invalidURL(URL?)
     case invalidResponse(URL?)
     case badResponse(Int, String)
     case invalidUploadRequest
     case notLoggedIn
+    case noMIMEType(String)
+    case noUnlockKey(String)
 }
 
 extension APICommunicationErrors: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .invalidURL(let url):
-            return NSLocalizedString("Invalid URL: \(url.absoluteString)", comment: "")
+            return NSLocalizedString("Invalid URL: \(url?.absoluteString ?? "unknown")", comment: "")
         case .invalidResponse(let url):
             return NSLocalizedString("Could not parse response for '\(url?.absoluteString ?? "Unknown")'.", comment: "")
         case .badResponse(let code, let detail):
@@ -40,6 +45,10 @@ extension APICommunicationErrors: LocalizedError {
             return NSLocalizedString("Upload request doesn't have an attached file.", comment: "")
         case .notLoggedIn:
             return NSLocalizedString("No logged in user to get token for.", comment: "")
+        case .noMIMEType(let name):
+            return NSLocalizedString("'\(name)' does not have a valid MIME type.", comment: "")
+        case .noUnlockKey(let id):
+            return NSLocalizedString("Unlock key not provided for '\(id)'", comment: "")
         }
     }
     
@@ -49,6 +58,8 @@ extension APICommunicationErrors: LocalizedError {
             return NSLocalizedString("Add a file to the upload request.", comment: "")
         case .notLoggedIn:
             return NSLocalizedString("Please log in via Settings.", comment: "")
+        case .noUnlockKey(_):
+            return NSLocalizedString("Provide an unlock key to decrypt the image.", comment: "")
         default:
             return nil
         }
@@ -88,7 +99,7 @@ extension LoginErrors: LocalizedError {
 enum FileImportErrors: Error {
     case tooLarge(String, Int)
     case noSize(String)
-    case unsupportedType(String, UTType)
+    case unsupportedType(String, String)
     case noType(String)
     case loadPhotoFromLibraryFailure
 }
@@ -126,4 +137,8 @@ extension FileImportErrors: LocalizedError {
 struct IdentifiableLocalizedError: Identifiable {
     let id: UUID = UUID()
     var error: LocalizedError
+}
+
+struct NoIDError: LocalizedError {
+    let errorDescription: String? = "No image ID available."
 }

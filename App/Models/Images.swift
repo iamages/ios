@@ -1,32 +1,109 @@
 import Foundation
 import CryptoKit
 import UniformTypeIdentifiers
+import SwiftUI
 
-struct Thumbnail: Codable {
-    let is_computing: Bool
-    let compute_attempts: Int
-}
+struct IamagesImage: Codable, Identifiable, Hashable {
+    struct Lock: Codable, Hashable {
+        enum Version: Int, Codable {
+            case aes128gcm_argon2 = 1
+        }
 
-enum LockVersion: Int, Codable {
-    case aes128gcm_argon2 = 1
-}
-
-struct Lock: Codable {
-    var is_locked: Bool
-    var version: LockVersion
-}
-
-struct IamagesImage: Codable {
+        var isLocked: Bool
+        var version: Version?
+        
+        enum CodingKeys: String, CodingKey {
+            case isLocked = "is_locked"
+            case version
+        }
+    }
+    
+    struct Thumbnail: Codable, Hashable {
+        let isComputing: Bool
+        let isUnavailable: Bool
+        
+        enum CodingKeys: String, CodingKey {
+            case isComputing = "is_computing"
+            case isUnavailable = "is_unavailable"
+        }
+    }
+    
+    let id: String
+    let createdOn: Date
     let owner: String?
-    let isPrivate: Bool
-    let lock: Lock
-    let thumbnail: Thumbnail
+    var isPrivate: Bool
+    let contentType: UTType
+    var lock: Lock
+    let thumbnail: Thumbnail?
     
     enum CodingKeys: String, CodingKey {
+        case id
+        case createdOn = "created_on"
         case owner
         case isPrivate = "is_private"
+        case contentType = "content_type"
         case lock
         case thumbnail
+    }
+    
+    init(
+        id: String,
+        createdOn: Date,
+        owner: String? = nil,
+        isPrivate: Bool,
+        contentType: UTType,
+        lock: Lock,
+        thumbnail: Thumbnail? = nil
+    ) {
+        self.id = id
+        self.createdOn = createdOn
+        self.owner = owner
+        self.isPrivate = isPrivate
+        self.contentType = contentType
+        self.lock = lock
+        self.thumbnail = thumbnail
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.id = try container.decode(String.self, forKey: .id)
+        self.createdOn = try container.decode(Date.self, forKey: .createdOn)
+        self.owner = try container.decodeIfPresent(String.self, forKey: .owner)
+        self.isPrivate = try container.decode(Bool.self, forKey: .isPrivate)
+        
+        guard let contentType = UTType(mimeType: try container.decode(String.self, forKey: .contentType)) else {
+            throw DecodingError.dataCorrupted(
+                .init(
+                    codingPath: [CodingKeys.contentType],
+                    debugDescription: "Could not convert MIME type string into UTType."
+                )
+            )
+        }
+        self.contentType = contentType
+
+        self.lock = try container.decode(Lock.self, forKey: .lock)
+        self.thumbnail = try container.decodeIfPresent(Thumbnail.self, forKey: .thumbnail)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.id, forKey: .id)
+        try container.encode(self.createdOn, forKey: .createdOn)
+        try container.encodeIfPresent(self.owner, forKey: .owner)
+        try container.encode(self.isPrivate, forKey: .isPrivate)
+        guard let contentType = self.contentType.preferredMIMEType else {
+            throw EncodingError.invalidValue(
+                self.contentType,
+                .init(
+                    codingPath: [CodingKeys.contentType],
+                    debugDescription: "Could not convert UTType into MIME type string."
+                )
+            )
+        }
+        try container.encode(contentType, forKey: .contentType)
+        try container.encode(self.lock, forKey: .lock)
+        try container.encodeIfPresent(self.thumbnail, forKey: .thumbnail)
     }
 }
 
@@ -34,41 +111,41 @@ struct IamagesImageMetadata: Codable {
     var description: String
     let width: Int
     let height: Int
-    let createdOn: Date
+    var realContentType: UTType? = nil
     
     enum CodingKeys: String, CodingKey {
         case description
         case width
         case height
-        case createdOn = "created_on"
+        case realContentType = "real_content_type"
+    }
+    
+    init(description: String, width: Int, height: Int, realContentType: UTType?) {
+        self.description = description
+        self.width = width
+        self.height = height
+        self.realContentType = realContentType
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.description = try container.decode(String.self, forKey: .description)
+        self.width = try container.decode(Int.self, forKey: .width)
+        self.height = try container.decode(Int.self, forKey: .height)
+        if let realContentType = try container.decodeIfPresent(String.self, forKey: .realContentType),
+           let realUTType = UTType(mimeType: realContentType){
+            self.realContentType = realUTType
+        }
     }
 }
 
-extension IamagesImageMetadata: RawRepresentable {
-    public init?(rawValue: String) {
-       guard let data = rawValue.data(using: .utf8),
-             let result = try? JSONDecoder().decode(IamagesImageMetadata.self, from: data) else {
-           return nil
-       }
-       self = result
-   }
-
-   public var rawValue: String {
-       guard let data = try? JSONEncoder().encode(self),
-           let result = String(data: data, encoding: .utf8)
-       else {
-           return "[]"
-       }
-       return result
-   }
-}
-
+// MARK: Image uploads
 struct IamagesUploadInformation: Codable, Identifiable {
     let id: UUID = UUID()
     var description: String = NSLocalizedString("No description provided.", comment: "")
     var isPrivate: Bool = false
     var isLocked: Bool = false
-    var lockKey: String = ""
+    var lockKey: String? = nil
     
     enum CodingKeys: String, CodingKey {
         case description
@@ -79,13 +156,65 @@ struct IamagesUploadInformation: Codable, Identifiable {
 }
 
 struct IamagesUploadFile {
-    var filename: String
+    var name: String
     var data: Data
-    var type: UTType
+    var type: String
 }
 
 struct IamagesUploadContainer: Identifiable {
     let id: UUID = UUID()
     var information: IamagesUploadInformation = IamagesUploadInformation()
     var file: IamagesUploadFile
+    var progress: Double = 0.0
+    var isUploading: Bool = false
+    var error: LocalizedError? = nil
+}
+
+// MARK: Image editing
+enum BoolOrString: Codable {
+    case bool(Bool)
+    case string(String)
+}
+
+enum IamagesImageAndMetadataEditable: String, Codable {
+    case isPrivate = "is_private"
+    case lock = "lock"
+    case description = "description"
+}
+
+struct IamagesImageEdit: Codable {
+    let change: IamagesImageAndMetadataEditable
+    let to: BoolOrString
+    var lockVersion: IamagesImage.Lock.Version? = nil
+    
+    enum CodingKeys: String, CodingKey {
+        case change
+        case to
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.change, forKey: .change)
+        switch self.to {
+        case .bool(let bool):
+            try container.encode(bool, forKey: .to)
+        case .string(let string):
+            try container.encode(string, forKey: .to)
+        }
+    }
+}
+
+struct IamagesImageEditResponse: Codable {
+    let ok: Bool
+    let lockVersion: IamagesImage.Lock.Version?
+    
+    enum CodingKeys: String, CodingKey {
+        case ok
+        case lockVersion = "lock_version"
+    }
+}
+
+struct EditImageNotification {
+    let id: String
+    let edit: IamagesImageEdit
 }
