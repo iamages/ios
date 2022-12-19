@@ -135,10 +135,10 @@ extension FileImportErrors: LocalizedError {
 }
 
 struct IdentifiableLocalizedError: Identifiable {
-    let id: UUID = UUID()
+    var id: UUID = UUID()
     var error: LocalizedError
 }
 
 struct NoIDError: LocalizedError {
-    let errorDescription: String? = "No image ID available."
+    let errorDescription = NSLocalizedString("No image ID available.", comment: "")
 }

@@ -85,7 +85,7 @@ struct IamagesApp: App {
         }
         
         WindowGroup("Uploads", id: "uploads") {
-            UploadView()
+            UploadsView()
                 .hideMacTitlebar()
                 .environmentObject(self.globalViewModel)
                 .onDisappear {

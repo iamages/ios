@@ -71,8 +71,6 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         "image/gif",
         "image/webp"
     ]
-    
-    let defaultPageItemsLimit: Int = 6
 
     @Published var userInformation: IamagesUser?
     
@@ -256,25 +254,6 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         try self.keychain.removeAll()
         self.userInformation = nil
         self.lastUserToken = nil
-    }
-    
-    func getImagesFeedPage(previousId: String? = nil) async throws -> [IamagesImage] {
-        var queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "limit", value: String(self.defaultPageItemsLimit))
-        ]
-        
-        if let previousId {
-            queryItems.append(URLQueryItem(name: "previous_id", value: previousId))
-        }
-        return try self.jsond.decode(
-            [IamagesImage].self,
-            from: try await self.fetchData(
-                "/feeds/images",
-                queryItems: queryItems,
-                method: .get,
-                authStrategy: .required
-            ).0
-        )
     }
     
     private func decryptAndVerify(

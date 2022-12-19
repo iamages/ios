@@ -1,7 +1,8 @@
 import Foundation
+import OrderedCollections
 
 final class SplitViewModel: ObservableObject {
-    // MARK: Selected image
+    // MARK: Images
     @Published var selectedImage: IamagesImage?
     @Published var selectedImageMetadata: IamagesImageMetadata?
     var selectedImageTitle: String {
@@ -19,8 +20,4 @@ final class SplitViewModel: ObservableObject {
         }
         return ""
     }
-
-    // MARK: Selected collection
-    @Published var selectedCollection: IamagesCollection?
-    @Published var selectedCollectionMetadata: IamagesCollectionMetadata?
 }

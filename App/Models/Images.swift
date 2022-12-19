@@ -140,7 +140,7 @@ struct IamagesImageMetadata: Codable {
 }
 
 // MARK: Image uploads
-struct IamagesUploadInformation: Codable, Identifiable {
+struct IamagesUploadInformation: Codable, Identifiable, Hashable {
     let id: UUID = UUID()
     var description: String = NSLocalizedString("No description provided.", comment: "")
     var isPrivate: Bool = false
@@ -155,35 +155,38 @@ struct IamagesUploadInformation: Codable, Identifiable {
     }
 }
 
-struct IamagesUploadFile {
+struct IamagesUploadInformationEdits {
+    struct Edit {
+        let change: IamagesUploadInformation.CodingKeys
+        let to: BoolOrString
+    }
+    let id: UUID
+    var list: [Edit] = []
+}
+
+struct IamagesUploadFile: Hashable {
     var name: String
     var data: Data
     var type: String
 }
 
-struct IamagesUploadContainer: Identifiable {
+struct IamagesUploadContainer: Identifiable, Hashable {
     let id: UUID = UUID()
     var information: IamagesUploadInformation = IamagesUploadInformation()
     var file: IamagesUploadFile
     var progress: Double = 0.0
     var isUploading: Bool = false
-    var error: LocalizedError? = nil
 }
 
 // MARK: Image editing
-enum BoolOrString: Codable {
-    case bool(Bool)
-    case string(String)
-}
-
-enum IamagesImageAndMetadataEditable: String, Codable {
-    case isPrivate = "is_private"
-    case lock = "lock"
-    case description = "description"
-}
-
 struct IamagesImageEdit: Codable {
-    let change: IamagesImageAndMetadataEditable
+    enum Changable: String, Codable {
+        case isPrivate = "is_private"
+        case lock = "lock"
+        case description = "description"
+    }
+    
+    let change: Changable
     let to: BoolOrString
     var lockVersion: IamagesImage.Lock.Version? = nil
     
@@ -200,6 +203,8 @@ struct IamagesImageEdit: Codable {
             try container.encode(bool, forKey: .to)
         case .string(let string):
             try container.encode(string, forKey: .to)
+        default:
+            break
         }
     }
 }

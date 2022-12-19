@@ -80,3 +80,37 @@ extension View {
         modifier(ErrorToast(error: error))
     }
 }
+
+struct ConfirmCancelDialogModifier: ViewModifier {
+    @Binding var isPresented: Bool
+    @Binding var isSheetPresented: Bool
+    
+    func body(content: Content) -> some View {
+        content
+            .confirmationDialog(
+                "Leave without saving?",
+                isPresented: self.$isPresented,
+                titleVisibility: .visible
+            ) {
+                Button("Leave", role: .destructive) {
+                    self.isSheetPresented = false
+                }
+            } message: {
+                Text("The changes you have made will not be saved.")
+            }
+    }
+}
+
+extension View {
+    func confirmCancelDialog(
+        isPresented: Binding<Bool>,
+        isSheetPresented: Binding<Bool>
+    ) -> some View {
+        modifier(
+            ConfirmCancelDialogModifier(
+                isPresented: isPresented,
+                isSheetPresented: isSheetPresented
+            )
+        )
+    }
+}

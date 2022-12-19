@@ -32,7 +32,7 @@ fileprivate struct NewestImagesWidgetProvider: TimelineProvider {
         var lastId: String?
         
         while (newestImage == nil && entry.errors.isEmpty) {
-            var feedUrl = URL.apiRootUrl.appending(path: "/feeds/images")
+            var feedUrl = URL.apiRootUrl.appending(path: "/images")
             if let lastId {
                 feedUrl.append(queryItems: [
                     URLQueryItem(name: "last_id", value: lastId)

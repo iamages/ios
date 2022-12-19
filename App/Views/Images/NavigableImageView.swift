@@ -4,7 +4,7 @@ import NukeUI
 struct NavigableImageView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     
-    @Binding var image: IamagesImage
+    let image: IamagesImage
     
     @State private var metadata: IamagesImageMetadata?
     @State private var isBusy: Bool = true
@@ -17,6 +17,7 @@ struct NavigableImageView: View {
                 Group {
                     if self.image.lock.isLocked {
                         Image(systemName: "lock.doc.fill")
+                            .border(.gray)
                     } else {
                         LazyImage(request: self.globalViewModel.getThumbnailRequest(for: self.image)) { state in
                             if let image = state.image {
@@ -96,7 +97,7 @@ struct NavigableImageView: View {
 #if DEBUG
 struct NavigableImageView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigableImageView(image: .constant(previewImage))
+        NavigableImageView(image: previewImage)
     }
 }
 #endif

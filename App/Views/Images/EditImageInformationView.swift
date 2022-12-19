@@ -171,20 +171,10 @@ struct EditImageInformationView: View {
                     }
                     .disabled(self.isBusy)
                     .keyboardShortcut(.escape)
-                    .confirmationDialog(
-                        "Leave without saving?",
-                        isPresented: self.$isCancelAlertPresented,
-                        titleVisibility: .visible
-                    ) {
-                        Button("Leave", role: .destructive) {
-                            self.isPresented = false
-                        }
-                    } message: {
-                        Text("The changes you have made will not be saved.")
-                    }
+                    .confirmCancelDialog(isPresented: self.$isCancelAlertPresented, isSheetPresented: self.$isPresented)
                 }
                 ToolbarItem(placement: .destructiveAction) {
-                    Button("Edit") {
+                    Button("Save") {
                         if self.splitViewModel.selectedImage?.lock.isLocked == true {
                             self.isKeyAlertPresented = true
                         } else {

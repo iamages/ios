@@ -1,4 +1,5 @@
 import SwiftUI
+import OrderedCollections
 
 struct ImagesListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
@@ -6,39 +7,41 @@ struct ImagesListView: View {
     @Environment(\.isSearching) private var isSearching
     
     @ObservedObject var splitViewModel: SplitViewModel
-    
-    @State private var isLoginSheetPresented: Bool = false
-    
+
     @State private var isFirstPageLoaded: Bool = false
     @State private var isBusy: Bool = false
-    @State private var images: [IamagesImage] = []
+    @State private var images: OrderedDictionary<String, IamagesImage> = [:]
     @State private var isEndOfFeed: Bool = false
     @State private var error: LocalizedAlertError?
     
     @State private var searchString: String = ""
-    
-    @ViewBuilder
-    private var notLoggedIn: some View {
-        IconAndInformationView(
-            icon: "person.fill.questionmark",
-            heading: "Login required",
-            additionalViews: AnyView(
-                Button("Login/signup") {
-                    self.isLoginSheetPresented = true
-                }
-                .buttonStyle(.bordered)
-            )
-        )
-    }
-    
+
     private func pageFeed() async {
         self.isBusy = true
         
         do {
-            let newImages: [IamagesImage] = try await self.globalViewModel.getImagesFeedPage(previousId: self.images.last?.id)
-            self.images.append(contentsOf: newImages)
-            if newImages.count < self.globalViewModel.defaultPageItemsLimit {
+            var queryItems: [URLQueryItem] = [
+                URLQueryItem(name: "limit", value: "6")
+            ]
+            if let lastID = self.images.values.last?.id {
+                queryItems.append(
+                    URLQueryItem(name: "last_id", value: lastID)
+                )
+            }
+            let newImages: [IamagesImage] = try self.globalViewModel.jsond.decode(
+                [IamagesImage].self,
+                from: await self.globalViewModel.fetchData(
+                    "/images/",
+                    queryItems: queryItems,
+                    method: .get,
+                    authStrategy: .required
+                ).0
+            )
+            if newImages.count < 6 {
                 self.isEndOfFeed = true
+            }
+            for newImage in newImages {
+                self.images[newImage.id] = newImage
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -49,17 +52,18 @@ struct ImagesListView: View {
     
     private func startFeed() async {
         self.splitViewModel.selectedImage = nil
-        self.images = []
+        self.splitViewModel.selectedImageMetadata = nil
+        self.images = [:]
         await pageFeed()
     }
     
     @ViewBuilder
     private var list: some View {
         List(selection: self.$splitViewModel.selectedImage) {
-            ForEach(self.$images) { image in
-                NavigableImageView(image: image)
+            ForEach(self.images.elements, id: \.key) { image in
+                NavigableImageView(image: image.value)
                     .task {
-                        if !self.isBusy && !self.isEndOfFeed && self.images.last != image.wrappedValue {
+                        if !self.isEndOfFeed && self.images.keys.last == image.key {
                             await pageFeed()
                         }
                     }
@@ -75,7 +79,7 @@ struct ImagesListView: View {
         .errorToast(error: self.$error)
         .task {
             if !self.isFirstPageLoaded {
-                await pageFeed()
+                await startFeed()
                 self.isFirstPageLoaded = true
             }
         }
@@ -83,8 +87,7 @@ struct ImagesListView: View {
             await self.startFeed()
         }
         .onReceive(NotificationCenter.default.publisher(for: .editImage)) { output in
-            guard let notification = output.object as? EditImageNotification,
-                  let i = self.images.firstIndex(where: { $0.id == notification.id }) else {
+            guard let notification = output.object as? EditImageNotification else {
                 print("Couldn't parse edit image notification.")
                 return
             }
@@ -92,7 +95,7 @@ struct ImagesListView: View {
             case .isPrivate:
                 switch notification.edit.to {
                 case .bool(let isPrivate):
-                    self.images[i].isPrivate = isPrivate
+                    self.images[notification.id]?.isPrivate = isPrivate
                     if self.splitViewModel.selectedImage?.id == notification.id {
                         self.splitViewModel.selectedImage?.isPrivate = isPrivate
                     }
@@ -102,11 +105,13 @@ struct ImagesListView: View {
             case .lock:
                 switch notification.edit.to {
                 case .bool(let isLocked):
-                    self.images[i].lock.isLocked = isLocked
-                    self.images[i].lock.version = nil
+                    self.images[notification.id]?.lock.isLocked = isLocked
+                    self.images[notification.id]?.lock.version = nil
                 case .string(_):
-                    self.images[i].lock.isLocked = true
-                    self.images[i].lock.version = notification.edit.lockVersion
+                    self.images[notification.id]?.lock.isLocked = true
+                    self.images[notification.id]?.lock.version = notification.edit.lockVersion
+                default:
+                    break
                 }
             case .description:
                 switch notification.edit.to {
@@ -120,28 +125,24 @@ struct ImagesListView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .deleteImage)) { output in
-            guard let id = output.object as? String,
-                  let i = self.images.firstIndex(where: { $0.id == id }) else {
+            guard let id = output.object as? String else {
                 print("Couldn't find image in list.")
                 return
             }
-            self.images.remove(at: i)
+            self.images.removeValue(forKey: id)
         }
         .toolbar {
             #if targetEnvironment(macCatalyst)
             ToolbarItem {
-                if self.isBusy {
-                    ProgressView()
-                } else {
-                    Button(action: {
-                        Task {
-                            await startFeed()
-                        }
-                    }) {
-                        Label("Refresh", systemImage: "arrow.clockwise")
+                Button(action: {
+                    Task {
+                        await startFeed()
                     }
-                    .keyboardShortcut("r")
+                }) {
+                    Label("Refresh", systemImage: "arrow.clockwise")
                 }
+                .keyboardShortcut("r")
+                .disabled(self.isBusy)
             }
             #endif
         }
@@ -150,15 +151,12 @@ struct ImagesListView: View {
     var body: some View {
         Group {
             if self.globalViewModel.userInformation == nil {
-                self.notLoggedIn
+                NotLoggedInView()
             } else {
                 self.list
             }
         }
         .navigationTitle("Images")
-        .sheet(isPresented: self.$isLoginSheetPresented) {
-            LoginSheetView(isPresented: self.$isLoginSheetPresented)
-        }
     }
 }
 

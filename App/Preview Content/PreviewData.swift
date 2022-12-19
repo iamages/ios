@@ -1,4 +1,4 @@
-import Foundation
+import SwiftUI
 
 let previewImage = IamagesImage(
     id: "test",
@@ -21,4 +21,22 @@ let previewImageMetadata = IamagesImageMetadata(
     width: 200,
     height: 200,
     realContentType: nil
+)
+
+let previewUploadContainer = IamagesUploadContainer(
+    file: IamagesUploadFile(
+        name: "test.jpg",
+        data: NSDataAsset(name: "PreviewImage")!.data,
+        type: "image/jpeg"
+    )
+)
+
+let previewCollection = IamagesCollection(
+    id: "test",
+    createdOn: Date.now,
+    owner: "jkelol111",
+    isPrivate: false,
+    metadata: .init(
+        description: "Test collection"
+    )
 )

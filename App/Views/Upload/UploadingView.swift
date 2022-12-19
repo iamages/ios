@@ -2,19 +2,20 @@ import SwiftUI
 import NukeUI
 
 fileprivate struct PendingUploadView: View {
-    let pendingUpload: IamagesUploadContainer
+    let uploadContainer: IamagesUploadContainer
+    @Binding var errors: [UUID: LocalizedError]
     
     var body: some View {
         HStack {
-            UniversalDataImage(data: pendingUpload.file.data)
+            UniversalDataImage(data: uploadContainer.file.data)
                 .frame(width: 64, height: 64)
             VStack(alignment: .leading) {
-                Text(pendingUpload.information.description)
+                Text(uploadContainer.information.description)
                     .bold()
-                if pendingUpload.isUploading {
-                    ProgressView(value: pendingUpload.progress, total: 100.0)
+                if uploadContainer.isUploading {
+                    ProgressView(value: uploadContainer.progress, total: 100.0)
                 } else {
-                    if let error: LocalizedError = pendingUpload.error {
+                    if let error = errors[uploadContainer.id] {
                         Text(error.localizedDescription)
                             .foregroundColor(.red)
                         if let recoverySuggestion: String = error.recoverySuggestion {
@@ -59,12 +60,14 @@ fileprivate struct UploadedView: View {
 struct UploadingView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     
+    @Binding var isPresented: Bool
     @Binding var uploadContainers: [IamagesUploadContainer]
     
     @State private var hasBeenViewed: Bool = false
 
     @State private var isBusy: Bool = true
     @State private var uploaded: [IamagesImage] = []
+    @State private var errors: [UUID: LocalizedError] = [:]
     
     private func upload() async {
         for i in 0..<self.uploadContainers.count {
@@ -84,46 +87,60 @@ struct UploadingView: View {
                 self.uploadContainers[i].isUploading = false
                 self.uploadContainers[i].progress = 0.0
                 if let error = error as? LocalizedError {
-                    self.uploadContainers[i].error = error
+                    self.errors[uploadContainer.id] = error
                 }
+                #if DEBUG
                 print(error)
+                #endif
             }
         }
         self.isBusy = false
     }
     
     var body: some View {
-        List {
-            Section("Uploaded") {
-                ForEach(self.uploaded) { uploaded in
-                    UploadedView(uploaded: uploaded)
-                }
-            }
-            
-            Section("Pending") {
-                ForEach(self.uploadContainers) { uploadContainer in
-                    PendingUploadView(pendingUpload: uploadContainer)
-                }
-            }
-        }
-        .navigationTitle("Uploading")
-        .navigationBarBackButtonHidden(self.isBusy)
-        .task {
-            if !self.hasBeenViewed {
-                self.hasBeenViewed = true
-                await self.upload()
-            }
-        }
-        .toolbar {
-            ToolbarItem {
-                Button(action: {
-                    Task {
-                        await self.upload()
+        NavigationStack {
+            List {
+                Section("Uploaded") {
+                    ForEach(self.uploaded) { uploaded in
+                        UploadedView(uploaded: uploaded)
                     }
-                }) {
-                    Label("Retry failed uploads", systemImage: "exclamationmark.arrow.triangle.2.circlepath")
                 }
-                .disabled(self.isBusy)
+                
+                Section("Pending") {
+                    ForEach(self.uploadContainers) { uploadContainer in
+                        PendingUploadView(
+                            uploadContainer: uploadContainer,
+                            errors: self.$errors
+                        )
+                    }
+                }
+            }
+            .navigationTitle("Uploading")
+            .task {
+                if !self.hasBeenViewed {
+                    self.hasBeenViewed = true
+                    await self.upload()
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(action: {
+                        self.isPresented = false
+                    }) {
+                        Label("Close", systemImage: "xmark")
+                    }
+                    .disabled(self.isBusy)
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: {
+                        Task {
+                            await self.upload()
+                        }
+                    }) {
+                        Label("Retry failed uploads", systemImage: "exclamationmark.arrow.triangle.2.circlepath")
+                    }
+                    .disabled(self.isBusy)
+                }
             }
         }
     }
@@ -133,7 +150,10 @@ struct UploadingView: View {
 struct UploadingView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            UploadingView(uploadContainers: .constant([]))
+            UploadingView(
+                isPresented: .constant(true),
+                uploadContainers: .constant([])
+            )
         }
         .environmentObject(GlobalViewModel())
     }

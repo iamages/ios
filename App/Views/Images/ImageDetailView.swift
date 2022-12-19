@@ -16,6 +16,7 @@ struct ImageDetailView: View {
 
     @State private var isInformationSheetPresented: Bool = false
     @State private var isEditInformationSheetPresented: Bool = false
+    @State private var isCollectionPickerSheetPresented: Bool = false
 
     @State private var isDeleteDialogPresented: Bool = false
     @State private var isBusy: Bool = false
@@ -174,6 +175,14 @@ struct ImageDetailView: View {
                     splitViewModel: self.splitViewModel
                 )
             }
+            .sheet(isPresented: self.$isCollectionPickerSheetPresented) {
+                CollectionsListView(
+                    splitViewModel: self.splitViewModel,
+                    viewMode: .picker,
+                    imageID: image.id,
+                    isPresented: self.$isCollectionPickerSheetPresented
+                )
+            }
             .toolbarRole(.editor)
             .toolbar(id: "imageDetail") {
                 ToolbarItem(id: "information", placement: .primaryAction) {
@@ -198,6 +207,13 @@ struct ImageDetailView: View {
                         }
                     }
                     .disabled(image.lock.isLocked)
+                }
+                ToolbarItem(id: "addToCollection", placement: .secondaryAction) {
+                    Button(action: {
+                        self.isCollectionPickerSheetPresented = true
+                    }) {
+                        Label("Add to collection", systemImage: "folder.badge.plus")
+                    }
                 }
                 ToolbarItem(id: "edit", placement: .secondaryAction) {
                     Button(action: {
