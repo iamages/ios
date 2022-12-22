@@ -32,22 +32,25 @@ struct CollectionsListView: View {
     @State private var isEndOfFeed: Bool = false
     @State private var error: LocalizedAlertError?
     
+    @State private var queryString: String = ""
+    @State private var querySuggestions: [String] = []
+    
     private func pageFeed() async {
         self.isBusy = true
         
         do {
-            var queryItems: [URLQueryItem] = [
-                URLQueryItem(name: "limit", value: "6")
-            ]
-            if let lastID = self.collections.elements.last?.value.id {
-                queryItems.append(URLQueryItem(name: "last_id", value: lastID))
-            }
             let newCollections: [IamagesCollection] = try self.globalViewModel.jsond.decode(
                 [IamagesCollection].self,
                 from: try await self.globalViewModel.fetchData(
-                    "/collections/",
-                    queryItems: queryItems,
-                    method: .get,
+                    "/users/collections",
+                    method: .post,
+                    body: self.globalViewModel.jsone.encode(
+                        Pagination(
+                            query: self.queryString.isEmpty ? nil : self.queryString,
+                            lastID: self.collections.keys.last
+                        )
+                    ),
+                    contentType: .json,
                     authStrategy: .required
                 ).0
             )
@@ -75,7 +78,7 @@ struct CollectionsListView: View {
             ForEach(self.collections.elements, id: \.key) { collection in
                 NavigableCollectionView(collection: collection.value)
                     .task {
-                        if !self.isEndOfFeed && self.collections.values.last == collection.value {
+                        if !self.isEndOfFeed && self.collections.keys.last == collection.key {
                             await self.pageFeed()
                         }
                     }
@@ -125,7 +128,7 @@ struct CollectionsListView: View {
         .navigationDestination(for: IamagesCollection.ID.self) { id in
             switch self.viewMode {
             case .normal:
-                if var collection = Binding<IamagesCollection>(self.$collections[id]) {
+                if let collection = Binding<IamagesCollection>(self.$collections[id]) {
                     CollectionImagesListView(collection: collection, splitViewModel: self.splitViewModel)
                 } else {
                     Text("Cannot open collection.")

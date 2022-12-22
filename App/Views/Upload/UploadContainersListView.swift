@@ -15,12 +15,10 @@ struct UploadContainersListView: View {
     @State private var isFilePickerPresented: Bool = false
     @State private var photoPickerItems: [PhotosPickerItem] = []
 
-    private func handleImagesPicked(_ images: [PhotosPickerItem]) async {
+    private func handleImagesPicked() async {
         self.isBusy = true
         
-        for i in (0..<images.count).reversed() {
-            let image: PhotosPickerItem = images[i]
-            
+        for image in self.photoPickerItems {
             do {
                 guard let data: Data = try await image.loadTransferable(type: Data.self) else {
                     throw FileImportErrors.loadPhotoFromLibraryFailure
@@ -49,9 +47,8 @@ struct UploadContainersListView: View {
                 }
                 
             }
-
-            self.photoPickerItems.remove(at: i)
         }
+        self.photoPickerItems = []
         
         self.isBusy = false
     }
@@ -133,9 +130,9 @@ struct UploadContainersListView: View {
         .navigationSubtitle("\(self.uploadContainers.count) image\(self.uploadContainers.count > 1 || self.uploadContainers.isEmpty ? "s" : "")")
         #endif
         .errorAlert(error: self.$error)
-        .onChange(of: self.photoPickerItems) { images in
+        .onChange(of: self.photoPickerItems) { _ in
             Task {
-                await self.handleImagesPicked(images)
+                await self.handleImagesPicked()
             }
         }
         .fileImporter(

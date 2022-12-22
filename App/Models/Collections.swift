@@ -1,22 +1,18 @@
 import Foundation
 
 struct IamagesCollection: Codable, Identifiable, Hashable {
-    struct Metadata: Codable, Hashable {
-        var description: String
-    }
-    
     let id: String
     let createdOn: Date
     let owner: String?
     var isPrivate: Bool
-    var metadata: Metadata
+    var description: String
     
     enum CodingKeys: String, CodingKey {
         case id
         case createdOn = "created_on"
         case owner
         case isPrivate = "is_private"
-        case metadata
+        case description
     }
 }
 

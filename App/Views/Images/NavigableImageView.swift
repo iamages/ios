@@ -11,6 +11,22 @@ struct NavigableImageView: View {
     @State private var hasAttemptedMetadataLoad: Bool = false
     @State private var error: Error?
     
+    @ViewBuilder
+    private var thumbnail: some View {
+        LazyImage(request: self.globalViewModel.getThumbnailRequest(for: self.image)) { state in
+            if let image = state.image {
+                image
+                    .resizingMode(.aspectFill)
+            } else if state.error != nil {
+                Image(systemName: "exclamationmark.octagon.fill")
+            } else {
+                Rectangle()
+                    .redacted(reason: .placeholder)
+            }
+        }
+        .animation(nil)
+    }
+    
     var body: some View {
         NavigationLink(value: self.image) {
             HStack {
@@ -19,18 +35,7 @@ struct NavigableImageView: View {
                         Image(systemName: "lock.doc.fill")
                             .border(.gray)
                     } else {
-                        LazyImage(request: self.globalViewModel.getThumbnailRequest(for: self.image)) { state in
-                            if let image = state.image {
-                                image
-                                    .resizingMode(.aspectFill)
-                            } else if state.error != nil {
-                                Image(systemName: "exclamationmark.octagon.fill")
-                            } else {
-                                Rectangle()
-                                    .redacted(reason: .placeholder)
-                            }
-                        }
-                        .animation(nil)
+                        self.thumbnail
                     }
                 }
                 .cornerRadius(8)
@@ -64,6 +69,9 @@ struct NavigableImageView: View {
                 .padding(.leading, 4)
                 .padding(.trailing, 4)
             }
+        }
+        .contextMenu {
+            ImageShareLinkView(image: self.image)
         }
         .task {
             if !self.hasAttemptedMetadataLoad {

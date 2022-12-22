@@ -44,6 +44,9 @@
 		2E38DDF5294EA28900ACB068 /* EditCollectionInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDF4294EA28900ACB068 /* EditCollectionInformationView.swift */; };
 		2E38DDF7294ECD9100ACB068 /* BoolOrString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDF6294ECD9100ACB068 /* BoolOrString.swift */; };
 		2E38DDFB29502D3A00ACB068 /* AddToCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDFA29502D3A00ACB068 /* AddToCollectionView.swift */; };
+		2E38DDFD2951F4A300ACB068 /* Pagination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDFC2951F4A300ACB068 /* Pagination.swift */; };
+		2E38DDFE2951F4AB00ACB068 /* Pagination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDFC2951F4A300ACB068 /* Pagination.swift */; };
+		2E38DE1C295290D300ACB068 /* ImageShareLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DE1B295290D300ACB068 /* ImageShareLinkView.swift */; };
 		2E4F8466290FF7F900629C27 /* AppNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4F8465290FF7F900629C27 /* AppNavigation.swift */; };
 		2E4F8468290FF94D00629C27 /* Collections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4F8467290FF94D00629C27 /* Collections.swift */; };
 		2E509E7728EEE98800ABC072 /* View+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E509E7628EEE98800ABC072 /* View+Utils.swift */; };
@@ -148,6 +151,8 @@
 		2E38DDF4294EA28900ACB068 /* EditCollectionInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCollectionInformationView.swift; sourceTree = "<group>"; };
 		2E38DDF6294ECD9100ACB068 /* BoolOrString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoolOrString.swift; sourceTree = "<group>"; };
 		2E38DDFA29502D3A00ACB068 /* AddToCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToCollectionView.swift; sourceTree = "<group>"; };
+		2E38DDFC2951F4A300ACB068 /* Pagination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pagination.swift; sourceTree = "<group>"; };
+		2E38DE1B295290D300ACB068 /* ImageShareLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageShareLinkView.swift; sourceTree = "<group>"; };
 		2E4F8465290FF7F900629C27 /* AppNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigation.swift; sourceTree = "<group>"; };
 		2E4F8467290FF94D00629C27 /* Collections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collections.swift; sourceTree = "<group>"; };
 		2E509E7628EEE98800ABC072 /* View+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Utils.swift"; sourceTree = "<group>"; };
@@ -245,6 +250,7 @@
 				2EAA35FF290E2CA600861C03 /* ZoomableScrollView.swift */,
 				2EA89ADF2920841900350F38 /* ImageInformationView.swift */,
 				2EA89AE32921FA2400350F38 /* EditImageInformationView.swift */,
+				2E38DE1B295290D300ACB068 /* ImageShareLinkView.swift */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -385,6 +391,7 @@
 			isa = PBXGroup;
 			children = (
 				2E74ED2C29421B3A00E30A5A /* WidgetKind.swift */,
+				2E38DDFC2951F4A300ACB068 /* Pagination.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -590,6 +597,7 @@
 				2E74ED1E2941B66D00E30A5A /* Entry.swift in Sources */,
 				2E161346293E17E600FC2CC8 /* URL+Iamages.swift in Sources */,
 				2E161337293B7CA200FC2CC8 /* SelectedImageWidget.swift in Sources */,
+				2E38DDFE2951F4AB00ACB068 /* Pagination.swift in Sources */,
 				2E74ED2E29421B3A00E30A5A /* WidgetKind.swift in Sources */,
 				2E74ED272942047A00E30A5A /* Image+widgetResize.swift in Sources */,
 			);
@@ -607,6 +615,7 @@
 				2E29D1FA293868DA009CE522 /* Notification.Name+Iamages.swift in Sources */,
 				2EAA360A290E55D200861C03 /* IconAndInformationView.swift in Sources */,
 				2E509E8328F15C8F00ABC072 /* EnvironmentValues+GRDB.swift in Sources */,
+				2E38DE1C295290D300ACB068 /* ImageShareLinkView.swift in Sources */,
 				2E38DDF1294AF0CE00ACB068 /* NavigableCollectionView.swift in Sources */,
 				2E8B2FA328B5D0D90071780B /* SettingsView.swift in Sources */,
 				2E8B2FA728B5D4D20071780B /* Images.swift in Sources */,
@@ -624,6 +633,7 @@
 				2E38DDF3294DEB5F00ACB068 /* NotLoggedInView.swift in Sources */,
 				2E00889F28FD6D0900607E0B /* UploadEditorView.swift in Sources */,
 				2E0424D228DAACD50023CE41 /* LoginSheetView.swift in Sources */,
+				2E38DDFD2951F4A300ACB068 /* Pagination.swift in Sources */,
 				2E38DDFB29502D3A00ACB068 /* AddToCollectionView.swift in Sources */,
 				2E0424DC28DF4B430023CE41 /* NavigableImageView.swift in Sources */,
 				2E74ED302944554B00E30A5A /* UploadContainersListView.swift in Sources */,

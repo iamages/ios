@@ -3,8 +3,6 @@ import OrderedCollections
 
 struct ImagesListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
-    @Environment(\.refresh) private var refreshAction
-    @Environment(\.isSearching) private var isSearching
     
     @ObservedObject var splitViewModel: SplitViewModel
 
@@ -14,26 +12,25 @@ struct ImagesListView: View {
     @State private var isEndOfFeed: Bool = false
     @State private var error: LocalizedAlertError?
     
-    @State private var searchString: String = ""
+    @State private var queryString: String = ""
+    @State private var querySuggestions: [String] = []
 
     private func pageFeed() async {
         self.isBusy = true
         
         do {
-            var queryItems: [URLQueryItem] = [
-                URLQueryItem(name: "limit", value: "6")
-            ]
-            if let lastID = self.images.values.last?.id {
-                queryItems.append(
-                    URLQueryItem(name: "last_id", value: lastID)
-                )
-            }
             let newImages: [IamagesImage] = try self.globalViewModel.jsond.decode(
                 [IamagesImage].self,
                 from: await self.globalViewModel.fetchData(
-                    "/images/",
-                    queryItems: queryItems,
-                    method: .get,
+                    "/users/images",
+                    method: .post,
+                    body: self.globalViewModel.jsone.encode(
+                        Pagination(
+                            query: self.queryString.isEmpty ? nil : self.queryString,
+                            lastID: self.images.keys.last
+                        )
+                    ),
+                    contentType: .json,
                     authStrategy: .required
                 ).0
             )
@@ -55,6 +52,27 @@ struct ImagesListView: View {
         self.splitViewModel.selectedImageMetadata = nil
         self.images = [:]
         await pageFeed()
+    }
+    
+    private func loadSuggestions() async {
+        if self.queryString.isEmpty {
+            self.querySuggestions = []
+            return
+        }
+        do {
+            self.querySuggestions = try self.globalViewModel.jsond.decode(
+                [String].self,
+                from: await self.globalViewModel.fetchData(
+                    "/users/images/suggestions",
+                    method: .post,
+                    body: self.queryString.data(using: .utf8),
+                    contentType: .text,
+                    authStrategy: .required
+                ).0
+            )
+        } catch {
+            self.querySuggestions = []
+        }
     }
     
     @ViewBuilder
@@ -81,6 +99,20 @@ struct ImagesListView: View {
             if !self.isFirstPageLoaded {
                 await startFeed()
                 self.isFirstPageLoaded = true
+            }
+        }
+        .searchable(text: self.$queryString)
+        .task(id: self.queryString) {
+            await self.loadSuggestions()
+        }
+        .searchSuggestions {
+            ForEach(self.querySuggestions, id: \.self) { querySuggestion in
+                Text(querySuggestion).searchCompletion(querySuggestion)
+            }
+        }
+        .onSubmit(of: .search) {
+            Task {
+                await self.startFeed()
             }
         }
         .refreshable {

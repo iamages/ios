@@ -3,6 +3,7 @@ import SwiftUI
 struct RootNavigationView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var isWelcomeSheetPresented: Bool = false
     
@@ -33,22 +34,55 @@ struct RootNavigationView: View {
                     Picker("View", selection: self.$selectedView) {
                         ForEach(AppUserViews.allCases) { view in
                             Label(view.localizedName, systemImage: view.icon)
+                                .tag(view)
                         }
                     }
                 }
                 #if !targetEnvironment(macCatalyst)
                 ToolbarItem(placement: .primaryAction) {
-                    Button(action: {
+                    Menu {
+                        Button(action: {
+                            self.globalViewModel.isUploadsPresented = true
+                        }) {
+                            Label("Uploads", systemImage: "square.and.arrow.up.on.square")
+                        }
+                        Button(action: {
+                            // TODO: New collection
+                        }) {
+                            Label("Collection", systemImage: "folder.badge.plus")
+                        }
+                    } label: {
+                        Label("New", systemImage: "plus")
+                    } primaryAction: {
                         self.globalViewModel.isUploadsPresented = true
-                    }) {
-                        Label("Upload", systemImage: "plus")
                     }
                     .keyboardShortcut("n")
                 }
                 #endif
             }
         } detail: {
-            ImageDetailView(splitViewModel: self.splitViewModel)
+            ZStack {
+                ImageDetailView(splitViewModel: self.splitViewModel)
+                // MARK: Inactive app locked image blur
+                if self.splitViewModel.selectedImage?.lock.isLocked == true &&
+                   self.scenePhase == .inactive
+                {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Image(systemName: "lock.fill")
+                                .foregroundColor(.white)
+                                .font(.largeTitle)
+                                .shadow(radius: 0.6)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                    .background(.regularMaterial)
+                }
+            }
+            
         }
         .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
             if !isLoggedIn {

@@ -3,7 +3,11 @@ import SwiftUI
 
 fileprivate struct SelectedImageWidgetProvider: TimelineProvider {
     struct NoSelectedWidgetImage: LocalizedError {
-        var errorDescription: String? = "Select an image in Iamages"
+        var errorDescription: String? = NSLocalizedString("Select an image in Iamages", comment: "")
+    }
+    
+    struct ImageNotFound: LocalizedError {
+        var errorDescription: String? = NSLocalizedString("Selected image is missing", comment: "")
     }
     
     @AppStorage("selectedWidgetImageId", store: .iamagesGroup) var imageId: String?
@@ -33,9 +37,15 @@ fileprivate struct SelectedImageWidgetProvider: TimelineProvider {
             var requiresAuth = false
             do {
                 let (_, response) = try await URLSession.shared.data(for: imageRequest)
-                if let httpResponse = response as? HTTPURLResponse,
-                   httpResponse.statusCode == 401 {
-                   requiresAuth = true
+                if let httpResponse = response as? HTTPURLResponse {
+                    if httpResponse.statusCode == 404 {
+                        // Prematurely return entry with error because image
+                        // does not exist.
+                        entry.errors.append(ImageNotFound())
+                        return entry
+                    } else if httpResponse.statusCode == 401 {
+                        requiresAuth = true
+                    }
                 }
             } catch {
                 // Ignore error here.
@@ -65,10 +75,7 @@ fileprivate struct SelectedImageWidgetProvider: TimelineProvider {
                 )
                 var metadataRequest = URLRequest(
                     url: .apiRootUrl
-                        .appending(path: "/images/\(imageId)")
-                        .appending(queryItems: [
-                            URLQueryItem(name: "type", value: "private")
-                        ])
+                        .appending(path: "/images/\(imageId)/metadata")
                 )
                 if requiresAuth {
                     try await self.userManager.getUserToken(for: &metadataRequest)

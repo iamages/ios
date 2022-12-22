@@ -188,11 +188,13 @@ struct IamagesImageEdit: Codable {
     
     let change: Changable
     let to: BoolOrString
+    var lockKey: String? = nil
     var lockVersion: IamagesImage.Lock.Version? = nil
     
     enum CodingKeys: String, CodingKey {
         case change
         case to
+        case lockKey = "lock_key"
     }
     
     func encode(to encoder: Encoder) throws {
@@ -206,6 +208,7 @@ struct IamagesImageEdit: Codable {
         default:
             break
         }
+        try container.encodeIfPresent(self.lockKey, forKey: .lockKey)
     }
 }
 

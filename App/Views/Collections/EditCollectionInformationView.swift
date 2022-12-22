@@ -17,7 +17,7 @@ struct EditCollectionInformationView: View {
         self.isBusy = true
         var edits: [IamagesCollectionEdit] = []
         do {
-            if self.description != self.collection.metadata.description {
+            if self.description != self.collection.description {
                 edits.append(.init(change: .description, to: .string(self.description)))
             }
             if self.isPrivate != self.collection.isPrivate {
@@ -35,7 +35,7 @@ struct EditCollectionInformationView: View {
                 case .description:
                     switch edit.to {
                     case .string(let description):
-                        self.collection.metadata.description = description
+                        self.collection.description = description
                     default:
                         throw BoolOrStringError.wrongType("description", .string)
                     }
@@ -71,13 +71,13 @@ struct EditCollectionInformationView: View {
             .navigationBarTitleDisplayMode(.inline)
             .errorAlert(error: self.$error)
             .onAppear {
-                self.description = self.collection.metadata.description
+                self.description = self.collection.description
                 self.isPrivate = self.collection.isPrivate
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
-                        if self.description != self.collection.metadata.description ||
+                        if self.description != self.collection.description ||
                            self.isPrivate != self.collection.isPrivate
                         {
                             self.isCancelAlertPresented = true

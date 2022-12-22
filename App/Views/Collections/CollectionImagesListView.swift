@@ -13,23 +13,27 @@ struct CollectionImagesListView: View {
     @State private var isEndOfFeed: Bool = false
     @State private var error: LocalizedAlertError?
     @State private var isEditSheetPresented: Bool = false
-    @State private var isRemoveImageAlertPresented: Bool = false
+    
+    @State private var removeImageID: String?
+    
+    @State private var queryString: String = ""
+    @State private var querySuggestions: [String] = []
     
     private func pageFeed() async {
         self.isBusy = true
         do {
-            var queryItems: [URLQueryItem] = [
-                URLQueryItem(name: "limit", value: "6")
-            ]
-            if let lastID = self.images.values.last?.id {
-                queryItems.append(URLQueryItem(name: "last_id", value: lastID))
-            }
             let newImages = try self.globalViewModel.jsond.decode(
                 [IamagesImage].self,
                 from: await self.globalViewModel.fetchData(
                     "/collections/\(self.collection.id)/images",
-                    queryItems: queryItems,
-                    method: .get,
+                    method: .post,
+                    body: self.globalViewModel.jsone.encode(
+                        Pagination(
+                            query: self.queryString.isEmpty ? self.queryString : nil,
+                            lastID: self.images.keys.last
+                        )
+                    ),
+                    contentType: .json,
                     authStrategy: .whenPossible
                 ).0
             )
@@ -50,8 +54,54 @@ struct CollectionImagesListView: View {
         await self.pageFeed()
     }
     
-    private func removeImage(image: IamagesImage) async {
-        
+    private func removeImage(id: String) async {
+        do {
+            try await self.globalViewModel.fetchData(
+                "/collections/\(self.collection.id)",
+                method: .patch,
+                body: self.globalViewModel.jsone.encode(
+                    IamagesCollectionEdit(
+                        change: .removeImages,
+                        to: .stringArray([id])
+                    )
+                ),
+                contentType: .json,
+                authStrategy: .required
+            )
+            self.images.removeValue(forKey: id)
+        } catch {
+            self.error = LocalizedAlertError(error: error)
+        }
+    }
+    
+    private func loadSuggestions() async {
+        if self.queryString.isEmpty {
+            self.querySuggestions = []
+            return
+        }
+        do {
+            self.querySuggestions = try self.globalViewModel.jsond.decode(
+                [String].self,
+                from: await self.globalViewModel.fetchData(
+                    "/collections/\(self.collection.id)/images/suggestions",
+                    method: .post,
+                    body: self.queryString.data(using: .utf8),
+                    contentType: .text,
+                    authStrategy: .required
+                ).0
+            )
+        } catch {
+            self.querySuggestions = []
+        }
+    }
+    
+    @ViewBuilder
+    private func removeFromCollectionButton(id: String) -> some View {
+        Button(role: .destructive, action: {
+            self.removeImageID = id
+        }) {
+            Label("Remove from collection", systemImage: "rectangle.stack.badge.minus")
+        }
     }
     
     var body: some View {
@@ -63,21 +113,13 @@ struct CollectionImagesListView: View {
                             await self.pageFeed()
                         }
                     }
-                    .contextMenu {
-                        Button(role: .destructive, action: {
-                            self.isRemoveImageAlertPresented = true
-                        }) {
-                            Label("Remove from collection", systemImage: "rectangle.stack.badge.minus")
-                        }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        self.removeFromCollectionButton(id: image.key)
                     }
-                    .confirmationDialog("Remove from collection?", isPresented: self.$isRemoveImageAlertPresented) {
-                        Button("Remove", role: .destructive) {
-                            Task {
-                                await removeImage(image: image.value)
-                            }
-                        }
-                    } message: {
-                        Text("The selected image will be removed from the collection")
+                    .contextMenu {
+                        ImageShareLinkView(image: image.value)
+                        Divider()
+                        self.removeFromCollectionButton(id: image.key)
                     }
             }
             if self.isBusy {
@@ -88,12 +130,8 @@ struct CollectionImagesListView: View {
                 }
             }
         }
-        .navigationTitle(collection.metadata.description)
+        .navigationTitle(self.collection.description)
         .errorToast(error: self.$error)
-        .onDisappear {
-            self.splitViewModel.selectedImage = nil
-            self.splitViewModel.selectedImageMetadata = nil
-        }
         .refreshable {
             await self.startFeed()
         }
@@ -103,11 +141,38 @@ struct CollectionImagesListView: View {
                 self.isFirstPageLoaded = true
             }
         }
+        .searchable(text: self.$queryString)
+        .onSubmit(of: .search) {
+            Task {
+                await self.startFeed()
+            }
+        }
+        .task(id: self.queryString) {
+            await self.loadSuggestions()
+        }
+        .searchSuggestions {
+            ForEach(self.querySuggestions, id: \.self) { querySuggestion in
+                Text(querySuggestion).searchCompletion(querySuggestion)
+            }
+        }
         .sheet(isPresented: self.$isEditSheetPresented) {
             EditCollectionInformationView(
                 collection: self.$collection,
                 isPresented: self.$isEditSheetPresented
             )
+        }
+        .alert("Remove from collection?", isPresented: .constant(self.removeImageID != nil)) {
+            Button("Remove", role: .destructive) {
+                Task {
+                    guard let id = self.removeImageID else {
+                        return
+                    }
+                    self.removeImageID = nil
+                    await removeImage(id: id)
+                }
+            }
+        } message: {
+            Text("The selected image will be removed from the collection. You will need to add it back again to see it in this collection.")
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {

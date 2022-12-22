@@ -10,10 +10,12 @@ fileprivate struct NewestImagesWidgetProvider: TimelineProvider {
         }
     }
     
+    private let jsone = JSONEncoder()
     private let jsond = JSONDecoder()
     private let userManager = UserManager()
     
     init() {
+        self.jsone.dateEncodingStrategy = .iso8601
         self.jsond.dateDecodingStrategy = .iso8601
     }
     
@@ -32,14 +34,11 @@ fileprivate struct NewestImagesWidgetProvider: TimelineProvider {
         var lastId: String?
         
         while (newestImage == nil && entry.errors.isEmpty) {
-            var feedUrl = URL.apiRootUrl.appending(path: "/images")
-            if let lastId {
-                feedUrl.append(queryItems: [
-                    URLQueryItem(name: "last_id", value: lastId)
-                ])
-            }
-            var request = URLRequest(url: feedUrl)
+            var request = URLRequest(url: URL.apiRootUrl.appending(path: "/users/images"))
+            request.httpMethod = "POST"
             do {
+                request.httpBody = try self.jsone.encode(Pagination(lastID: lastId))
+                request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
                 try await self.userManager.getUserToken(for: &request)
                 let images = try self.jsond.decode(
                     [IamagesImage].self,
@@ -70,10 +69,7 @@ fileprivate struct NewestImagesWidgetProvider: TimelineProvider {
                 )
                 var metadataRequest = URLRequest(
                     url: .apiRootUrl
-                        .appending(path: "/images/\(newestImage.id)")
-                        .appending(queryItems: [
-                            URLQueryItem(name: "type", value: "private")
-                        ])
+                        .appending(path: "/images/\(newestImage.id)/metadata")
                 )
                 if newestImage.isPrivate {
                     try await self.userManager.getUserToken(for: &metadataRequest)

@@ -36,7 +36,5 @@ let previewCollection = IamagesCollection(
     createdOn: Date.now,
     owner: "jkelol111",
     isPrivate: false,
-    metadata: .init(
-        description: "Test collection"
-    )
+    description: "Test collection"
 )

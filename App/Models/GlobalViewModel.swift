@@ -41,6 +41,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     }
     
     enum HTTPContentType: String {
+        case text = "text/plain; charset=utf-8"
         case json = "application/json; charset=utf-8"
         case encodedForm = "application/x-www-form-urlencoded"
         case multipart = "multipart/form-data; boundary=iamages"
@@ -114,7 +115,6 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         willPerformHTTPRedirection response: HTTPURLResponse,
         newRequest request: URLRequest
     ) async -> URLRequest? {
-        print("redirect")
         var newRequest = request
         if let header = response.value(forHTTPHeaderField: "X-Iamages-Image-Private") as? NSString,
            header.boolValue
@@ -320,10 +320,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         key: String? = nil
     ) async throws -> IamagesImageMetadata {
         let (data, response): (Data, HTTPURLResponse) = try await self.fetchData(
-            "/images/\(image.id)",
-            queryItems: [
-                URLQueryItem(name: "type", value: "private")
-            ],
+            "/images/\(image.id)/metadata",
             method: .get,
             authStrategy: image.isPrivate ? .required : .none
         )

@@ -45,7 +45,8 @@ struct EditImageInformationView: View {
                     self.edits.append(
                         IamagesImageEdit(
                             change: .lock,
-                            to: .bool(false)
+                            to: .bool(false),
+                            lockKey: self.key
                         )
                     )
                 }
@@ -54,7 +55,8 @@ struct EditImageInformationView: View {
                 self.edits.append(
                     IamagesImageEdit(
                         change: .description,
-                        to: .string(self.description)
+                        to: .string(self.description),
+                        lockKey: self.splitViewModel.selectedImage?.lock.isLocked == true ? self.key : nil
                     )
                 )
             }
@@ -91,20 +93,16 @@ struct EditImageInformationView: View {
                     if let metadata = self.splitViewModel.selectedImageMetadata {
                         Section {
                             TextField("Description", text: self.$description)
-                                .disabled(image.lock.isLocked)
                         } header: {
                             Text("Description")
                         } footer: {
-                            if image.lock.isLocked {
-                                Text("You cannot change the descripion of a locked file.")
-                            }
                         }
                         .onAppear {
                             self.description = metadata.description
                         }
                     } else {
                         if image.lock.isLocked {
-                            Label("Unlock this file to view its metadata.", systemImage: "lock")
+                            Label("Unlock this file to edit its metadata.", systemImage: "lock")
                         } else {
                             LoadingMetadataView()
                         }

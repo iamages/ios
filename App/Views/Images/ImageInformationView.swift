@@ -47,9 +47,6 @@ struct ImageInformationView: View {
                         }
                     }
                     .formStyle(.grouped)
-                    #if targetEnvironment(macCatalyst)
-                    .navigationSubtitle(self.splitViewModel.selectedImageTitle)
-                    #endif
                 } else {
                     Text("Select an image")
                 }

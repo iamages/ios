@@ -12,10 +12,9 @@ struct NavigableCollectionView: View {
             [IamagesImage].self,
             from: await self.globalViewModel.fetchData(
                 "/collections/\(self.collection.id)/images",
-                queryItems: [
-                    URLQueryItem(name: "limit", value: "4")
-                ],
-                method: .get
+                method: .post,
+                body: self.globalViewModel.jsone.encode(Pagination(limit: 4)),
+                contentType: .json
             ).0
         )
     }
@@ -65,7 +64,7 @@ struct NavigableCollectionView: View {
                 .cornerRadius(8)
             }
             VStack(alignment: .leading) {
-                Text(self.collection.metadata.description)
+                Text(self.collection.description)
                     .bold()
                     .lineLimit(1)
                 HStack {

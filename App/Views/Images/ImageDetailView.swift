@@ -5,6 +5,7 @@ import WidgetKit
 struct ImageDetailView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("selectedWidgetImageId", store: .iamagesGroup) var selectedWidgetImageId: String?
     
     @ObservedObject var splitViewModel: SplitViewModel
@@ -21,6 +22,24 @@ struct ImageDetailView: View {
     @State private var isDeleteDialogPresented: Bool = false
     @State private var isBusy: Bool = false
     @State private var error: LocalizedAlertError?
+    
+    private var selectedImageTitle: String {
+        guard let selectedImage = self.splitViewModel.selectedImage else {
+            return ""
+        }
+        if let metadata = self.splitViewModel.selectedImageMetadata {
+            if selectedImage.lock.isLocked && self.scenePhase == .inactive {
+                return NSLocalizedString("Locked image", comment: "")
+            }
+            return metadata.description
+        } else {
+            if selectedImage.lock.isLocked {
+                return NSLocalizedString("Locked image", comment: "")
+            } else {
+                return NSLocalizedString("Loading metadata...", comment: "")
+            }
+        }
+    }
     
     private func fetchMetadata(image: IamagesImage) async {
         self.isBusy = true
@@ -154,10 +173,10 @@ struct ImageDetailView: View {
                 }
             }
             .errorAlert(error: self.$error)
-            .navigationTitle(self.splitViewModel.selectedImageTitle)
+            .navigationTitle(self.selectedImageTitle)
             .navigationBarTitleDisplayMode(.inline)
             #if targetEnvironment(macCatalyst)
-            .navigationSubtitle(self.splitViewModel.selectedImageTitle)
+            .navigationSubtitle(self.selectedImageTitle)
             #endif
             .onDisappear(perform: self.resetView)
             .onChange(of: self.splitViewModel.selectedImage) { _ in
@@ -239,6 +258,17 @@ struct ImageDetailView: View {
                         }
                     } message: {
                         Text("You cannot revert this action.")
+                    }
+                }
+                ToolbarItem(id: "relock", placement: .secondaryAction) {
+                    if image.lock.isLocked {
+                        Button(role: .destructive, action: {
+                            self.request = nil
+                            self.splitViewModel.selectedImageMetadata = nil
+                        }) {
+                            Label("Relock", systemImage: "lock")
+                        }
+                        .disabled(self.request == nil)
                     }
                 }
             }
