@@ -11,10 +11,12 @@ struct IamagesImage: Codable, Identifiable, Hashable {
 
         var isLocked: Bool
         var version: Version?
+        var upgradable: Bool?
         
         enum CodingKeys: String, CodingKey {
             case isLocked = "is_locked"
             case version
+            case upgradable
         }
     }
     
@@ -139,37 +141,12 @@ struct IamagesImageMetadata: Codable {
     }
 }
 
+struct IamagesImageMetadataContainer {
+    var data: IamagesImageMetadata
+    var salt: Data? = nil
+}
+
 // MARK: Image uploads
-struct IamagesUploadInformation: Codable, Identifiable, Hashable {
-    let id: UUID = UUID()
-    var description: String = NSLocalizedString("No description provided.", comment: "")
-    var isPrivate: Bool = false
-    var isLocked: Bool = false
-    var lockKey: String? = nil
-    
-    enum CodingKeys: String, CodingKey {
-        case description
-        case isPrivate = "is_private"
-        case isLocked = "is_locked"
-        case lockKey = "lock_key"
-    }
-}
-
-struct IamagesUploadInformationEdits {
-    struct Edit {
-        let change: IamagesUploadInformation.CodingKeys
-        let to: BoolOrString
-    }
-    let id: UUID
-    var list: [Edit] = []
-}
-
-struct IamagesUploadFile: Hashable {
-    var name: String
-    var data: Data
-    var type: String
-}
-
 struct IamagesUploadContainer: Identifiable, Hashable {
     let id: UUID = UUID()
     var information: IamagesUploadInformation = IamagesUploadInformation()
@@ -180,6 +157,21 @@ struct IamagesUploadContainer: Identifiable, Hashable {
 
 // MARK: Image editing
 struct IamagesImageEdit: Codable {
+    struct Notification {
+        let id: String
+        let edit: IamagesImageEdit
+    }
+    
+    struct Response: Codable {
+        let ok: Bool
+        let lockVersion: IamagesImage.Lock.Version?
+        
+        enum CodingKeys: String, CodingKey {
+            case ok
+            case lockVersion = "lock_version"
+        }
+    }
+    
     enum Changable: String, Codable {
         case isPrivate = "is_private"
         case lock = "lock"
@@ -188,13 +180,15 @@ struct IamagesImageEdit: Codable {
     
     let change: Changable
     let to: BoolOrString
-    var lockKey: String? = nil
+    var metadataLockKey: Data? = nil
+    var imageLockKey: Data? = nil
     var lockVersion: IamagesImage.Lock.Version? = nil
     
     enum CodingKeys: String, CodingKey {
         case change
         case to
-        case lockKey = "lock_key"
+        case metadataLockKey = "metadata_lock_key"
+        case imageLockKey = "image_lock_key"
     }
     
     func encode(to encoder: Encoder) throws {
@@ -208,21 +202,7 @@ struct IamagesImageEdit: Codable {
         default:
             break
         }
-        try container.encodeIfPresent(self.lockKey, forKey: .lockKey)
+        try container.encodeIfPresent(self.metadataLockKey?.base64EncodedString(), forKey: .metadataLockKey)
+        try container.encodeIfPresent(self.imageLockKey?.base64EncodedString(), forKey: .imageLockKey)
     }
-}
-
-struct IamagesImageEditResponse: Codable {
-    let ok: Bool
-    let lockVersion: IamagesImage.Lock.Version?
-    
-    enum CodingKeys: String, CodingKey {
-        case ok
-        case lockVersion = "lock_version"
-    }
-}
-
-struct EditImageNotification {
-    let id: String
-    let edit: IamagesImageEdit
 }

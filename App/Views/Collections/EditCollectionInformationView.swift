@@ -2,9 +2,9 @@ import SwiftUI
 
 struct EditCollectionInformationView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @Environment(\.dismiss) private var dismiss
     
     @Binding var collection: IamagesCollection
-    @Binding var isPresented: Bool
 
     @State private var description: String = ""
     @State private var isPrivate: Bool = false
@@ -50,7 +50,7 @@ struct EditCollectionInformationView: View {
                     break
                 }
             }
-            self.isPresented = false
+            self.dismiss()
         } catch {
             self.isBusy = false
             self.error = LocalizedAlertError(error: error)
@@ -82,13 +82,12 @@ struct EditCollectionInformationView: View {
                         {
                             self.isCancelAlertPresented = true
                         } else {
-                            self.isPresented = false
+                            self.dismiss()
                         }
                     }
                     .disabled(self.isBusy)
                     .confirmCancelDialog(
-                        isPresented: self.$isCancelAlertPresented,
-                        isSheetPresented: self.$isPresented
+                        isPresented: self.$isCancelAlertPresented
                     )
                 }
                 ToolbarItem(placement: .primaryAction) {
@@ -108,8 +107,7 @@ struct EditCollectionInformationView: View {
 struct EditCollectionInformationView_Previews: PreviewProvider {
     static var previews: some View {
         EditCollectionInformationView(
-            collection: .constant(previewCollection),
-            isPresented: .constant(true)
+            collection: .constant(previewCollection)
         )
         .environmentObject(GlobalViewModel())
     }

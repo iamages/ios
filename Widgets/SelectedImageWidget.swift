@@ -32,7 +32,7 @@ fileprivate struct SelectedImageWidgetProvider: TimelineProvider {
         var entry = ImageWidgetEntry()
         if let imageId {
             var imageRequest = URLRequest(url: .apiRootUrl.appending(path: "/images/\(imageId)"))
-            imageRequest.httpMethod = "HEAD"
+            imageRequest.httpMethod = HTTPMethod.head.rawValue
             // Check if image is private or not.
             var requiresAuth = false
             do {
@@ -52,7 +52,7 @@ fileprivate struct SelectedImageWidgetProvider: TimelineProvider {
                 print(error)
             }
             // Actually do the request
-            imageRequest.httpMethod = "GET"
+            imageRequest.httpMethod = HTTPMethod.get.rawValue
             do {
                 if requiresAuth {
                     try await self.userManager.getUserToken(for: &imageRequest)

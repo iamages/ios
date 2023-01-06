@@ -4,7 +4,7 @@ struct AboutLinksView: View {
     var body: some View {
         Link("Open-source on GitHub", destination: URL(string: "https://github.com/iamages")!)
         Link("Terms of Service", destination: URL.apiRootUrl.appending(path: "/legal/tos"))
-        Link("Privacy policy", destination: URL.apiRootUrl.appending(path: "/legal/privacy"))
+        Link("Privacy Policy", destination: URL.apiRootUrl.appending(path: "/legal/privacy"))
     }
 }
 

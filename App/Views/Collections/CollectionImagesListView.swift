@@ -68,7 +68,9 @@ struct CollectionImagesListView: View {
                 contentType: .json,
                 authStrategy: .required
             )
-            self.images.removeValue(forKey: id)
+            withAnimation {
+                self.images.removeValue(forKey: id)
+            }
         } catch {
             self.error = LocalizedAlertError(error: error)
         }
@@ -151,14 +153,11 @@ struct CollectionImagesListView: View {
             await self.loadSuggestions()
         }
         .searchSuggestions {
-            ForEach(self.querySuggestions, id: \.self) { querySuggestion in
-                Text(querySuggestion).searchCompletion(querySuggestion)
-            }
+            QuerySuggestionsView(suggestions: self.$querySuggestions)
         }
         .sheet(isPresented: self.$isEditSheetPresented) {
             EditCollectionInformationView(
-                collection: self.$collection,
-                isPresented: self.$isEditSheetPresented
+                collection: self.$collection
             )
         }
         .alert("Remove from collection?", isPresented: .constant(self.removeImageID != nil)) {
@@ -185,8 +184,7 @@ struct CollectionImagesListView: View {
                 }
             }
             ToolbarItem {
-                ShareLink(item: URL.apiRootUrl.appending(path: "/collections/\(self.collection.id)/embed"))
-                    .disabled(self.collection.isPrivate)
+                CollectionShareLinkView(collection: self.collection)
             }
             ToolbarItem {
                 Button(action: {

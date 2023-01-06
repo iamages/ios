@@ -106,9 +106,7 @@ struct ImagesListView: View {
             await self.loadSuggestions()
         }
         .searchSuggestions {
-            ForEach(self.querySuggestions, id: \.self) { querySuggestion in
-                Text(querySuggestion).searchCompletion(querySuggestion)
-            }
+            QuerySuggestionsView(suggestions: self.$querySuggestions)
         }
         .onSubmit(of: .search) {
             Task {
@@ -119,7 +117,7 @@ struct ImagesListView: View {
             await self.startFeed()
         }
         .onReceive(NotificationCenter.default.publisher(for: .editImage)) { output in
-            guard let notification = output.object as? EditImageNotification else {
+            guard let notification = output.object as? IamagesImageEdit.Notification else {
                 print("Couldn't parse edit image notification.")
                 return
             }
@@ -139,9 +137,17 @@ struct ImagesListView: View {
                 case .bool(let isLocked):
                     self.images[notification.id]?.lock.isLocked = isLocked
                     self.images[notification.id]?.lock.version = nil
+                    if self.splitViewModel.selectedImage?.id == notification.id {
+                        self.splitViewModel.selectedImage?.lock.isLocked = isLocked
+                        self.splitViewModel.selectedImage?.lock.version = nil
+                    }
                 case .string(_):
                     self.images[notification.id]?.lock.isLocked = true
                     self.images[notification.id]?.lock.version = notification.edit.lockVersion
+                    if self.splitViewModel.selectedImage?.id == notification.id {
+                        self.splitViewModel.selectedImage?.lock.isLocked = true
+                        self.splitViewModel.selectedImage?.lock.version = notification.edit.lockVersion
+                    }
                 default:
                     break
                 }
@@ -149,7 +155,7 @@ struct ImagesListView: View {
                 switch notification.edit.to {
                 case .string(let description):
                     if self.splitViewModel.selectedImage?.id == notification.id {
-                        self.splitViewModel.selectedImageMetadata?.description = description
+                        self.splitViewModel.selectedImageMetadata?.data.description = description
                     }
                 default:
                     break
@@ -158,10 +164,11 @@ struct ImagesListView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .deleteImage)) { output in
             guard let id = output.object as? String else {
-                print("Couldn't find image in list.")
                 return
             }
-            self.images.removeValue(forKey: id)
+            withAnimation {
+                self.images.removeValue(forKey: id)
+            }
         }
         .toolbar {
             #if targetEnvironment(macCatalyst)

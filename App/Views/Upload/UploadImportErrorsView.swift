@@ -1,8 +1,9 @@
 import SwiftUI
 
 struct UploadImportErrorsView: View {
+    @Environment(\.dismiss) private var dismiss
+    
     @Binding var errors: [IdentifiableLocalizedError]
-    @Binding var isPresented: Bool
     
     var body: some View {
         NavigationStack {
@@ -23,12 +24,12 @@ struct UploadImportErrorsView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Clear") {
                         self.errors = []
-                        self.isPresented = false
+                        self.dismiss()
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") {
-                        self.isPresented = false
+                        self.dismiss()
                     }
                 }
             }
@@ -43,8 +44,7 @@ struct UploadImportErrorsView_Previews: PreviewProvider {
             errors: .constant([
                 IdentifiableLocalizedError(error: FileImportErrors.unsupportedType("test.mov", "video/mov")),
                 IdentifiableLocalizedError(error: FileImportErrors.tooLarge("test.jpg", 4000000))
-            ]),
-            isPresented: .constant(true)
+            ])
         )
     }
 }

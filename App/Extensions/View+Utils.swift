@@ -32,31 +32,6 @@ extension View {
 }
 #endif
 
-struct ErrorAlert: ViewModifier {
-    @Binding var error: LocalizedAlertError?
-    
-    func body(content: Content) -> some View {
-        content
-            .alert(isPresented: .constant(error != nil), error: self.error, actions: { _ in
-                // iOS 16.0: OS-provided OK button no longer sets error to nil automatically.
-                // We have to set it to nil ourselves with this 'custom' button.
-                Button("OK", role: .cancel) {
-                    self.error = nil
-                }
-            }) { error in
-                if let recoverySuggestion = error.recoverySuggestion {
-                    Text(recoverySuggestion)
-                }
-            }
-    }
-}
-
-extension View {
-    func errorAlert(error: Binding<LocalizedAlertError?>) -> some View {
-        modifier(ErrorAlert(error: error))
-    }
-}
-
 struct ErrorToast: ViewModifier {
     @Binding var error: LocalizedAlertError?
     
@@ -81,35 +56,35 @@ extension View {
     }
 }
 
-struct ConfirmCancelDialogModifier: ViewModifier {
+struct LockBetaWarningAlertModifier: ViewModifier {
+    @Binding var isLocked: Bool
     @Binding var isPresented: Bool
-    @Binding var isSheetPresented: Bool
     
     func body(content: Content) -> some View {
         content
-            .confirmationDialog(
-                "Leave without saving?",
-                isPresented: self.$isPresented,
-                titleVisibility: .visible
-            ) {
-                Button("Leave", role: .destructive) {
-                    self.isSheetPresented = false
+            .alert("Enable lock?", isPresented: self.$isPresented) {
+                Button("Enable", role: .destructive) {
+                    self.isPresented = false
+                }
+                Button("Disable", role: .cancel) {
+                    self.isLocked = false
+                    self.isPresented = false
                 }
             } message: {
-                Text("The changes you have made will not be saved.")
+                Text("This feature is currently in beta. We are not responsible for any data loss sustained by continuing.")
             }
     }
 }
 
 extension View {
-    func confirmCancelDialog(
-        isPresented: Binding<Bool>,
-        isSheetPresented: Binding<Bool>
+    func lockBetaWarningAlert(
+        isLocked: Binding<Bool>,
+        isPresented: Binding<Bool>
     ) -> some View {
         modifier(
-            ConfirmCancelDialogModifier(
-                isPresented: isPresented,
-                isSheetPresented: isSheetPresented
+            LockBetaWarningAlertModifier(
+                isLocked: isLocked,
+                isPresented: isPresented
             )
         )
     }

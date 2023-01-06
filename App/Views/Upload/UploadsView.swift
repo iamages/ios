@@ -1,16 +1,16 @@
 import SwiftUI
-import PhotosUI
+import OrderedCollections
 
 struct UploadsView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     #if !targetEnvironment(macCatalyst)
-    @Binding var isPresented: Bool
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dismiss) private var dismiss
     #endif
     
-    @State private var selectedUploadContainer: IamagesUploadContainer?
-    @State private var uploadContainers: [IamagesUploadContainer] = []
+    @State private var selectedUploadContainer: UUID?
+    @State private var uploadContainers: OrderedDictionary<UUID, IamagesUploadContainer> = [:]
     @State private var isBusy: Bool = false
 
     @State private var fileImportErrors: [IdentifiableLocalizedError] = []
@@ -33,7 +33,7 @@ struct UploadsView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     if self.horizontalSizeClass == .compact {
                         Button(action: {
-                            self.isPresented = false
+                            self.dismiss()
                         }) {
                             Label("Close", systemImage: "xmark")
                         }
@@ -72,34 +72,47 @@ struct UploadsView: View {
                 }
             }
         } detail: {
-            #if targetEnvironment(macCatalyst)
-            UploadEditorView(
-                selectedUploadContainer: self.$selectedUploadContainer
-            )
-            #else
-            UploadEditorView(
-                isPresented: self.$isPresented,
-                selectedUploadContainer: self.$selectedUploadContainer
-            )
-            #endif
+            Group {
+                if let id = self.selectedUploadContainer,
+                   var uploadContainer = Binding<IamagesUploadContainer>(self.$uploadContainers[id]) {
+                    UploadEditorView(
+                        information: uploadContainer.information
+                    )
+                } else {
+                    Text("Select an upload to edit")
+                        .navigationTitle("")
+                }
+            }
+            .toolbar {
+                #if !targetEnvironment(macCatalyst)
+                ToolbarItem(placement: .primaryAction) {
+                    if self.horizontalSizeClass == .regular {
+                        Button(action: {
+                            self.dismiss()
+                        }) {
+                            Label("Close", systemImage: "xmark")
+                        }
+                        .keyboardShortcut("w")
+                    }
+                }
+                #endif
+            }
         }
         .navigationTitle("Uploads")
         .fullScreenCover(isPresented: self.$isUploadingCoverPresented) {
             UploadingView(
-                isPresented: self.$isUploadingCoverPresented,
                 uploadContainers: self.$uploadContainers
             )
         }
         .sheet(isPresented: self.$isImportErrorsSheetPresented) {
             UploadImportErrorsView(
-                errors: self.$fileImportErrors,
-                isPresented: self.$isImportErrorsSheetPresented
+                errors: self.$fileImportErrors
             )
         }
         .sheet(isPresented: self.$isNewCollectionSheetPresented, onDismiss: {
             self.isUploadingCoverPresented = true
         }) {
-            EmptyView()
+            NewCollectionView()
         }
     }
 }
@@ -107,13 +120,8 @@ struct UploadsView: View {
 #if DEBUG
 struct UploadsView_Previews: PreviewProvider {
     static var previews: some View {
-        #if targetEnvironment(macCatalyst)
         UploadsView()
             .environmentObject(GlobalViewModel())
-        #else
-        UploadsView(isPresented: .constant(true))
-            .environmentObject(GlobalViewModel())
-        #endif
     }
 }
 #endif

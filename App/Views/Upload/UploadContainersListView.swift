@@ -1,12 +1,13 @@
 import SwiftUI
 import PhotosUI
+import OrderedCollections
 
 struct UploadContainersListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.editMode) private var editMode
     
-    @Binding var selectedUploadContainer: IamagesUploadContainer?
-    @Binding var uploadContainers: [IamagesUploadContainer]
+    @Binding var selectedUploadContainer: UUID?
+    @Binding var uploadContainers: OrderedDictionary<UUID, IamagesUploadContainer>
     @Binding var fileImportErrors: [IdentifiableLocalizedError]
     @Binding var isBusy: Bool
     
@@ -32,15 +33,14 @@ struct UploadContainersListView: View {
                     throw FileImportErrors.unsupportedType("Photo library file", mime)
                 }
                 
-                self.uploadContainers.append(
-                    IamagesUploadContainer(
-                        file: IamagesUploadFile(
-                            name: "\(image.itemIdentifier ?? UUID().uuidString).\(type.preferredFilenameExtension ?? ".bin")",
-                            data: data,
-                            type: mime
-                        )
+                let container = IamagesUploadContainer(
+                    file: IamagesUploadFile(
+                        data: data,
+                        type: mime
                     )
                 )
+                
+                self.uploadContainers[container.id] = container
             } catch {
                 if let error = error as? LocalizedError {
                     self.fileImportErrors.append(IdentifiableLocalizedError(error: error))
@@ -75,16 +75,15 @@ struct UploadContainersListView: View {
                     if !self.globalViewModel.acceptedFileTypes.contains(type) {
                         throw FileImportErrors.unsupportedType(url.lastPathComponent, type)
                     }
-
-                    self.uploadContainers.append(
-                        IamagesUploadContainer(
-                            file: IamagesUploadFile(
-                                name: url.lastPathComponent,
-                                data: try Data(contentsOf: url),
-                                type: type
-                            )
+                    
+                    let container = IamagesUploadContainer(
+                        file: IamagesUploadFile(
+                            data: try Data(contentsOf: url),
+                            type: type
                         )
                     )
+
+                    self.uploadContainers[container.id] = container
                 } catch {
                     self.fileImportErrors.append(IdentifiableLocalizedError(error: error as! LocalizedError))
                 }
@@ -108,19 +107,10 @@ struct UploadContainersListView: View {
                 }
             } else {
                 List(selection: self.$selectedUploadContainer) {
-                    ForEach(self.$uploadContainers) { uploadContainer in
+                    ForEach(self.uploadContainers.values) { uploadContainer in
                         NavigableUploadContainerView(
                             uploadContainer: uploadContainer
                         )
-                        .disabled(self.selectedUploadContainer != nil)
-                    }
-                    .onDelete { offset in
-                        for i in offset {
-                            if self.uploadContainers[i].id == self.selectedUploadContainer?.id {
-                                self.selectedUploadContainer = nil
-                            }
-                        }
-                        self.uploadContainers.remove(atOffsets: offset)
                     }
                 }
             }
@@ -137,7 +127,7 @@ struct UploadContainersListView: View {
         }
         .fileImporter(
             isPresented: self.$isFilePickerPresented,
-            allowedContentTypes: [.jpeg, .png, .gif, .webP, .svg],
+            allowedContentTypes: [.jpeg, .png, .gif, .webP],
             allowsMultipleSelection: true,
             onCompletion: self.handleFilePicked
         )
@@ -166,7 +156,7 @@ struct UploadContainersListView_Previews: PreviewProvider {
     static var previews: some View {
         UploadContainersListView(
             selectedUploadContainer: .constant(nil),
-            uploadContainers: .constant([]),
+            uploadContainers: .constant([:]),
             fileImportErrors: .constant([]),
             isBusy: .constant(false)
         )

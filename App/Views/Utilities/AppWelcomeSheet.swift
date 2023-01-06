@@ -9,7 +9,7 @@ struct AppWelcomeView: View {
         #endif
     }
     
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
     
     @State private var path: [WelcomeScreens] = []
     
@@ -53,7 +53,7 @@ struct AppWelcomeView: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Skip", role: .destructive) {
-                    self.isPresented = false
+                    self.dismiss()
                 }
             }
             ToolbarItem(placement: .primaryAction) {
@@ -126,7 +126,7 @@ struct AppWelcomeView: View {
                 }
                 #else
                 Button("Agree & finish") {
-                    self.isPresented = false
+                    self.dismiss()
                 }
                 #endif
             }
@@ -161,7 +161,7 @@ struct AppWelcomeView: View {
         .toolbar {
             ToolbarItem {
                 Button("Finish") {
-                    self.isPresented = false
+                    self.dismiss()
                 }
             }
         }
@@ -199,7 +199,7 @@ struct AppWelcomeView: View {
 #if DEBUG
 struct AppWelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        AppWelcomeView(isPresented: .constant(true))
+        AppWelcomeView()
     }
 }
 #endif
@@ -207,7 +207,7 @@ struct AppWelcomeView_Previews: PreviewProvider {
 struct AppWelcomeSheetModifier: ViewModifier {
     @AppStorage("hasPresentedWelcome") private var hasPresentedWelcome: Bool = false
     
-    @Binding var isPresented: Bool
+    @State private var isPresented: Bool = false
     
     func body(content: Content) -> some View {
         content
@@ -219,7 +219,7 @@ struct AppWelcomeSheetModifier: ViewModifier {
             .sheet(isPresented: self.$isPresented, onDismiss: {
                 self.hasPresentedWelcome = true
             }) {
-                AppWelcomeView(isPresented: self.$isPresented)
+                AppWelcomeView()
             }
     }
 }

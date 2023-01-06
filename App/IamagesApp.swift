@@ -42,19 +42,30 @@ struct IamagesApp: App {
             CommandGroup(replacing: .newItem) {
                 Button("New images upload...") {
                     #if targetEnvironment(macCatalyst)
-                    if !self.globalViewModel.isUploadsPresented {
-                        openWindow(id: "uploads")
-                    }
-                    #endif
+                    openWindow(id: "uploads")
+                    #else
                     self.globalViewModel.isUploadsPresented = true
+                    #endif
                 }
                 .keyboardShortcut("n")
+                #if !targetEnvironment(macCatalyst)
                 .disabled(self.globalViewModel.isUploadsPresented)
+                #endif
 
                 Button("New images collection...") {
-                    
+                    #if targetEnvironment(macCatalyst)
+                    openWindow(id: "newCollection")
+                    #else
+                    self.globalViewModel.isNewCollectionPresented = true
+                    #endif
                 }
                 .keyboardShortcut("n", modifiers: [.command, .shift])
+                #if targetEnvironment(macCatalyst)
+                .disabled(!self.globalViewModel.isLoggedIn)
+                #else
+                .disabled(self.globalViewModel.isNewCollectionPresented || !self.globalViewModel.isLoggedIn)
+                #endif
+
                 if self.supportsMultipleWindows {
                     Divider()
                     Button("New window") {
@@ -88,8 +99,16 @@ struct IamagesApp: App {
             UploadsView()
                 .hideMacTitlebar()
                 .environmentObject(self.globalViewModel)
-                .onDisappear {
-                    self.globalViewModel.isUploadsPresented = false
+        }
+        
+        WindowGroup("New collection", id: "newCollection") {
+            NewCollectionView()
+                .hideMacTitlebar()
+                .environmentObject(self.globalViewModel)
+                .withHostingWindow { window in
+                    let size: CGSize = CGSize(width: 400, height: 350)
+                    window?.windowScene?.sizeRestrictions?.minimumSize = size
+                    window?.windowScene?.sizeRestrictions?.maximumSize = size
                 }
         }
         #endif

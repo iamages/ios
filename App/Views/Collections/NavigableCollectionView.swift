@@ -1,22 +1,30 @@
 import SwiftUI
 import NukeUI
+import OrderedCollections
 
 struct NavigableCollectionView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     
     let collection: IamagesCollection
-    @State private var images: [IamagesImage] = []
+    @State private var images: OrderedDictionary<String, IamagesImage> = [:]
     
-    private func getCollectionImages() async throws {
-        self.images = try self.globalViewModel.jsond.decode(
-            [IamagesImage].self,
-            from: await self.globalViewModel.fetchData(
-                "/collections/\(self.collection.id)/images",
-                method: .post,
-                body: self.globalViewModel.jsone.encode(Pagination(limit: 4)),
-                contentType: .json
-            ).0
-        )
+    private func getCollectionImages() async {
+        do {
+            let newImages = try self.globalViewModel.jsond.decode(
+                [IamagesImage].self,
+                from: await self.globalViewModel.fetchData(
+                    "/collections/\(self.collection.id)/images",
+                    method: .post,
+                    body: self.globalViewModel.jsone.encode(Pagination(limit: 4)),
+                    contentType: .json
+                ).0
+            )
+            for newImage in newImages {
+                self.images[newImage.id] = newImage
+            }
+        } catch {
+            print(error)
+        }
     }
     
     private func collectionImageView(for image: IamagesImage) -> some View {
@@ -42,7 +50,7 @@ struct NavigableCollectionView: View {
                         count: 2
                     ), spacing: 0) {
                     Group {
-                        ForEach(self.images) { image in
+                        ForEach(self.images.values) { image in
                             if image.lock.isLocked {
                                 Image(systemName: "lock.doc")
                             } else {
@@ -74,11 +82,31 @@ struct NavigableCollectionView: View {
         }
         .task {
             if images.isEmpty {
-                do {
-                    try await getCollectionImages()
-                } catch {
-                    print(error)
+                await getCollectionImages()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .editCollection)) { output in
+            guard let notification = output.object as? IamagesCollectionEdit.Notification else {
+                print("Couldn't parse edit collection notification.")
+                return
+            }
+            if notification.id != self.collection.id { return }
+            switch notification.edit.change {
+            case .addImages:
+                Task {
+                    await getCollectionImages()
                 }
+            case .removeImages:
+                switch notification.edit.to {
+                case .stringArray(let ids):
+                    for id in ids {
+                        self.images.removeValue(forKey: id)
+                    }
+                default:
+                    break
+                }
+            default:
+                break
             }
         }
     }

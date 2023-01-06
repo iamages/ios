@@ -35,10 +35,10 @@ fileprivate struct NewestImagesWidgetProvider: TimelineProvider {
         
         while (newestImage == nil && entry.errors.isEmpty) {
             var request = URLRequest(url: URL.apiRootUrl.appending(path: "/users/images"))
-            request.httpMethod = "POST"
+            request.httpMethod = HTTPMethod.post.rawValue
             do {
                 request.httpBody = try self.jsone.encode(Pagination(lastID: lastId))
-                request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+                request.addValue(HTTPContentType.json.rawValue, forHTTPHeaderField: "Content-Type")
                 try await self.userManager.getUserToken(for: &request)
                 let images = try self.jsond.decode(
                     [IamagesImage].self,

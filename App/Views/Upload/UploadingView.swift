@@ -1,5 +1,6 @@
 import SwiftUI
 import NukeUI
+import OrderedCollections
 
 fileprivate struct PendingUploadView: View {
     let uploadContainer: IamagesUploadContainer
@@ -59,39 +60,36 @@ fileprivate struct UploadedView: View {
 
 struct UploadingView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
-    
-    @Binding var isPresented: Bool
-    @Binding var uploadContainers: [IamagesUploadContainer]
+    @Environment(\.dismiss) private var dismiss
+
+    @Binding var uploadContainers: OrderedDictionary<UUID, IamagesUploadContainer>
     
     @State private var hasBeenViewed: Bool = false
 
     @State private var isBusy: Bool = true
     @State private var uploaded: [IamagesImage] = []
     @State private var errors: [UUID: LocalizedError] = [:]
-    
+
     private func upload() async {
-        for i in 0..<self.uploadContainers.count {
-            let uploadContainer = self.uploadContainers[i]
+        for id in self.uploadContainers.keys {
             do {
-                self.uploadContainers[i].isUploading = true
+                self.uploadContainers[id]?.isUploading = true
+                guard let container = self.uploadContainers[id] else { continue }
                 self.uploaded.insert(
-                    try await self.globalViewModel.uploadImage(for: uploadContainer) { progress in
-                        DispatchQueue.main.async {
-                            self.uploadContainers[i].progress = progress
+                    try await self.globalViewModel.uploadImage(for: container) { progress in
+                        DispatchQueue.main.sync {
+                            self.uploadContainers[id]?.progress = progress
                         }
                     },
                     at: 0
                 )
-                self.uploadContainers.remove(at: i)
+                self.uploadContainers.removeValue(forKey: id)
             } catch {
-                self.uploadContainers[i].isUploading = false
-                self.uploadContainers[i].progress = 0.0
+                self.uploadContainers[id]?.isUploading = false
+                self.uploadContainers[id]?.progress = 0.0
                 if let error = error as? LocalizedError {
-                    self.errors[uploadContainer.id] = error
+                    self.errors[id] = error
                 }
-                #if DEBUG
-                print(error)
-                #endif
             }
         }
         self.isBusy = false
@@ -107,7 +105,7 @@ struct UploadingView: View {
                 }
                 
                 Section("Pending") {
-                    ForEach(self.uploadContainers) { uploadContainer in
+                    ForEach(self.uploadContainers.values) { uploadContainer in
                         PendingUploadView(
                             uploadContainer: uploadContainer,
                             errors: self.$errors
@@ -125,7 +123,7 @@ struct UploadingView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(action: {
-                        self.isPresented = false
+                        self.dismiss()
                     }) {
                         Label("Close", systemImage: "xmark")
                     }
@@ -149,12 +147,9 @@ struct UploadingView: View {
 #if DEBUG
 struct UploadingView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationStack {
-            UploadingView(
-                isPresented: .constant(true),
-                uploadContainers: .constant([])
-            )
-        }
+        UploadingView(
+            uploadContainers: .constant([:])
+        )
         .environmentObject(GlobalViewModel())
     }
 }

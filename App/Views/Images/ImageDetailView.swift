@@ -11,6 +11,7 @@ struct ImageDetailView: View {
     @ObservedObject var splitViewModel: SplitViewModel
 
     @State private var request: ImageRequest?
+    @State private var imageLockKeySalt: Data?
     @State private var key: String = ""
     @State private var isKeyAlertPresented: Bool = false
     @State private var shouldAttemptUnlock: Bool = false
@@ -27,7 +28,7 @@ struct ImageDetailView: View {
         guard let selectedImage = self.splitViewModel.selectedImage else {
             return ""
         }
-        if let metadata = self.splitViewModel.selectedImageMetadata {
+        if let metadata = self.splitViewModel.selectedImageMetadata?.data {
             if selectedImage.lock.isLocked && self.scenePhase == .inactive {
                 return NSLocalizedString("Locked image", comment: "")
             }
@@ -41,6 +42,7 @@ struct ImageDetailView: View {
         }
     }
     
+    // Fetches metadata and image key salt
     private func fetchMetadata(image: IamagesImage) async {
         self.isBusy = true
 
@@ -49,6 +51,17 @@ struct ImageDetailView: View {
                 for: image,
                 key: self.key.isEmpty ? nil : self.key
             )
+            if image.lock.isLocked {
+                guard let salt = try await self.globalViewModel.fetchData(
+                    "/images/\(image.id)/download",
+                    method: .head,
+                    authStrategy: image.isPrivate ? .required : .none
+                ).1.value(forHTTPHeaderField: "X-Iamages-Lock-Salt")?.data(using: .utf8) else {
+                    throw NoSaltError()
+                }
+                self.imageLockKeySalt = Data(base64Encoded: salt)
+            }
+            
         } catch {
             self.error = LocalizedAlertError(error: error)
         }
@@ -69,6 +82,7 @@ struct ImageDetailView: View {
                 authStrategy: .required
             )
             NotificationCenter.default.post(name: .deleteImage, object: id)
+            self.isBusy = false
             self.splitViewModel.selectedImage = nil
         } catch {
             self.isBusy = false
@@ -150,6 +164,7 @@ struct ImageDetailView: View {
     private func resetView() {
         self.key = ""
         self.splitViewModel.selectedImageMetadata = nil
+        self.imageLockKeySalt = nil
         self.request = nil
     }
     
@@ -178,19 +193,18 @@ struct ImageDetailView: View {
             #if targetEnvironment(macCatalyst)
             .navigationSubtitle(self.selectedImageTitle)
             #endif
-            .onDisappear(perform: self.resetView)
+            //.onDisappear(perform: self.resetView)
             .onChange(of: self.splitViewModel.selectedImage) { _ in
                 self.resetView()
             }
             .sheet(isPresented: self.$isInformationSheetPresented) {
                 ImageInformationView(
-                    isPresented: self.$isInformationSheetPresented,
                     splitViewModel: self.splitViewModel
                 )
             }
             .sheet(isPresented: self.$isEditInformationSheetPresented) {
                 EditImageInformationView(
-                    isPresented: self.$isEditInformationSheetPresented,
+                    imageLockKeySalt: self.$imageLockKeySalt,
                     splitViewModel: self.splitViewModel
                 )
             }
@@ -198,8 +212,7 @@ struct ImageDetailView: View {
                 CollectionsListView(
                     splitViewModel: self.splitViewModel,
                     viewMode: .picker,
-                    imageID: image.id,
-                    isPresented: self.$isCollectionPickerSheetPresented
+                    imageID: image.id
                 )
             }
             .toolbarRole(.editor)
@@ -212,8 +225,7 @@ struct ImageDetailView: View {
                     }
                 }
                 ToolbarItem(id: "share", placement: .secondaryAction) {
-                    ShareLink(item: self.globalViewModel.getImageEmbedURL(id: image.id))
-                        .disabled(image.isPrivate)
+                    ImageShareLinkView(image: image)
                 }
                 ToolbarItem(id: "toggleWidgetImage", placement: .secondaryAction) {
                     Button(action: {
@@ -240,6 +252,7 @@ struct ImageDetailView: View {
                     }) {
                         Label("Edit", systemImage: "pencil")
                     }
+                    .disabled(image.lock.isLocked && self.imageLockKeySalt == nil)
                 }
                 ToolbarItem(id: "delete", placement: .secondaryAction) {
                     Button(role: .destructive, action: {

@@ -9,6 +9,7 @@ struct RootNavigationView: View {
     
     @StateObject private var splitViewModel: SplitViewModel = SplitViewModel()
     @State private var selectedView: AppUserViews = .images
+    @State private var isNewCollectionSheetPresented: Bool = false
     
     var body: some View {
         NavigationSplitView {
@@ -17,7 +18,11 @@ struct RootNavigationView: View {
                 case .images:
                     ImagesListView(splitViewModel: self.splitViewModel)
                 case .collections:
-                    CollectionsListView(splitViewModel: self.splitViewModel)
+                    CollectionsListView(
+                        splitViewModel: self.splitViewModel,
+                        viewMode: .normal,
+                        imageID: nil
+                    )
                 }
             }
             .toolbar {
@@ -31,7 +36,7 @@ struct RootNavigationView: View {
                 }
                 #endif
                 ToolbarItem {
-                    Picker("View", selection: self.$selectedView) {
+                    Picker("View", selection: self.$selectedView.animation()) {
                         ForEach(AppUserViews.allCases) { view in
                             Label(view.localizedName, systemImage: view.icon)
                                 .tag(view)
@@ -47,16 +52,13 @@ struct RootNavigationView: View {
                             Label("Uploads", systemImage: "square.and.arrow.up.on.square")
                         }
                         Button(action: {
-                            // TODO: New collection
+                            self.globalViewModel.isNewCollectionPresented = true
                         }) {
                             Label("Collection", systemImage: "folder.badge.plus")
                         }
                     } label: {
                         Label("New", systemImage: "plus")
-                    } primaryAction: {
-                        self.globalViewModel.isUploadsPresented = true
                     }
-                    .keyboardShortcut("n")
                 }
                 #endif
             }
@@ -82,26 +84,33 @@ struct RootNavigationView: View {
                     .background(.regularMaterial)
                 }
             }
-            
         }
+        .navigationTitle(self.selectedView.localizedName)
         .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
             if !isLoggedIn {
-                self.splitViewModel.selectedImage = nil
+                withAnimation {
+                    self.splitViewModel.selectedImage = nil
+                }
             }
         }
         .onChange(of: self.selectedView) { _ in
-            self.splitViewModel.selectedImage = nil
+            withAnimation {
+                self.splitViewModel.selectedImage = nil
+            }
         }
         // Welcome sheet
-        .modifier(AppWelcomeSheetModifier(isPresented: self.$isWelcomeSheetPresented))
+        .modifier(AppWelcomeSheetModifier())
         #if targetEnvironment(macCatalyst)
         .hideMacTitlebar()
         #else
         .fullScreenCover(isPresented: self.$globalViewModel.isSettingsPresented) {
-            SettingsView(isPresented: self.$globalViewModel.isSettingsPresented)
+            SettingsView()
         }
         .fullScreenCover(isPresented: self.$globalViewModel.isUploadsPresented) {
-            UploadsView(isPresented: self.$globalViewModel.isUploadsPresented)
+            UploadsView()
+        }
+        .sheet(isPresented: self.$globalViewModel.isNewCollectionPresented) {
+            NewCollectionView()
         }
         #endif
         

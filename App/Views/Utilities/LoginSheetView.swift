@@ -3,8 +3,7 @@ import WidgetKit
 
 struct LoginSheetView: View {
     @EnvironmentObject var globalViewModel: GlobalViewModel
-
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
     
     @State private var usernameInput: String = ""
     @State private var passwordInput: String = ""
@@ -32,9 +31,8 @@ struct LoginSheetView: View {
                 password: self.passwordInput
             )
             WidgetCenter.shared.reloadAllTimelines()
-            self.isPresented = false
+            self.dismiss()
         } catch {
-            print(error)
             self.error = LocalizedAlertError(error: error)
         }
         self.isBusy = false
@@ -77,7 +75,7 @@ struct LoginSheetView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel) {
-                        self.isPresented = false
+                        self.dismiss()
                     }
                     .disabled(self.isBusy)
                 }
@@ -102,7 +100,7 @@ struct LoginSheetView: View {
 #if DEBUG
 struct LoginSheetView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginSheetView(isPresented: .constant(true))
+        LoginSheetView()
             .environmentObject(GlobalViewModel())
     }
 }

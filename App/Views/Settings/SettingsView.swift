@@ -9,7 +9,7 @@ struct SettingsView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     
     #if !targetEnvironment(macCatalyst)
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
     #endif
     
     @State private var isBusy: Bool = false
@@ -18,11 +18,12 @@ struct SettingsView: View {
     @ViewBuilder
     private var closeButton: some View {
         Button(action: {
-            self.isPresented = false
+            self.dismiss()
         }) {
             Label("Close", systemImage: "xmark")
         }
         .disabled(self.isBusy)
+        .keyboardShortcut(.escape)
     }
     #endif
     
@@ -54,7 +55,7 @@ struct SettingsView: View {
                     Form {
                         switch selectedSettingsView {
                         case .account:
-                            AccountSettingsView()
+                            AccountSettingsView(isBusy: self.$isBusy)
                         case .uploads:
                             UploadDefaultsSettingsView()
                         case .tips:
@@ -98,13 +99,8 @@ struct SettingsView: View {
 #if DEBUG
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        #if targetEnvironment(macCatalyst)
         SettingsView()
             .environmentObject(GlobalViewModel())
-        #else
-        SettingsView(isPresented: .constant(true))
-            .environmentObject(GlobalViewModel())
-        #endif
     }
 }
 #endif

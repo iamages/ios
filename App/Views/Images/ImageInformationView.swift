@@ -1,15 +1,20 @@
 import SwiftUI
 
 struct ImageInformationView: View {
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
+    
     @ObservedObject var splitViewModel: SplitViewModel
+    
+    private func copyID() {
+        UIPasteboard.general.string = self.splitViewModel.selectedImage?.id
+    }
     
     var body: some View {
         NavigationStack {
             Group {
                 if let image = self.splitViewModel.selectedImage {
                     Form {
-                        if let metadata = self.splitViewModel.selectedImageMetadata {
+                        if let metadata = self.splitViewModel.selectedImageMetadata?.data {
                             Section("Description") {
                                 Text(metadata.description)
                                     .textSelection(.enabled)
@@ -42,8 +47,13 @@ struct ImageInformationView: View {
                                 .disabled(true)
                         }
                         Section("ID") {
-                            Text(image.id)
-                                .textSelection(.enabled)
+                            Button(action: self.copyID) {
+                                HStack {
+                                    Text(image.id)
+                                    Spacer()
+                                    Image(systemName: "doc.on.doc")
+                                }
+                            }
                         }
                     }
                     .formStyle(.grouped)
@@ -56,10 +66,11 @@ struct ImageInformationView: View {
             .toolbar {
                 ToolbarItem {
                     Button(action: {
-                        self.isPresented = false
+                        self.dismiss()
                     }) {
                         Label("Close", systemImage: "xmark")
                     }
+                    .keyboardShortcut(.escape)
                 }
             }
         }
@@ -70,7 +81,6 @@ struct ImageInformationView: View {
 struct ImageInformationView_Previews: PreviewProvider {
     static var previews: some View {
         ImageInformationView(
-            isPresented: .constant(true),
             splitViewModel: SplitViewModel()
         )
     }

@@ -2,10 +2,10 @@ import SwiftUI
 
 struct AddToCollectionView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @Environment(\.dismiss) private var dismiss
     
     let collectionID: String
     let imageID: String
-    @Binding var isPresented: Bool
     
     @State private var isBusy: Bool = true
     @State private var error: Error?
@@ -25,7 +25,7 @@ struct AddToCollectionView: View {
                 contentType: .json,
                 authStrategy: .required
             )
-            self.isPresented = false
+            self.dismiss()
         } catch {
             self.isBusy = false
             self.error = error
@@ -57,7 +57,7 @@ struct AddToCollectionView: View {
 struct AddToCollectionView_Previews: PreviewProvider {
     static var previews: some View {
         AddToCollectionView(
-            collectionID: "test", imageID: "test", isPresented: .constant(true)
+            collectionID: "test", imageID: "test"
         )
         .environmentObject(GlobalViewModel())
     }

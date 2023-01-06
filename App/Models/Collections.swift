@@ -17,6 +17,11 @@ struct IamagesCollection: Codable, Identifiable, Hashable {
 }
 
 struct IamagesCollectionEdit: Codable {
+    struct Notification {
+        let id: String
+        let edit: IamagesCollectionEdit
+    }
+    
     enum Changable: String, Codable {
         case description
         case isPrivate = "is_private"
@@ -42,5 +47,17 @@ struct IamagesCollectionEdit: Codable {
         case .stringArray(let stringArray):
             try container.encode(stringArray, forKey: .to)
         }
+    }
+}
+
+struct NewIamagesCollection: Codable {
+    var isPrivate: Bool
+    var description: String
+    var imageIDs: [String] = []
+    
+    enum CodingKeys: String, CodingKey {
+        case isPrivate = "is_private"
+        case description
+        case imageIDs = "image_ids"
     }
 }

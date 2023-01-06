@@ -11,6 +11,18 @@ struct NavigableImageView: View {
     @State private var hasAttemptedMetadataLoad: Bool = false
     @State private var error: Error?
     
+    private func getMetadata() async {
+        self.isBusy = true
+        do {
+            self.metadata = try await self.globalViewModel.getImagePrivateMetadata(
+                for: self.image
+            ).data
+        } catch {
+            self.error = error
+        }
+        self.isBusy = false
+    }
+    
     @ViewBuilder
     private var thumbnail: some View {
         LazyImage(request: self.globalViewModel.getThumbnailRequest(for: self.image)) { state in
@@ -24,7 +36,6 @@ struct NavigableImageView: View {
                     .redacted(reason: .placeholder)
             }
         }
-        .animation(nil)
     }
     
     var body: some View {
@@ -77,26 +88,36 @@ struct NavigableImageView: View {
             if !self.hasAttemptedMetadataLoad {
                 self.hasAttemptedMetadataLoad = true
                 if !self.image.lock.isLocked {
-                    do {
-                        self.metadata = try await self.globalViewModel.getImagePrivateMetadata(for: self.image)
-                    } catch {
-                        self.error = error
-                        print(error)
-                    }
+                    await self.getMetadata()
                 }
-                self.isBusy = false
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .editImage)) { output in
-            if let notification = output.object as? EditImageNotification,
-               notification.id == self.image.id,
-               notification.edit.change == .description {
-                switch notification.edit.to {
-                case .string(let description):
-                    self.metadata?.description = description
+            if let notification = output.object as? IamagesImageEdit.Notification,
+               notification.id == self.image.id {
+                switch notification.edit.change {
+                case .description:
+                    switch notification.edit.to {
+                    case .string(let description):
+                        self.metadata?.description = description
+                    default:
+                        break
+                    }
+                case .lock:
+                    switch notification.edit.to {
+                    case .bool(let isLocked):
+                        if !isLocked {
+                            Task {
+                                await self.getMetadata()
+                            }
+                        }
+                    default:
+                        break
+                    }
                 default:
                     break
                 }
+                
             }
         }
     }

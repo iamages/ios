@@ -8,23 +8,11 @@ struct CollectionsListView: View {
     }
     
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @Environment(\.dismiss) private var dismiss
     
     @ObservedObject var splitViewModel: SplitViewModel
     let viewMode: ViewMode
     let imageID: String?
-    @Binding var isPresented: Bool
-    
-    init(
-        splitViewModel: SplitViewModel,
-        viewMode: ViewMode = .normal,
-        imageID: String? = nil,
-        isPresented: Binding<Bool> = .constant(false)
-    ) {
-        self.splitViewModel = splitViewModel
-        self.viewMode = viewMode
-        self.imageID = imageID
-        self._isPresented = isPresented
-    }
     
     @State private var collections: OrderedDictionary<String, IamagesCollection> = [:]
     @State private var isBusy: Bool = false
@@ -34,6 +22,8 @@ struct CollectionsListView: View {
     
     @State private var queryString: String = ""
     @State private var querySuggestions: [String] = []
+    
+    @State private var selectedCollectionId: String?
     
     private func pageFeed() async {
         self.isBusy = true
@@ -72,6 +62,51 @@ struct CollectionsListView: View {
         await self.pageFeed()
     }
     
+    private func loadSuggestions() async {
+        if self.queryString.isEmpty {
+            self.querySuggestions = []
+            return
+        }
+        do {
+            self.querySuggestions = try self.globalViewModel.jsond.decode(
+                [String].self,
+                from: await self.globalViewModel.fetchData(
+                    "/users/collections/suggestions",
+                    method: .post,
+                    body: self.queryString.data(using: .utf8),
+                    contentType: .text,
+                    authStrategy: .required
+                ).0
+            )
+        } catch {
+            self.querySuggestions = []
+        }
+    }
+    
+    private func deleteCollection(id: String) async {
+        do {
+            try await self.globalViewModel.fetchData(
+                "/collections/\(id)",
+                method: .delete,
+                authStrategy: .required
+            )
+            withAnimation {
+                self.collections.removeValue(forKey: id)
+            }
+        } catch {
+            self.error = LocalizedAlertError(error: error)
+        }
+    }
+    
+    @ViewBuilder
+    private func deleteCollectionButton(id: String) -> some View {
+        Button(role: .destructive, action: {
+            self.selectedCollectionId = id
+        }) {
+            Label("Delete collection", systemImage: "trash")
+        }
+    }
+    
     @ViewBuilder
     private var list: some View {
         List {
@@ -81,6 +116,16 @@ struct CollectionsListView: View {
                         if !self.isEndOfFeed && self.collections.keys.last == collection.key {
                             await self.pageFeed()
                         }
+                    }
+                    .swipeActions {
+                        if self.viewMode == .normal {
+                            self.deleteCollectionButton(id: collection.key)
+                        }
+                    }
+                    .contextMenu {
+                        CollectionShareLinkView(collection: collection.value)
+                        Divider()
+                        self.deleteCollectionButton(id: collection.key)
                     }
             }
             if self.isBusy {
@@ -101,11 +146,36 @@ struct CollectionsListView: View {
                 self.isFirstPageLoaded = true
             }
         }
+        .searchable(text: self.$queryString)
+        .task(id: self.queryString) {
+            await loadSuggestions()
+        }
+        .searchSuggestions {
+            QuerySuggestionsView(suggestions: self.$querySuggestions)
+        }
+        .onSubmit(of: .search) {
+            Task {
+                await self.startFeed()
+            }
+        }
+        .alert("Delete collection?", isPresented: .constant(self.selectedCollectionId != nil)) {
+            Button("Delete", role: .destructive) {
+                Task {
+                    guard let id = self.selectedCollectionId else {
+                        return
+                    }
+                    self.selectedCollectionId = nil
+                    await self.deleteCollection(id: id)
+                }
+            }
+        } message: {
+            Text("The selected collection will be deleted. The images it contains will not be deleted.")
+        }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                if self.isPresented {
+                if self.viewMode == .picker {
                     Button("Cancel") {
-                        self.isPresented = false
+                        self.dismiss()
                     }
                 }
             }
@@ -135,7 +205,7 @@ struct CollectionsListView: View {
                 }
             case .picker:
                 if let imageID {
-                    AddToCollectionView(collectionID: id, imageID: imageID, isPresented: self.$isPresented)
+                    AddToCollectionView(collectionID: id, imageID: imageID)
                 } else {
                     Text("Image not provided.")
                 }
@@ -161,9 +231,6 @@ struct CollectionsListView: View {
             }
             .navigationTitle("Collections")
         }
-        .onReceive(NotificationCenter.default.publisher(for: .editCollection)) { output in
-            
-        }
     }
 }
 
@@ -171,7 +238,9 @@ struct CollectionsListView: View {
 struct CollectionsListView_Previews: PreviewProvider {
     static var previews: some View {
         CollectionsListView(
-            splitViewModel: SplitViewModel()
+            splitViewModel: SplitViewModel(),
+            viewMode: .normal,
+            imageID: nil
         )
         .environmentObject(GlobalViewModel())
     }

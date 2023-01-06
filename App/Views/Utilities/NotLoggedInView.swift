@@ -17,7 +17,7 @@ struct NotLoggedInView: View {
             )
         )
         .sheet(isPresented: self.$isLoginSheetPresented) {
-            LoginSheetView(isPresented: self.$isLoginSheetPresented)
+            LoginSheetView()
         }
     }
 }

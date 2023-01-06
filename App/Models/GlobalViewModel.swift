@@ -6,6 +6,7 @@ import Argon2Swift
 import GRDB
 import UniformTypeIdentifiers
 import Nuke
+import SharedWithYou
 
 class UploadProgress: NSObject, URLSessionTaskDelegate {
     private let cb: (Double) -> Void
@@ -26,25 +27,11 @@ class UploadProgress: NSObject, URLSessionTaskDelegate {
 }
 
 @MainActor
-final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate {
-    enum HTTPMethod: String {
-        case get = "GET"
-        case post = "POST"
-        case patch = "PATCH"
-        case delete = "DELETE"
-    }
-    
+final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate, SWHighlightCenterDelegate {
     enum AuthenticationStrategy {
         case whenPossible
         case required
         case none
-    }
-    
-    enum HTTPContentType: String {
-        case text = "text/plain; charset=utf-8"
-        case json = "application/json; charset=utf-8"
-        case encodedForm = "application/x-www-form-urlencoded"
-        case multipart = "multipart/form-data; boundary=iamages"
     }
     
     private struct EncryptedBlob {
@@ -53,12 +40,8 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         let data: Data
         let tag: Data
     }
-    
-    private struct APIErrorDetails: Codable {
-        let detail: String
-    }
 
-    private let keychain = Keychain(accessGroup: "group.me.jkelol111.Iamages")
+    private let keychain = Keychain.getIamagesKeychain()
     private let addAuthStrategies: [AuthenticationStrategy] = [
         .whenPossible, .required
     ]
@@ -81,19 +64,29 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     @Published var isSettingsPresented: Bool = false
     @Published var selectedSettingsView: AppSettingsViews?
     
+    #if !targetEnvironment(macCatalyst)
     @Published var isUploadsPresented: Bool = false
+    @Published var isNewCollectionPresented: Bool = false
+    #endif
+    
+    var highlightCenter = SWHighlightCenter()
     
     override init() {
         super.init()
+        
         self.jsone.dateEncodingStrategy = .iso8601
         self.jsond.dateDecodingStrategy = .iso8601
+        
         ImagePipeline.shared = ImagePipeline(configuration: .withDataCache)
         (ImagePipeline.shared.configuration.dataLoader as? DataLoader)?.delegate = self
+        
+        self.highlightCenter.delegate = self
+        
         do {
-            if let userInformation = try self.keychain.getData("userInformation") {
+            if let userInformation = try self.keychain.getDataWithKey(.userInformation) {
                 self.userInformation = try self.jsond.decode(IamagesUser.self, from: userInformation)
             }
-            if let lastUserToken = try self.keychain.getData("lastUserToken") {
+            if let lastUserToken = try self.keychain.getDataWithKey(.lastUserToken) {
                 self.lastUserToken = try self.jsond.decode(LastIamagesUserToken.self, from: lastUserToken)
             }
         } catch {
@@ -107,6 +100,13 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             try await self.fetchUserToken()
         }
         request.addValue("\(self.lastUserToken!.token.tokenType) \(self.lastUserToken!.token.accessToken)", forHTTPHeaderField: "Authorization")
+    }
+    
+    // MARK: Delegate methods
+    nonisolated internal func highlightCenterHighlightsDidChange(_ highlightCenter: SWHighlightCenter) {
+        highlightCenter.highlights.forEach { highlight in
+            print("Received a new highlight with URL: \(highlight.url)")
+        }
     }
     
     internal func urlSession(
@@ -190,8 +190,8 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     }
     
     private func fetchUserToken() async throws {
-        if let username = try self.keychain.get("username"),
-           let password = try self.keychain.get("password") {
+        if let username = try self.keychain.getStringWithKey(.username),
+           let password = try self.keychain.getStringWithKey(.password) {
             let newLastUserToken = LastIamagesUserToken(
                 token: try self.jsond.decode(
                     IamagesUserToken.self,
@@ -204,14 +204,15 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
                 ),
                 date: Date.now
             )
-            try self.keychain[data: "lastUserToken"] = self.jsone.encode(newLastUserToken)
             self.lastUserToken = newLastUserToken
+            try self.keychain.setDataWithKey(self.jsone.encode(newLastUserToken), key: .lastUserToken)
+            try await self.getUserInformation()
         } else {
             throw APICommunicationErrors.notLoggedIn
         }
     }
     
-    private func getUserInformation() async throws {
+    func getUserInformation() async throws {
         let userInformation: IamagesUser = try self.jsond.decode(
             IamagesUser.self,
             from: try await self.fetchData(
@@ -220,18 +221,18 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
                 authStrategy: .required
             ).0
         )
-        try self.keychain[data: "userInformation"] = self.jsone.encode(userInformation)
         self.userInformation = userInformation
+        try self.keychain.setDataWithKey(self.jsone.encode(userInformation), key: .userInformation)
     }
     
     func login(username: String, password: String) async throws {
         do {
-            try self.keychain.set(username, key: "username")
-            try self.keychain.set(password, key: "password")
+            try self.keychain.setStringWithKey(username, key: .username)
+            try self.keychain.setStringWithKey(password, key: .password)
             try await self.fetchUserToken()
         } catch {
-            try self.keychain.remove("username")
-            try self.keychain.remove("password")
+            try self.keychain.removeWithKey(.username)
+            try self.keychain.removeWithKey(.password)
             throw error
         }
         try await self.getUserInformation()
@@ -256,20 +257,24 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         self.lastUserToken = nil
     }
     
+    func hashKey(for key: String, salt: Data) throws -> Argon2SwiftResult {
+        return try Argon2Swift.hashPasswordBytes(
+            password: key.data(using: .utf8)!,
+            salt: Salt(bytes: salt),
+            iterations: 3,
+            memory: 65536,
+            parallelism: 4,
+            length: 16,
+            type: .id
+        )
+    }
+    
     private func decryptAndVerify(
         blob: EncryptedBlob,
         key: String
     ) throws -> Data {
         let key = SymmetricKey(
-            data: try Argon2Swift.hashPasswordBytes(
-                password: key.data(using: .utf8)!,
-                salt: Salt(bytes: blob.salt),
-                iterations: 3,
-                memory: 65536,
-                parallelism: 4,
-                length: 16,
-                type: .id
-            ).hashData()
+            data: try self.hashKey(for: key, salt: blob.salt).hashData()
         )
         let nonce = try AES.GCM.Nonce(data: blob.nonce)
         let sealedBox = try AES.GCM.SealedBox(
@@ -318,31 +323,29 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     func getImagePrivateMetadata(
         for image: IamagesImage,
         key: String? = nil
-    ) async throws -> IamagesImageMetadata {
+    ) async throws -> IamagesImageMetadataContainer {
         let (data, response): (Data, HTTPURLResponse) = try await self.fetchData(
             "/images/\(image.id)/metadata",
             method: .get,
             authStrategy: image.isPrivate ? .required : .none
         )
         var actualData: Data = data
+        var salt: Data? = nil
         if image.lock.isLocked {
             guard let key else {
                 throw APICommunicationErrors.notLoggedIn
             }
+            let blob = try self.getEncryptedBlob(data: data, response: response)
             actualData = try self.decryptAndVerify(
-                blob: try self.getEncryptedBlob(data: data, response: response),
+                blob: blob,
                 key: key
             )
+            salt = blob.salt
         }
-        return try self.jsond.decode(IamagesImageMetadata.self, from: actualData)
-    }
-    
-    func getThumbnailUrl(for id: String) -> URL {
-        return URL.apiRootUrl.appending(path: "/thumbnails/\(id)")
-    }
-    
-    func getImageDownloadUrl(for id: String) -> URL {
-        return URL.apiRootUrl.appending(path: "/images/\(id)/download")
+        return IamagesImageMetadataContainer(
+            data: try self.jsond.decode(IamagesImageMetadata.self, from: actualData),
+            salt: salt
+        )
     }
     
     func getThumbnailRequest(for image: IamagesImage) -> ImageRequest {
@@ -386,10 +389,6 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             },
             options: options
         )
-    }
-    
-    func getImageEmbedURL(id: String) -> URL {
-        return URL.apiRootUrl.appending(path: "/images/\(id)/embed")
     }
     
     func uploadImage(
