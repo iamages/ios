@@ -49,8 +49,6 @@ struct NewCollectionView: View {
             Form {
                 Section {
                     TextField("Description", text: self.$newCollection.description)
-                } header: {
-                    Text("Description")
                 } footer: {
                     if self.newCollection.description.isEmpty ||
                         self.newCollection.description.count > 255 {

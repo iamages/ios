@@ -3,12 +3,10 @@ import OrderedCollections
 
 struct ImagesListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
-    
-    @ObservedObject var splitViewModel: SplitViewModel
+    @EnvironmentObject private var splitViewModel: SplitViewModel
 
     @State private var isFirstPageLoaded: Bool = false
     @State private var isBusy: Bool = false
-    @State private var images: OrderedDictionary<String, IamagesImage> = [:]
     @State private var isEndOfFeed: Bool = false
     @State private var error: LocalizedAlertError?
     
@@ -27,7 +25,7 @@ struct ImagesListView: View {
                     body: self.globalViewModel.jsone.encode(
                         Pagination(
                             query: self.queryString.isEmpty ? nil : self.queryString,
-                            lastID: self.images.keys.last
+                            lastID: self.splitViewModel.images.keys.last
                         )
                     ),
                     contentType: .json,
@@ -38,7 +36,7 @@ struct ImagesListView: View {
                 self.isEndOfFeed = true
             }
             for newImage in newImages {
-                self.images[newImage.id] = newImage
+                self.splitViewModel.images[newImage.id] = IamagesImageAndMetadataContainer(image: newImage)
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -49,8 +47,8 @@ struct ImagesListView: View {
     
     private func startFeed() async {
         self.splitViewModel.selectedImage = nil
-        self.splitViewModel.selectedImageMetadata = nil
-        self.images = [:]
+        self.splitViewModel.images = [:]
+        self.isEndOfFeed = false
         await pageFeed()
     }
     
@@ -78,10 +76,10 @@ struct ImagesListView: View {
     @ViewBuilder
     private var list: some View {
         List(selection: self.$splitViewModel.selectedImage) {
-            ForEach(self.images.elements, id: \.key) { image in
-                NavigableImageView(image: image.value)
+            ForEach(self.$splitViewModel.images.values, id: \.image.id) { imageAndMetadata in
+                NavigableImageView(imageAndMetadata: imageAndMetadata)
                     .task {
-                        if !self.isEndOfFeed && self.images.keys.last == image.key {
+                        if !self.isEndOfFeed && self.splitViewModel.images.keys.last == imageAndMetadata.image.id {
                             await pageFeed()
                         }
                     }
@@ -116,60 +114,6 @@ struct ImagesListView: View {
         .refreshable {
             await self.startFeed()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .editImage)) { output in
-            guard let notification = output.object as? IamagesImageEdit.Notification else {
-                print("Couldn't parse edit image notification.")
-                return
-            }
-            switch notification.edit.change {
-            case .isPrivate:
-                switch notification.edit.to {
-                case .bool(let isPrivate):
-                    self.images[notification.id]?.isPrivate = isPrivate
-                    if self.splitViewModel.selectedImage?.id == notification.id {
-                        self.splitViewModel.selectedImage?.isPrivate = isPrivate
-                    }
-                default:
-                    break
-                }
-            case .lock:
-                switch notification.edit.to {
-                case .bool(let isLocked):
-                    self.images[notification.id]?.lock.isLocked = isLocked
-                    self.images[notification.id]?.lock.version = nil
-                    if self.splitViewModel.selectedImage?.id == notification.id {
-                        self.splitViewModel.selectedImage?.lock.isLocked = isLocked
-                        self.splitViewModel.selectedImage?.lock.version = nil
-                    }
-                case .string(_):
-                    self.images[notification.id]?.lock.isLocked = true
-                    self.images[notification.id]?.lock.version = notification.edit.lockVersion
-                    if self.splitViewModel.selectedImage?.id == notification.id {
-                        self.splitViewModel.selectedImage?.lock.isLocked = true
-                        self.splitViewModel.selectedImage?.lock.version = notification.edit.lockVersion
-                    }
-                default:
-                    break
-                }
-            case .description:
-                switch notification.edit.to {
-                case .string(let description):
-                    if self.splitViewModel.selectedImage?.id == notification.id {
-                        self.splitViewModel.selectedImageMetadata?.data.description = description
-                    }
-                default:
-                    break
-                }
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .deleteImage)) { output in
-            guard let id = output.object as? String else {
-                return
-            }
-            withAnimation {
-                self.images.removeValue(forKey: id)
-            }
-        }
         .toolbar {
             #if targetEnvironment(macCatalyst)
             ToolbarItem {
@@ -196,14 +140,24 @@ struct ImagesListView: View {
             }
         }
         .navigationTitle("Images")
+        .toolbar {
+            ToolbarItem {
+                Button(action: {
+                    self.globalViewModel.isUploadsPresented = true
+                }) {
+                    Label("New upload", systemImage: "plus")
+                }
+            }
+        }
     }
 }
 
 #if DEBUG
 struct ImagesListView_Previews: PreviewProvider {
     static var previews: some View {
-        ImagesListView(splitViewModel: SplitViewModel())
+        ImagesListView()
             .environmentObject(GlobalViewModel())
+            .environmentObject(SplitViewModel())
     }
 }
 #endif

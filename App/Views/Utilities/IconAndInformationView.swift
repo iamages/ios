@@ -21,6 +21,8 @@ struct IconAndInformationView: View {
             }
         }
         .multilineTextAlignment(.center)
+        .padding(.leading, 16)
+        .padding(.trailing, 16)
     }
 }
 

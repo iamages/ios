@@ -9,23 +9,20 @@ struct ShareView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.extensionContext) private var extensionContext
     
-    @StateObject private var model = UploadViewModel()
+    @StateObject private var uploadModel = UploadViewModel()
+    @StateObject private var coreDataModel = CoreDataModel()
 
     @FocusState private var focusedField: Field?
     @State private var isLoggedIn: Bool = false
-    @State private var error: LocalizedAlertError?
     
     private func dismiss() {
         self.extensionContext!.completeRequest(returningItems: nil)
     }
     
     private func upload() async {
-        do {
-            try await self.model.upload()
+        await self.uploadModel.upload()
+        if self.uploadModel.error == nil && !self.uploadModel.isUploading {
             self.dismiss()
-        } catch {
-            self.model.isUploading = false
-            self.error = LocalizedAlertError(error: error)
         }
     }
     
@@ -34,12 +31,12 @@ struct ShareView: View {
             Form {
                 Section {
                     HStack {
-                        TextField("Description", text: self.$model.information.description, axis: .vertical)
+                        TextField("Description", text: self.$uploadModel.information.description, axis: .vertical)
                             .lineLimit(2)
                             .focused(self.$focusedField, equals: .description)
                         Spacer()
                         Group {
-                            if let data = self.model.file?.data {
+                            if let data = self.uploadModel.file?.data {
                                 Image(uiImage: UIImage(data: data)!)
                                     .resizable()
                                     .scaledToFit()
@@ -51,11 +48,11 @@ struct ShareView: View {
                     }
                 }
                 Section {
-                    Toggle("Private", isOn: self.$model.information.isPrivate)
+                    Toggle("Private", isOn: self.$uploadModel.information.isPrivate)
                         .disabled(!self.isLoggedIn)
-                    Toggle("Locked", isOn: self.$model.information.isLocked)
-                    if self.model.information.isLocked {
-                        SecureField("Lock key", text: self.$model.information.lockKey)
+                    Toggle("Locked", isOn: self.$uploadModel.information.isLocked)
+                    if self.uploadModel.information.isLocked {
+                        SecureField("Lock key", text: self.$uploadModel.information.lockKey)
                     }
                 } header: {
                     Text("Ownership")
@@ -71,8 +68,8 @@ struct ShareView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", action: self.dismiss)
                         .keyboardShortcut(.escape)
-                        .disabled(self.model.isUploading)
-                        .tint(self.model.information.description.isEmpty ? .none : .red)
+                        .disabled(self.uploadModel.isUploading)
+                        .tint(self.uploadModel.information.description.isEmpty ? .none : .red)
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button("Upload") {
@@ -80,51 +77,52 @@ struct ShareView: View {
                             await self.upload()
                         }
                     }
-                    .disabled(self.model.file == nil || self.model.isUploading)
+                    .disabled(self.uploadModel.file == nil || self.uploadModel.isUploading)
                 }
                 ToolbarItem(placement: .principal) {
-                    if self.model.isUploading {
-                        ProgressView(value: self.model.progress, total: 100.0)
+                    if self.uploadModel.isUploading {
+                        ProgressView(value: self.uploadModel.progress, total: 100.0)
                     }
                 }
             }
         }
         .tint(.orange)
-        .errorAlert(error: self.$error)
-        .onChange(of: self.model.information.isLocked) { _ in
-            self.model.information.lockKey = ""
+        .errorAlert(error: self.$uploadModel.error)
+        .onChange(of: self.uploadModel.information.isLocked) { _ in
+            self.uploadModel.information.lockKey = ""
         }
         .onAppear {
+            self.uploadModel.viewContext = self.coreDataModel.container.viewContext
             self.focusedField = .description
-            self.isLoggedIn = self.model.checkLoggedIn()
+            self.isLoggedIn = self.uploadModel.checkLoggedIn()
         }
         // Refresh isLoggedIn on focus, in case user logs in somewhere else.
         // Wish there was a better solution for this.
         .onChange(of: self.scenePhase) { phase in
             if phase == .active {
-                self.isLoggedIn = self.model.checkLoggedIn()
+                self.isLoggedIn = self.uploadModel.checkLoggedIn()
                 if !self.isLoggedIn {
-                    self.model.information.isPrivate = false
+                    self.uploadModel.information.isPrivate = false
                 }
             }
         }
         .onAppear {
             guard let itemProvider = (self.extensionContext!.inputItems.first as? NSExtensionItem)?.attachments?.first,
                   let contentType = itemProvider.registeredContentTypes.first else {
-                self.error = LocalizedAlertError(error: NoImageDataError())
+                self.uploadModel.error = LocalizedAlertError(error: NoImageDataError())
                 return
             }
             itemProvider.loadDataRepresentation(for: contentType) { data, error in
                 DispatchQueue.main.async {
                     if let error {
-                        self.error = LocalizedAlertError(error: error)
+                        self.uploadModel.error = LocalizedAlertError(error: error)
                         return
                     }
                     guard let data else {
-                        self.error = LocalizedAlertError(error: error)
+                        self.uploadModel.error = LocalizedAlertError(error: error)
                         return
                     }
-                    self.model.file = IamagesUploadFile(
+                    self.uploadModel.file = IamagesUploadFile(
                         data: data,
                         type: contentType.preferredMIMEType!
                     )

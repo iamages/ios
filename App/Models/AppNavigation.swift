@@ -1,10 +1,12 @@
 import Foundation
 
-enum AppUserViews: Identifiable, CaseIterable {
+enum AppUserViews: String, Identifiable, CaseIterable {
     var id: Self { self }
     
     case images
     case collections
+    case sharedWithYou
+    case anonymousUploads
     
     var localizedName: String {
         switch self {
@@ -12,6 +14,10 @@ enum AppUserViews: Identifiable, CaseIterable {
             return NSLocalizedString("Images", comment: "")
         case .collections:
             return NSLocalizedString("Collections", comment: "")
+        case .sharedWithYou:
+            return NSLocalizedString("Shared with You", comment: "")
+        case .anonymousUploads:
+            return NSLocalizedString("Anonymous Uploads", comment: "")
         }
     }
     
@@ -21,6 +27,10 @@ enum AppUserViews: Identifiable, CaseIterable {
             return "photo.stack"
         case .collections:
             return "folder"
+        case .sharedWithYou:
+            return "shared.with.you"
+        case .anonymousUploads:
+            return "person.fill.questionmark"
         }
     }
 }

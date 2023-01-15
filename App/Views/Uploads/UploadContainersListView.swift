@@ -95,35 +95,60 @@ struct UploadContainersListView: View {
         self.isBusy = false
     }
     
+    @ViewBuilder
+    private func deleteUploadButton(id: UUID) -> some View {
+        Button(role: .destructive, action: {
+            // return is there for no reason, it just shuts the compiler up.
+            // Don't ask me why this fix works...
+            // FIXME: Conflicting arguments to generic parameter 'Result' ('Void' vs. 'IamagesUploadContainer?')
+            return withAnimation {
+                self.uploadContainers.removeValue(forKey: id)
+            }
+        }) {
+            Label("Delete upload", systemImage: "trash")
+        }
+    }
+    
     var body: some View {
         Group {
             if self.uploadContainers.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "questionmark.folder")
-                        .font(.largeTitle)
-                    Text("No images added")
-                        .font(.title2)
-                        .bold()
-                }
+                IconAndInformationView(
+                    icon: "questionmark.folder",
+                    heading: "No images added"
+                )
             } else {
                 List(selection: self.$selectedUploadContainer) {
                     ForEach(self.uploadContainers.values) { uploadContainer in
                         NavigableUploadContainerView(
                             uploadContainer: uploadContainer
                         )
+                        .swipeActions {
+                            self.deleteUploadButton(id: uploadContainer.id)
+                        }
+                        .contextMenu {
+                            self.deleteUploadButton(id: uploadContainer.id)
+                        }
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .deleteUpload)) { output in
+                    self.selectedUploadContainer = nil
+                    guard let id = output.object as? UUID else {
+                        return
+                    }
+                    withAnimation {
+                        self.uploadContainers.removeValue(forKey: id)
                     }
                 }
             }
         }
         .navigationTitle("Uploads")
+        .navigationBarTitleDisplayMode(.inline)
         #if targetEnvironment(macCatalyst)
         .navigationSubtitle("\(self.uploadContainers.count) image\(self.uploadContainers.count > 1 || self.uploadContainers.isEmpty ? "s" : "")")
         #endif
         .errorAlert(error: self.$error)
-        .onChange(of: self.photoPickerItems) { _ in
-            Task {
-                await self.handleImagesPicked()
-            }
+        .task(id: self.photoPickerItems) {
+            await self.handleImagesPicked()
         }
         .fileImporter(
             isPresented: self.$isFilePickerPresented,
@@ -136,15 +161,17 @@ struct UploadContainersListView: View {
                 EditButton()
             }
             ToolbarItem {
-                PhotosPicker(selection: self.$photoPickerItems, matching: .images) {
-                    Label("Choose photos", systemImage: "rectangle.stack.badge.plus")
-                }
-            }
-            ToolbarItem {
-                Button(action: {
-                    self.isFilePickerPresented = true
-                }) {
-                   Label("Choose files", systemImage: "filemenu.and.selection")
+                Menu {
+                    PhotosPicker(selection: self.$photoPickerItems, matching: .images) {
+                        Label("Choose photos", systemImage: "rectangle.stack.badge.plus")
+                    }
+                    Button(action: {
+                        self.isFilePickerPresented = true
+                    }) {
+                       Label("Choose files", systemImage: "filemenu.and.selection")
+                    }
+                } label: {
+                    Label("Choose", systemImage: "plus")
                 }
             }
         }

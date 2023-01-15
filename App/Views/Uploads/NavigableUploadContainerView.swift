@@ -11,9 +11,10 @@ struct NavigableUploadContainerView: View {
                     .cornerRadius(8)
                 
                 VStack(alignment: .leading) {
-                    Text(verbatim: self.uploadContainer.information.description)
+                    Text(self.uploadContainer.information.description.isEmpty ? "No description yet" : self.uploadContainer.information.description)
                         .bold()
                         .lineLimit(1)
+                        .foregroundColor(self.uploadContainer.information.description.isEmpty ? .red : nil)
                     HStack {
                         Image(systemName: self.uploadContainer.information.isPrivate ? "eye.slash.fill" : "eye.slash")
                         Image(systemName: self.uploadContainer.information.isLocked ? "lock.doc.fill" : "lock.doc")

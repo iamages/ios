@@ -3,31 +3,11 @@ import KeychainAccess
 import MultipartFormData
 import CryptoKit
 import Argon2Swift
-import GRDB
 import UniformTypeIdentifiers
 import Nuke
-import SharedWithYou
-
-class UploadProgress: NSObject, URLSessionTaskDelegate {
-    private let cb: (Double) -> Void
-    
-    init(cb: @escaping (Double) -> Void) {
-        self.cb = cb
-    }
-    
-    internal func urlSession(
-        _ session: URLSession,
-        task: URLSessionTask,
-        didSendBodyData bytesSent: Int64,
-        totalBytesSent: Int64,
-        totalBytesExpectedToSend: Int64
-    ) {
-        self.cb(Double(totalBytesSent) / Double(totalBytesExpectedToSend))
-    }
-}
 
 @MainActor
-final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate, SWHighlightCenterDelegate {
+final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate {
     enum AuthenticationStrategy {
         case whenPossible
         case required
@@ -69,8 +49,6 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate,
     @Published var isNewCollectionPresented: Bool = false
     #endif
     
-    var highlightCenter = SWHighlightCenter()
-    
     override init() {
         super.init()
         
@@ -79,8 +57,6 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate,
         
         ImagePipeline.shared = ImagePipeline(configuration: .withDataCache)
         (ImagePipeline.shared.configuration.dataLoader as? DataLoader)?.delegate = self
-        
-        self.highlightCenter.delegate = self
         
         do {
             if let userInformation = try self.keychain.getDataWithKey(.userInformation) {
@@ -100,13 +76,6 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate,
             try await self.fetchUserToken()
         }
         request.addValue("\(self.lastUserToken!.token.tokenType) \(self.lastUserToken!.token.accessToken)", forHTTPHeaderField: "Authorization")
-    }
-    
-    // MARK: Delegate methods
-    nonisolated internal func highlightCenterHighlightsDidChange(_ highlightCenter: SWHighlightCenter) {
-        highlightCenter.highlights.forEach { highlight in
-            print("Received a new highlight with URL: \(highlight.url)")
-        }
     }
     
     internal func urlSession(
@@ -135,21 +104,15 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate,
         body: Data? = nil,
         contentType: HTTPContentType = .json,
         headers: [String: String] = [:],
-        authStrategy: AuthenticationStrategy = .none,
-        useUpload: Bool = false,
-        uploadProgressCb: ((Double) -> Void)? = nil
+        authStrategy: AuthenticationStrategy = .none
     ) async throws -> (Data, HTTPURLResponse) {
-        var url: URL = URL.apiRootUrl.appendingPathComponent(endpoint)
-        url.append(queryItems: queryItems)
-        
         var request = URLRequest(
-            url: url
+            url: .apiRootUrl
+                .appending(path: endpoint, directoryHint: .notDirectory)
+                .appending(queryItems: queryItems)
         )
         request.httpMethod = method.rawValue
-
-        if !useUpload {
-            request.httpBody = body
-        }
+        request.httpBody = body
         
         request.addValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
         
@@ -157,21 +120,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate,
             try await self.addUserTokenToRequest(to: &request)
         }
 
-        let data: Data
-        let response: URLResponse
-
-        if useUpload {
-            guard let body, let uploadProgressCb else {
-                throw APICommunicationErrors.invalidUploadRequest
-            }
-            (data, response) = try await URLSession.shared.upload(
-                for: request,
-                from: body,
-                delegate: UploadProgress(cb: uploadProgressCb)
-            )
-        } else {
-            (data, response) = try await URLSession.shared.data(for: request)
-        }
+        let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let response = response as? HTTPURLResponse else {
             throw APICommunicationErrors.invalidResponse(request.url)
@@ -324,7 +273,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate,
         for image: IamagesImage,
         key: String? = nil
     ) async throws -> IamagesImageMetadataContainer {
-        let (data, response): (Data, HTTPURLResponse) = try await self.fetchData(
+        let (data, response) = try await self.fetchData(
             "/images/\(image.id)/metadata",
             method: .get,
             authStrategy: image.isPrivate ? .required : .none
@@ -388,44 +337,6 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate,
                 return data
             },
             options: options
-        )
-    }
-    
-    func uploadImage(
-        for upload: IamagesUploadContainer,
-        uploadProgressCb: @escaping (Double) -> Void
-    ) async throws -> IamagesImage {
-        let mimeType: [String] = upload.file.type.components(separatedBy: "/")
-        
-        let form: MultipartFormData = try MultipartFormData(
-            boundary: try Boundary(uncheckedBoundary: "iamages")
-        ) {
-            try Subpart {
-                ContentDisposition(name: "information")
-                ContentType(mediaType: .applicationJson)
-            } body: {
-                try self.jsone.encode(upload.information)
-            }
-            
-            Subpart {
-                ContentDisposition(name: "file", filename: "image.bin")
-                ContentType(mediaType: MediaType(type: mimeType[0], subtype: mimeType[1]))
-            } body: {
-                upload.file.data
-            }
-        }
-        
-        return try self.jsond.decode(
-            IamagesImage.self,
-            from: try await self.fetchData(
-                "/images/",
-                method: .post,
-                body: form.httpBody,
-                contentType: .multipart,
-                authStrategy: .whenPossible,
-                useUpload: true,
-                uploadProgressCb: uploadProgressCb
-            ).0
         )
     }
 }

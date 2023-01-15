@@ -5,4 +5,5 @@ extension Notification.Name {
     static let deleteImage: Self = .init("deleteImage")
     static let editCollection: Self = .init("editCollection")
     static let deleteUpload: Self = .init("deleteUpload")
+    static let retryUploads: Self = .init("retryUploads")
 }

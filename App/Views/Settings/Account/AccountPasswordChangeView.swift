@@ -43,6 +43,7 @@ struct AccountPasswordChangeView: View {
 struct AccountPasswordChangeView_Previews: PreviewProvider {
     static var previews: some View {
         AccountPasswordChangeView(isBusy: .constant(false))
+            .environmentObject(GlobalViewModel())
     }
 }
 #endif

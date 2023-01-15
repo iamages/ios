@@ -4,9 +4,8 @@ import NukeUI
 struct NavigableImageView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     
-    let image: IamagesImage
-    
-    @State private var metadata: IamagesImageMetadata?
+    @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
+
     @State private var isBusy: Bool = true
     @State private var hasAttemptedMetadataLoad: Bool = false
     @State private var error: Error?
@@ -14,9 +13,9 @@ struct NavigableImageView: View {
     private func getMetadata() async {
         self.isBusy = true
         do {
-            self.metadata = try await self.globalViewModel.getImagePrivateMetadata(
-                for: self.image
-            ).data
+            self.imageAndMetadata.metadataContainer = try await self.globalViewModel.getImagePrivateMetadata(
+                for: self.imageAndMetadata.image
+            )
         } catch {
             self.error = error
         }
@@ -25,7 +24,7 @@ struct NavigableImageView: View {
     
     @ViewBuilder
     private var thumbnail: some View {
-        LazyImage(request: self.globalViewModel.getThumbnailRequest(for: self.image)) { state in
+        LazyImage(request: self.globalViewModel.getThumbnailRequest(for: self.imageAndMetadata.image)) { state in
             if let image = state.image {
                 image
                     .resizingMode(.aspectFill)
@@ -39,10 +38,10 @@ struct NavigableImageView: View {
     }
     
     var body: some View {
-        NavigationLink(value: self.image) {
+        NavigationLink(value: self.imageAndMetadata.image.id) {
             HStack {
                 Group {
-                    if self.image.lock.isLocked {
+                    if self.imageAndMetadata.image.lock.isLocked {
                         Image(systemName: "lock.doc.fill")
                             .border(.gray)
                     } else {
@@ -53,7 +52,7 @@ struct NavigableImageView: View {
                 .frame(width: 64, height: 64)
                 
                 VStack(alignment: .leading) {
-                    if self.image.lock.isLocked {
+                    if self.imageAndMetadata.image.lock.isLocked {
                         Text("Locked image")
                             .bold()
                     } else if self.isBusy {
@@ -63,7 +62,7 @@ struct NavigableImageView: View {
                             if let error {
                                 Text(error.localizedDescription)
                                     .foregroundColor(.red)
-                            } else if let metadata {
+                            } else if let metadata = self.imageAndMetadata.metadataContainer?.data {
                                 Text(verbatim: metadata.description)
                             }
                         }
@@ -71,9 +70,8 @@ struct NavigableImageView: View {
                         .lineLimit(1)
                     }
                     HStack {
-                        Image(systemName: self.image.isPrivate ? "eye.slash.fill" : "eye.slash")
-                        Image(systemName: self.image.lock.isLocked ? "lock.doc.fill" : "lock.doc")
-                        Image(systemName: self.image.contentType == .gif ? "figure.run.square.stack.fill" : "figure.run.square.stack")
+                        Image(systemName: self.imageAndMetadata.image.isPrivate ? "eye.slash.fill" : "eye.slash")
+                        Image(systemName: self.imageAndMetadata.image.contentType == .gif ? "figure.run.square.stack.fill" : "figure.run.square.stack")
                     }
                         
                 }
@@ -82,42 +80,14 @@ struct NavigableImageView: View {
             }
         }
         .contextMenu {
-            ImageShareLinkView(image: self.image)
+            ImageShareLinkView(image: self.imageAndMetadata.image)
         }
         .task {
             if !self.hasAttemptedMetadataLoad {
                 self.hasAttemptedMetadataLoad = true
-                if !self.image.lock.isLocked {
+                if !self.imageAndMetadata.image.lock.isLocked {
                     await self.getMetadata()
                 }
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .editImage)) { output in
-            if let notification = output.object as? IamagesImageEdit.Notification,
-               notification.id == self.image.id {
-                switch notification.edit.change {
-                case .description:
-                    switch notification.edit.to {
-                    case .string(let description):
-                        self.metadata?.description = description
-                    default:
-                        break
-                    }
-                case .lock:
-                    switch notification.edit.to {
-                    case .bool(let isLocked):
-                        if !isLocked {
-                            Task {
-                                await self.getMetadata()
-                            }
-                        }
-                    default:
-                        break
-                    }
-                default:
-                    break
-                }
-                
             }
         }
     }
@@ -126,7 +96,7 @@ struct NavigableImageView: View {
 #if DEBUG
 struct NavigableImageView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigableImageView(image: previewImage)
+        NavigableImageView(imageAndMetadata: .constant(previewImageAndMetadata))
     }
 }
 #endif

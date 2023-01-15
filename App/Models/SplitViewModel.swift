@@ -1,7 +1,7 @@
 import SwiftUI
+import OrderedCollections
 
 final class SplitViewModel: ObservableObject {
-    // MARK: Images
-    @Published var selectedImage: IamagesImage?
-    @Published var selectedImageMetadata: IamagesImageMetadataContainer?
+    @Published var selectedImage: String?
+    @Published var images: OrderedDictionary<String, IamagesImageAndMetadataContainer> = [:]
 }

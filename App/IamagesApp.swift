@@ -1,13 +1,49 @@
 import SwiftUI
-import GRDB
-import Nuke
+import AlertToast
+
+// Thanks to:
+// https://swiftwombat.com/how-to-add-home-screen-quick-actions-to-swiftui-app/
+final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
+    var shortcutItem: UIApplicationShortcutItem? { AppDelegate.shortcutItem }
+        
+    static var shortcutItem: UIApplicationShortcutItem?
+
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        if let shortcutItem = options.shortcutItem {
+            AppDelegate.shortcutItem = shortcutItem
+        }
+        
+        let sceneConfiguration = UISceneConfiguration(name: "IamagesQuickActions", sessionRole: connectingSceneSession.role)
+        sceneConfiguration.delegateClass = SceneDelegate.self
+        
+        return sceneConfiguration
+    }
+}
+
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    func windowScene(
+        _ windowScene: UIWindowScene,
+        performActionFor shortcutItem: UIApplicationShortcutItem,
+        completionHandler: @escaping (Bool) -> Void
+    ) {
+        AppDelegate.shortcutItem = shortcutItem
+        completionHandler(true)
+    }
+}
 
 @main
 struct IamagesApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
     @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
     @Environment(\.openWindow) private var openWindow
     
     @StateObject private var globalViewModel: GlobalViewModel = GlobalViewModel()
+    @StateObject private var coreDataModel = CoreDataModel()
     
     private func openSettings() {
         #if targetEnvironment(macCatalyst)
@@ -21,8 +57,8 @@ struct IamagesApp: App {
     var body: some Scene {
         WindowGroup(id: "main") {
             RootNavigationView()
+                .environment(\.managedObjectContext, self.coreDataModel.container.viewContext)
                 .environmentObject(self.globalViewModel)
-                .environment(\.dbQueue, try! DatabaseQueue()) // FIXME: Use local DbQueue.
         }
         .commands {
             #if targetEnvironment(macCatalyst)

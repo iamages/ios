@@ -4,10 +4,10 @@ import WidgetKit
 
 struct ImageDetailView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
-    @Environment(\.openWindow) private var openWindow
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("selectedWidgetImageId", store: .iamagesGroup) var selectedWidgetImageId: String?
     
+    @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
     @ObservedObject var splitViewModel: SplitViewModel
 
     @State private var request: ImageRequest?
@@ -25,16 +25,13 @@ struct ImageDetailView: View {
     @State private var error: LocalizedAlertError?
     
     private var selectedImageTitle: String {
-        guard let selectedImage = self.splitViewModel.selectedImage else {
-            return ""
-        }
-        if let metadata = self.splitViewModel.selectedImageMetadata?.data {
-            if selectedImage.lock.isLocked && self.scenePhase == .inactive {
+        if let metadata = self.imageAndMetadata.metadataContainer?.data {
+            if self.imageAndMetadata.image.lock.isLocked && self.scenePhase == .inactive {
                 return NSLocalizedString("Locked image", comment: "")
             }
             return metadata.description
         } else {
-            if selectedImage.lock.isLocked {
+            if self.imageAndMetadata.image.lock.isLocked {
                 return NSLocalizedString("Locked image", comment: "")
             } else {
                 return NSLocalizedString("Loading metadata...", comment: "")
@@ -47,7 +44,7 @@ struct ImageDetailView: View {
         self.isBusy = true
 
         do {
-            self.splitViewModel.selectedImageMetadata = try await self.globalViewModel.getImagePrivateMetadata(
+            self.imageAndMetadata.metadataContainer = try await self.globalViewModel.getImagePrivateMetadata(
                 for: image,
                 key: self.key.isEmpty ? nil : self.key
             )
@@ -73,17 +70,16 @@ struct ImageDetailView: View {
         self.isBusy = true
         
         do {
-            guard let id = self.splitViewModel.selectedImage?.id else {
-                throw NoIDError()
-            }
             try await self.globalViewModel.fetchData(
-                "/images/\(id)",
+                "/images/\(self.imageAndMetadata.image.id)",
                 method: .delete,
                 authStrategy: .required
             )
-            NotificationCenter.default.post(name: .deleteImage, object: id)
+            NotificationCenter.default.post(
+                name: .deleteImage,
+                object: self.imageAndMetadata.image.id
+            )
             self.isBusy = false
-            self.splitViewModel.selectedImage = nil
         } catch {
             self.isBusy = false
             self.error = LocalizedAlertError(error: error)
@@ -99,7 +95,8 @@ struct ImageDetailView: View {
         WidgetCenter.shared.reloadTimelines(ofKind: WidgetKind.selected.rawValue)
     }
 
-    private func lock(for image: IamagesImage) -> some View {
+    @ViewBuilder
+    private var lock: some View {
         IconAndInformationView(
             icon: "lock.doc.fill",
             heading: "Image is locked",
@@ -118,8 +115,11 @@ struct ImageDetailView: View {
         )
         .task(id: self.isKeyAlertPresented) {
             if !self.isKeyAlertPresented && self.shouldAttemptUnlock {
-                await self.fetchMetadata(image: image)
-                self.request = self.globalViewModel.getImageRequest(for: image, key: self.key)
+                await self.fetchMetadata(image: self.imageAndMetadata.image)
+                self.request = self.globalViewModel.getImageRequest(
+                    for: self.imageAndMetadata.image,
+                    key: self.key
+                )
                 self.shouldAttemptUnlock = false
             }
         }
@@ -163,131 +163,125 @@ struct ImageDetailView: View {
     
     private func resetView() {
         self.key = ""
-        self.splitViewModel.selectedImageMetadata = nil
         self.imageLockKeySalt = nil
         self.request = nil
     }
     
     var body: some View {
-        if let image = self.splitViewModel.selectedImage {
-            Group {
-                if self.request == nil {
-                    if image.lock.isLocked {
-                        self.lock(for: image)
-                    } else {
-                        ProgressView()
-                            .task {
-                                await self.fetchMetadata(image: image)
-                                self.request = self.globalViewModel.getImageRequest(for: image)
-                            }
-                    }
+        Group {
+            if self.request == nil {
+                if self.imageAndMetadata.image.lock.isLocked {
+                    self.lock
                 } else {
-                    ZoomableScrollView {
-                        self.imageView
+                    ProgressView()
+                        .onAppear {
+                            self.request = self.globalViewModel.getImageRequest(
+                                for: self.imageAndMetadata.image
+                            )
+                        }
+                }
+            } else {
+                ZoomableScrollView {
+                    self.imageView
+                }
+            }
+        }
+        .errorAlert(error: self.$error)
+        .navigationTitle(self.selectedImageTitle)
+        .navigationBarTitleDisplayMode(.inline)
+        #if targetEnvironment(macCatalyst)
+        .navigationSubtitle(self.selectedImageTitle)
+        #endif
+        .onDisappear(perform: self.resetView)
+        .onChange(of: self.splitViewModel.selectedImage) { _ in
+            self.resetView()
+        }
+        .sheet(isPresented: self.$isInformationSheetPresented) {
+            ImageInformationView(
+                imageAndMetadata: self.$imageAndMetadata
+            )
+        }
+        .sheet(isPresented: self.$isEditInformationSheetPresented) {
+            EditImageInformationView(
+                imageAndMetadata: self.$imageAndMetadata,
+                imageLockKeySalt: self.$imageLockKeySalt
+            )
+        }
+        .sheet(isPresented: self.$isCollectionPickerSheetPresented) {
+            CollectionsListView(
+                viewMode: .picker,
+                imageID: self.imageAndMetadata.image.id
+            )
+        }
+        .toolbarRole(.editor)
+        .toolbar(id: "imageDetail") {
+            ToolbarItem(id: "information", placement: .primaryAction) {
+                Button(action: {
+                    self.isInformationSheetPresented = true
+                }) {
+                    Label("Information", systemImage: "info.circle")
+                }
+            }
+            ToolbarItem(id: "share", placement: .secondaryAction) {
+                ImageShareLinkView(image: self.imageAndMetadata.image)
+            }
+            ToolbarItem(id: "toggleWidgetImage", placement: .secondaryAction) {
+                Button(action: {
+                    self.toggleWidgetImage(id: self.imageAndMetadata.image.id)
+                }) {
+                    if self.selectedWidgetImageId == self.imageAndMetadata.image.id {
+                        Label("Unset widget image", systemImage: "rectangle.slash")
+                    } else {
+                        Label("Set widget image", systemImage: "rectangle")
                     }
                 }
+                .disabled(self.imageAndMetadata.image.lock.isLocked)
             }
-            .errorAlert(error: self.$error)
-            .navigationTitle(self.selectedImageTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            #if targetEnvironment(macCatalyst)
-            .navigationSubtitle(self.selectedImageTitle)
-            #endif
-            //.onDisappear(perform: self.resetView)
-            .onChange(of: self.splitViewModel.selectedImage) { _ in
-                self.resetView()
-            }
-            .sheet(isPresented: self.$isInformationSheetPresented) {
-                ImageInformationView(
-                    splitViewModel: self.splitViewModel
-                )
-            }
-            .sheet(isPresented: self.$isEditInformationSheetPresented) {
-                EditImageInformationView(
-                    imageLockKeySalt: self.$imageLockKeySalt,
-                    splitViewModel: self.splitViewModel
-                )
-            }
-            .sheet(isPresented: self.$isCollectionPickerSheetPresented) {
-                CollectionsListView(
-                    splitViewModel: self.splitViewModel,
-                    viewMode: .picker,
-                    imageID: image.id
-                )
-            }
-            .toolbarRole(.editor)
-            .toolbar(id: "imageDetail") {
-                ToolbarItem(id: "information", placement: .primaryAction) {
-                    Button(action: {
-                        self.isInformationSheetPresented = true
-                    }) {
-                        Label("Information", systemImage: "info.circle")
-                    }
+            ToolbarItem(id: "addToCollection", placement: .secondaryAction) {
+                Button(action: {
+                    self.isCollectionPickerSheetPresented = true
+                }) {
+                    Label("Add to collection", systemImage: "folder.badge.plus")
                 }
-                ToolbarItem(id: "share", placement: .secondaryAction) {
-                    ImageShareLinkView(image: image)
+            }
+            ToolbarItem(id: "edit", placement: .secondaryAction) {
+                Button(action: {
+                    self.isEditInformationSheetPresented = true
+                }) {
+                    Label("Edit", systemImage: "pencil")
                 }
-                ToolbarItem(id: "toggleWidgetImage", placement: .secondaryAction) {
-                    Button(action: {
-                        self.toggleWidgetImage(id: image.id)
-                    }) {
-                        if self.selectedWidgetImageId == image.id {
-                            Label("Unset widget image", systemImage: "rectangle.slash")
-                        } else {
-                            Label("Set widget image", systemImage: "rectangle")
+                .disabled(self.imageAndMetadata.image.lock.isLocked && self.imageLockKeySalt == nil)
+            }
+            ToolbarItem(id: "delete", placement: .secondaryAction) {
+                Button(role: .destructive, action: {
+                    self.isDeleteDialogPresented = true
+                }) {
+                    Label("Delete", systemImage: "trash")
+                }
+                .confirmationDialog("Delete image?", isPresented: self.$isDeleteDialogPresented, titleVisibility: .visible) {
+                    Button("Delete", role: .destructive) {
+                        Task {
+                            await self.delete()
                         }
                     }
-                    .disabled(image.lock.isLocked)
-                }
-                ToolbarItem(id: "addToCollection", placement: .secondaryAction) {
-                    Button(action: {
-                        self.isCollectionPickerSheetPresented = true
-                    }) {
-                        Label("Add to collection", systemImage: "folder.badge.plus")
+                    Button("Cancel", role: .cancel) {
+                        self.isDeleteDialogPresented = false
                     }
+                } message: {
+                    Text("You cannot revert this action.")
                 }
-                ToolbarItem(id: "edit", placement: .secondaryAction) {
-                    Button(action: {
-                        self.isEditInformationSheetPresented = true
-                    }) {
-                        Label("Edit", systemImage: "pencil")
-                    }
-                    .disabled(image.lock.isLocked && self.imageLockKeySalt == nil)
-                }
-                ToolbarItem(id: "delete", placement: .secondaryAction) {
+            }
+            ToolbarItem(id: "relock", placement: .secondaryAction) {
+                if self.imageAndMetadata.image.lock.isLocked {
                     Button(role: .destructive, action: {
-                        self.isDeleteDialogPresented = true
+                        self.request = nil
+                        self.imageAndMetadata.metadataContainer = nil
                     }) {
-                        Label("Delete", systemImage: "trash")
+                        Label("Relock", systemImage: "lock")
                     }
-                    .confirmationDialog("Delete image?", isPresented: self.$isDeleteDialogPresented, titleVisibility: .visible) {
-                        Button("Delete", role: .destructive) {
-                            Task {
-                                await self.delete()
-                            }
-                        }
-                        Button("Cancel", role: .cancel) {
-                            self.isDeleteDialogPresented = false
-                        }
-                    } message: {
-                        Text("You cannot revert this action.")
-                    }
-                }
-                ToolbarItem(id: "relock", placement: .secondaryAction) {
-                    if image.lock.isLocked {
-                        Button(role: .destructive, action: {
-                            self.request = nil
-                            self.splitViewModel.selectedImageMetadata = nil
-                        }) {
-                            Label("Relock", systemImage: "lock")
-                        }
-                        .disabled(self.request == nil)
-                    }
+                    .disabled(self.request == nil)
                 }
             }
-        } else {
-            Text("Select an image from the sidebar")
-                .navigationTitle("")
         }
     }
 }
@@ -295,8 +289,11 @@ struct ImageDetailView: View {
 #if DEBUG
 struct ImageDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        ImageDetailView(splitViewModel: SplitViewModel())
-            .environmentObject(GlobalViewModel())
+        ImageDetailView(
+            imageAndMetadata: .constant(previewImageAndMetadata),
+            splitViewModel: SplitViewModel()
+        )
+        .environmentObject(GlobalViewModel())
     }
 }
 #endif

@@ -23,6 +23,11 @@ let previewImageMetadata = IamagesImageMetadata(
     realContentType: nil
 )
 
+let previewImageAndMetadata = IamagesImageAndMetadataContainer(
+    image: previewImage,
+    metadataContainer: IamagesImageMetadataContainer(data: previewImageMetadata)
+)
+
 let previewUploadContainer = IamagesUploadContainer(
     file: IamagesUploadFile(
         data: NSDataAsset(name: "PreviewImage")!.data,

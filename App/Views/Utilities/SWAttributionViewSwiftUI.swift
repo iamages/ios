@@ -12,7 +12,5 @@ struct SWAttributionViewSwiftUI: UIViewRepresentable {
         return attributionView
     }
     
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        //
-    }
+    func updateUIView(_ uiView: UIViewType, context: Context) {}
 }

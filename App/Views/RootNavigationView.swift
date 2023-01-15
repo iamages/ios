@@ -1,31 +1,43 @@
 import SwiftUI
+import OrderedCollections
 
 struct RootNavigationView: View {
+    @EnvironmentObject private var appDelegate: AppDelegate
     @EnvironmentObject private var globalViewModel: GlobalViewModel
-    @Environment(\.openWindow) private var openWindow
     @Environment(\.scenePhase) private var scenePhase
 
     @State private var isWelcomeSheetPresented: Bool = false
     
     @StateObject private var splitViewModel: SplitViewModel = SplitViewModel()
+
     @State private var selectedView: AppUserViews = .images
-    @State private var isNewCollectionSheetPresented: Bool = false
     
     var body: some View {
         NavigationSplitView {
             Group {
                 switch self.selectedView {
                 case .images:
-                    ImagesListView(splitViewModel: self.splitViewModel)
+                    ImagesListView()
                 case .collections:
-                    CollectionsListView(
-                        splitViewModel: self.splitViewModel,
-                        viewMode: .normal,
-                        imageID: nil
-                    )
+                    CollectionsListView(viewMode: .normal)
+                case .sharedWithYou:
+                    SharedWithYouListView()
+                case .anonymousUploads:
+                    AnonymousUploadsListView()
                 }
             }
+            .environmentObject(self.splitViewModel)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarTitleMenu {
+                    Picker("View", selection: self.$selectedView.animation()) {
+                        ForEach(AppUserViews.allCases) { view in
+                            Label(view.localizedName, systemImage: view.icon)
+                                .tag(view)
+                        }
+                    }
+                    .pickerStyle(.inline)
+                }
                 #if !targetEnvironment(macCatalyst)
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
@@ -35,71 +47,72 @@ struct RootNavigationView: View {
                     }
                 }
                 #endif
-                ToolbarItem {
-                    Picker("View", selection: self.$selectedView.animation()) {
-                        ForEach(AppUserViews.allCases) { view in
-                            Label(view.localizedName, systemImage: view.icon)
-                                .tag(view)
-                        }
-                    }
-                }
-                #if !targetEnvironment(macCatalyst)
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
-                        Button(action: {
-                            self.globalViewModel.isUploadsPresented = true
-                        }) {
-                            Label("Uploads", systemImage: "square.and.arrow.up.on.square")
-                        }
-                        Button(action: {
-                            self.globalViewModel.isNewCollectionPresented = true
-                        }) {
-                            Label("Collection", systemImage: "folder.badge.plus")
-                        }
-                    } label: {
-                        Label("New", systemImage: "plus")
-                    }
-                }
-                #endif
             }
         } detail: {
             ZStack {
-                ImageDetailView(splitViewModel: self.splitViewModel)
-                // MARK: Inactive app locked image blur
-                if self.splitViewModel.selectedImage?.lock.isLocked == true &&
-                   self.scenePhase == .inactive
-                {
-                    VStack {
-                        Spacer()
-                        HStack {
+                if let selectedImage = self.splitViewModel.selectedImage,
+                    let imageAndMetadata = Binding<IamagesImageAndMetadataContainer>(
+                    self.$splitViewModel.images[selectedImage]
+                ) {
+                    ImageDetailView(
+                        imageAndMetadata: imageAndMetadata,
+                        splitViewModel: self.splitViewModel
+                    )
+                    // MARK: Inactive app locked image blur
+                    if imageAndMetadata.wrappedValue.image.lock.isLocked == true &&
+                       self.scenePhase == .inactive
+                    {
+                        VStack {
                             Spacer()
-                            Image(systemName: "lock.fill")
-                                .foregroundColor(.white)
-                                .font(.largeTitle)
-                                .shadow(radius: 0.6)
+                            HStack {
+                                Spacer()
+                                Image(systemName: "lock.fill")
+                                    .foregroundColor(.white)
+                                    .font(.largeTitle)
+                                    .shadow(radius: 0.6)
+                                Spacer()
+                            }
                             Spacer()
                         }
-                        Spacer()
+                        .background(.regularMaterial)
                     }
-                    .background(.regularMaterial)
+                } else {
+                    Text("Select an image")
                 }
             }
         }
+        // For Mac Catalyst window title
         .navigationTitle(self.selectedView.localizedName)
+        // Handle quick actions
+        .onChange(of: self.scenePhase) { phase in
+            if phase == .active,
+               let quickActionType = self.appDelegate.shortcutItem?.type,
+               let appView = AppUserViews(rawValue: quickActionType)
+            {
+                AppDelegate.shortcutItem = nil
+                withAnimation {
+                    self.selectedView = appView
+                }
+            }
+        }
         .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
             if !isLoggedIn {
                 withAnimation {
                     self.splitViewModel.selectedImage = nil
                 }
+                self.splitViewModel.images = [:]
             }
         }
         .onChange(of: self.selectedView) { _ in
             withAnimation {
                 self.splitViewModel.selectedImage = nil
             }
+            self.splitViewModel.images = [:]
         }
         // Welcome sheet
         .modifier(AppWelcomeSheetModifier())
+        // Delete image listener
+        .deleteImageListener(images: self.$splitViewModel.images, splitViewModel: self.splitViewModel)
         #if targetEnvironment(macCatalyst)
         .hideMacTitlebar()
         #else

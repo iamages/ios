@@ -40,7 +40,7 @@ struct AccountSettingsView: View {
                         }
                     }
                     NavigationLink {
-                        EmptyView()
+                        AccountEmailChangeView(isBusy: self.$isBusy)
                     } label: {
                         LabeledContent("Email", value: userInformation.email ?? "Set new...")
                     }

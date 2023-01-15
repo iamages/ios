@@ -3,15 +3,14 @@ import SwiftUI
 struct UploadEditorView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
 
+    let id: UUID
     @Binding var information: IamagesUploadInformation
 
     @State private var isLockWarningAlertPresented: Bool = false
 
     var body: some View {
         Form {
-            Section("Description") {
-                TextField("Description", text: self.$information.description)
-            }
+            TextField("Description", text: self.$information.description)
             Section {
                 Toggle("Private", isOn: self.$information.isPrivate)
                     .disabled(!self.globalViewModel.isLoggedIn)
@@ -26,7 +25,7 @@ struct UploadEditorView: View {
                 Text("Ownership")
             } footer: {
                 if self.information.isLocked {
-                    Text("Locked images are encrypted in the cloud using your provided password. These features will be disabled:\n· Thumbnail in images list\n· Social media embed cards.\n· Local image cache.\nYou will have to unlock locked images manually everytime you open the app. People who receive your public link also need a password to decrypt the image. You cannot reverse the encryption process.")
+                    Text("Locked images are encrypted in the cloud using your provided password. These features will be disabled:\n· Thumbnail in images list\n· Social media embed cards.\n· Local image cache.\nYou will have to unlock locked images manually everytime you open the app. People who receive your public link also need a password to decrypt the image.")
                 }
             }
         }
@@ -36,16 +35,6 @@ struct UploadEditorView: View {
             isLocked: self.$information.isLocked,
             isPresented: self.$isLockWarningAlertPresented
         )
-        .toolbar {
-            ToolbarItem {
-                Button(role: .destructive, action: {
-                    NotificationCenter.default.post(name: .deleteUpload, object: self.information.id)
-                }) {
-                    Label("Delete", systemImage: "")
-                }
-                .keyboardShortcut(.delete)
-            }
-        }
     }
 }
 
@@ -53,6 +42,7 @@ struct UploadEditorView: View {
 struct UploadEditorView_Previews: PreviewProvider {
     static var previews: some View {
         UploadEditorView(
+            id: UUID(),
             information: .constant(previewUploadContainer.information)
         )
         .environmentObject(GlobalViewModel())

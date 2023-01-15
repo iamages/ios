@@ -76,6 +76,7 @@ struct UploadsView: View {
                 if let id = self.selectedUploadContainer,
                    var uploadContainer = Binding<IamagesUploadContainer>(self.$uploadContainers[id]) {
                     UploadEditorView(
+                        id: id,
                         information: uploadContainer.information
                     )
                 } else {

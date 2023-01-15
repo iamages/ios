@@ -4,8 +4,8 @@ struct EditImageInformationView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.dismiss) private var dismiss
 
+    @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
     @Binding var imageLockKeySalt: Data?
-    @ObservedObject var splitViewModel: SplitViewModel
     
     @State private var description: String = ""
     @State private var isPrivate: Bool = false
@@ -22,7 +22,7 @@ struct EditImageInformationView: View {
     @State private var edits: [IamagesImageEdit] = []
     
     func getMetadataLockKey() throws -> Data {
-        guard let salt = self.splitViewModel.selectedImageMetadata?.salt else {
+        guard let salt = self.imageAndMetadata.metadataContainer?.salt else {
             throw NoSaltError()
         }
         return try self.globalViewModel.hashKey(for: self.currentLockKey, salt: salt).hashData()
@@ -39,10 +39,7 @@ struct EditImageInformationView: View {
         self.edits = []
         self.isBusy = true
         do {
-            guard let id = self.splitViewModel.selectedImage?.id else {
-                throw NoIDError()
-            }
-            if self.isPrivate != self.splitViewModel.selectedImage?.isPrivate {
+            if self.isPrivate != self.imageAndMetadata.image.isPrivate {
                 self.edits.append(
                     IamagesImageEdit(
                         change: .isPrivate,
@@ -50,13 +47,13 @@ struct EditImageInformationView: View {
                     )
                 )
             }
-            if self.isLocked != self.splitViewModel.selectedImage?.lock.isLocked {
+            if self.isLocked != self.imageAndMetadata.image.lock.isLocked {
                 if self.isLocked {
                     var edit = IamagesImageEdit(
                         change: .lock,
                         to: .string(self.newLockKey)
                     )
-                    if self.splitViewModel.selectedImage?.lock.isLocked == true {
+                    if self.imageAndMetadata.image.lock.isLocked == true {
                         edit.metadataLockKey = try self.getMetadataLockKey()
                         edit.imageLockKey = try self.getImageLockKey()
                     }
@@ -72,33 +69,55 @@ struct EditImageInformationView: View {
                     )
                 }
             }
-            if self.description != self.splitViewModel.selectedImageMetadata?.data.description {
+            if self.description != self.imageAndMetadata.metadataContainer?.data.description {
                 self.edits.append(
                     IamagesImageEdit(
                         change: .description,
                         to: .string(self.description),
-                        metadataLockKey: self.splitViewModel.selectedImage?.lock.isLocked == true ? try self.getMetadataLockKey() : nil
+                        metadataLockKey: self.imageAndMetadata.image.lock.isLocked == true ? try self.getMetadataLockKey() : nil
                     )
                 )
             }
-            for i in self.edits.indices {
+            for edit in self.edits {
                 let response = try self.globalViewModel.jsond.decode(
                     IamagesImageEdit.Response.self,
                     from: try await self.globalViewModel.fetchData(
-                        "/images/\(id)",
+                        "/images/\(self.imageAndMetadata.image.id)",
                         method: .patch,
-                        body: self.globalViewModel.jsone.encode(self.edits[i]),
+                        body: self.globalViewModel.jsone.encode(edit),
                         contentType: .json,
                         authStrategy: .required
                     ).0
                 )
                 if let lockVersion = response.lockVersion {
-                    self.edits[i].lockVersion = lockVersion
+                    self.imageAndMetadata.image.lock.version = lockVersion
                 }
-                NotificationCenter.default.post(
-                    name: .editImage,
-                    object: IamagesImageEdit.Notification(id: id, edit: self.edits[i])
-                )
+                switch edit.change {
+                case .isPrivate:
+                    switch edit.to {
+                    case .bool(let isPrivate):
+                        self.imageAndMetadata.image.isPrivate = isPrivate
+                    default:
+                        break
+                    }
+                case .lock:
+                    switch edit.to {
+                    case .string(_):
+                        self.imageAndMetadata.image.lock.isLocked = true
+                    case .bool(_):
+                        self.imageAndMetadata.image.lock.isLocked = false
+                        self.imageAndMetadata.image.lock.version = nil
+                    default:
+                        break
+                    }
+                case .description:
+                    switch edit.to {
+                    case .string(let description):
+                        self.imageAndMetadata.metadataContainer?.data.description = description
+                    default:
+                        break
+                    }
+                }
             }
             self.dismiss()
         } catch {
@@ -108,9 +127,9 @@ struct EditImageInformationView: View {
     }
     
     func checkHasChanges() -> Bool {
-        if self.description != self.splitViewModel.selectedImageMetadata?.data.description ||
-            self.isPrivate != self.splitViewModel.selectedImage?.isPrivate ||
-            self.isLocked != self.splitViewModel.selectedImage?.lock.isLocked
+        if self.description != self.imageAndMetadata.metadataContainer?.data.description ||
+            self.isPrivate != self.imageAndMetadata.image.isPrivate ||
+            self.isLocked != self.imageAndMetadata.image.lock.isLocked
         {
             return true
         }
@@ -120,47 +139,45 @@ struct EditImageInformationView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if let image = self.splitViewModel.selectedImage {
-                    if let metadata = self.splitViewModel.selectedImageMetadata {
-                        Section {
-                            TextField("Description", text: self.$description)
-                        } header: {
-                            Text("Description")
-                        } footer: {
-                        }
-                        .onAppear {
-                            self.description = metadata.data.description
-                        }
-                    } else {
-                        if image.lock.isLocked {
-                            Label("Unlock this file to edit its metadata.", systemImage: "lock")
-                        } else {
-                            LoadingMetadataView()
-                        }
-                    }
+                if let metadata = self.imageAndMetadata.metadataContainer {
                     Section {
-                        Toggle("Private", isOn: self.$isPrivate)
-                        Toggle("Lock (Beta)", isOn: self.$isLocked)
-                        if self.isLocked && !image.lock.isLocked {
-                            SecureField("Lock key", text: self.$newLockKey)
-                        }
+                        TextField("Description", text: self.$description)
                     } header: {
-                        Text("Privacy")
+                        Text("Description")
                     } footer: {
-                        if self.isLocked {
-                            if !image.lock.isLocked {
-                                Text("Remember this key, as it will be used to unlock this image in the future.\nWe cannot recover locked images.")
-                            }
-                        } else {
-                            if image.lock.isLocked {
-                                Text("At-rest encryption will be disabled upon disabling the lock option.")
-                            }
-                        }
                     }
                     .onAppear {
-                        self.isPrivate = image.isPrivate
-                        self.isLocked = image.lock.isLocked
+                        self.description = metadata.data.description
                     }
+                } else {
+                    if self.imageAndMetadata.image.lock.isLocked {
+                        Label("Unlock this file to edit its metadata.", systemImage: "lock")
+                    } else {
+                        LoadingMetadataView()
+                    }
+                }
+                Section {
+                    Toggle("Private", isOn: self.$isPrivate)
+                    Toggle("Lock (Beta)", isOn: self.$isLocked)
+                    if self.isLocked && !self.imageAndMetadata.image.lock.isLocked {
+                        SecureField("Lock key", text: self.$newLockKey)
+                    }
+                } header: {
+                    Text("Privacy")
+                } footer: {
+                    if self.isLocked {
+                        if !self.imageAndMetadata.image.lock.isLocked {
+                            Text("Remember this key, as it will be used to unlock this image in the future.\nWe cannot recover locked images.")
+                        }
+                    } else {
+                        if self.imageAndMetadata.image.lock.isLocked {
+                            Text("At-rest encryption will be disabled upon disabling the lock option.")
+                        }
+                    }
+                }
+                .onAppear {
+                    self.isPrivate = self.imageAndMetadata.image.isPrivate
+                    self.isLocked = self.imageAndMetadata.image.lock.isLocked
                 }
             }
             .errorAlert(error: self.$error)
@@ -203,7 +220,8 @@ struct EditImageInformationView: View {
                 ToolbarItem(placement: .destructiveAction) {
                     Button("Save") {
                         if self.checkHasChanges() &&
-                           self.splitViewModel.selectedImage?.lock.isLocked == true {
+                           self.imageAndMetadata.image.lock.isLocked
+                        {
                             self.isKeyAlertPresented = true
                         } else {
                             Task {
@@ -211,7 +229,7 @@ struct EditImageInformationView: View {
                             }
                         }
                     }
-                    .disabled(self.isBusy || (self.isLocked && self.splitViewModel.selectedImage?.lock.isLocked == false && self.newLockKey.isEmpty))
+                    .disabled(self.isBusy || (self.isLocked && self.imageAndMetadata.image.lock.isLocked == false && self.newLockKey.isEmpty))
                 }
             }
         }
@@ -222,8 +240,8 @@ struct EditImageInformationView: View {
 struct EditImageInformationView_Previews: PreviewProvider {
     static var previews: some View {
         EditImageInformationView(
-            imageLockKeySalt: .constant(Data()),
-            splitViewModel: SplitViewModel()
+            imageAndMetadata: .constant(previewImageAndMetadata),
+            imageLockKeySalt: .constant(Data())
         )
         .environmentObject(GlobalViewModel())
     }

@@ -3,11 +3,10 @@ import OrderedCollections
 
 struct CollectionImagesListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @EnvironmentObject private var splitViewModel: SplitViewModel
     
     @Binding var collection: IamagesCollection
-    @ObservedObject var splitViewModel: SplitViewModel
 
-    @State private var images: OrderedDictionary<String, IamagesImage> = [:]
     @State private var isFirstPageLoaded: Bool = false
     @State private var isBusy: Bool = false
     @State private var isEndOfFeed: Bool = false
@@ -30,7 +29,7 @@ struct CollectionImagesListView: View {
                     body: self.globalViewModel.jsone.encode(
                         Pagination(
                             query: self.queryString.isEmpty ? self.queryString : nil,
-                            lastID: self.images.keys.last
+                            lastID: self.splitViewModel.images.keys.last
                         )
                     ),
                     contentType: .json,
@@ -41,7 +40,7 @@ struct CollectionImagesListView: View {
                 self.isEndOfFeed = true
             }
             for newImage in newImages {
-                self.images[newImage.id] = newImage
+                self.splitViewModel.images[newImage.id] = IamagesImageAndMetadataContainer(image: newImage)
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -50,7 +49,7 @@ struct CollectionImagesListView: View {
     }
     
     private func startFeed() async {
-        self.images = [:]
+        self.splitViewModel.images = [:]
         await self.pageFeed()
     }
     
@@ -69,7 +68,7 @@ struct CollectionImagesListView: View {
                 authStrategy: .required
             )
             withAnimation {
-                self.images.removeValue(forKey: id)
+                self.splitViewModel.images.removeValue(forKey: id)
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -108,20 +107,20 @@ struct CollectionImagesListView: View {
     
     var body: some View {
         List(selection: self.$splitViewModel.selectedImage) {
-            ForEach(self.images.elements, id: \.key) { image in
-                NavigableImageView(image: image.value)
+            ForEach(self.$splitViewModel.images.values, id: \.image.id) { imageAndMetadata in
+                NavigableImageView(imageAndMetadata: imageAndMetadata)
                     .task {
-                        if !self.isEndOfFeed && self.images.keys.last == image.key {
+                        if !self.isEndOfFeed && self.splitViewModel.images.keys.last == imageAndMetadata.image.id {
                             await self.pageFeed()
                         }
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        self.removeFromCollectionButton(id: image.key)
+                        self.removeFromCollectionButton(id: imageAndMetadata.image.id)
                     }
                     .contextMenu {
-                        ImageShareLinkView(image: image.value)
+                        ImageShareLinkView(image: imageAndMetadata.image.wrappedValue)
                         Divider()
-                        self.removeFromCollectionButton(id: image.key)
+                        self.removeFromCollectionButton(id: imageAndMetadata.image.id)
                     }
             }
             if self.isBusy {
@@ -205,10 +204,10 @@ struct CollectionImagesListView: View {
 struct CollectionImagesListView_Previews: PreviewProvider {
     static var previews: some View {
         CollectionImagesListView(
-            collection: .constant(previewCollection),
-            splitViewModel: SplitViewModel()
+            collection: .constant(previewCollection)
         )
         .environmentObject(GlobalViewModel())
+        .environmentObject(SplitViewModel())
     }
 }
 #endif

@@ -8,11 +8,11 @@ struct CollectionsListView: View {
     }
     
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @EnvironmentObject private var splitViewModel: SplitViewModel
     @Environment(\.dismiss) private var dismiss
-    
-    @ObservedObject var splitViewModel: SplitViewModel
+
     let viewMode: ViewMode
-    let imageID: String?
+    var imageID: String? = nil
     
     @State private var collections: OrderedDictionary<String, IamagesCollection> = [:]
     @State private var isBusy: Bool = false
@@ -192,14 +192,22 @@ struct CollectionsListView: View {
                 .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
+            #else
+            ToolbarItem {
+                Button(action: {
+                    self.globalViewModel.isNewCollectionPresented = true
+                }) {
+                    Label("New collection", systemImage: "plus")
+                }
+            }
             #endif
-            
         }
         .navigationDestination(for: IamagesCollection.ID.self) { id in
             switch self.viewMode {
             case .normal:
                 if let collection = Binding<IamagesCollection>(self.$collections[id]) {
-                    CollectionImagesListView(collection: collection, splitViewModel: self.splitViewModel)
+                    CollectionImagesListView(collection: collection)
+                        .environmentObject(self.splitViewModel)
                 } else {
                     Text("Cannot open collection.")
                 }
@@ -226,6 +234,9 @@ struct CollectionsListView: View {
                         self.list
                             .navigationTitle("Select a collection")
                             .navigationBarTitleDisplayMode(.inline)
+                            .onAppear {
+                                
+                            }
                     }
                 }
             }
@@ -238,11 +249,11 @@ struct CollectionsListView: View {
 struct CollectionsListView_Previews: PreviewProvider {
     static var previews: some View {
         CollectionsListView(
-            splitViewModel: SplitViewModel(),
             viewMode: .normal,
             imageID: nil
         )
         .environmentObject(GlobalViewModel())
+        .environmentObject(SplitViewModel())
     }
 }
 #endif
