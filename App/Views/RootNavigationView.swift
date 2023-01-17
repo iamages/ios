@@ -51,7 +51,7 @@ struct RootNavigationView: View {
         } detail: {
             ZStack {
                 if let selectedImage = self.splitViewModel.selectedImage,
-                    let imageAndMetadata = Binding<IamagesImageAndMetadataContainer>(
+                   let imageAndMetadata = Binding<IamagesImageAndMetadataContainer>(
                     self.$splitViewModel.images[selectedImage]
                 ) {
                     ImageDetailView(
@@ -112,18 +112,12 @@ struct RootNavigationView: View {
         // Welcome sheet
         .modifier(AppWelcomeSheetModifier())
         // Delete image listener
-        .deleteImageListener(images: self.$splitViewModel.images, splitViewModel: self.splitViewModel)
+        .deleteImageListener(splitViewModel: self.splitViewModel)
         #if targetEnvironment(macCatalyst)
         .hideMacTitlebar()
         #else
         .fullScreenCover(isPresented: self.$globalViewModel.isSettingsPresented) {
             SettingsView()
-        }
-        .fullScreenCover(isPresented: self.$globalViewModel.isUploadsPresented) {
-            UploadsView()
-        }
-        .sheet(isPresented: self.$globalViewModel.isNewCollectionPresented) {
-            NewCollectionView()
         }
         #endif
         

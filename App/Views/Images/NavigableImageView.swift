@@ -7,10 +7,10 @@ struct NavigableImageView: View {
     @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
 
     @State private var isBusy: Bool = true
-    @State private var hasAttemptedMetadataLoad: Bool = false
     @State private var error: Error?
     
     private func getMetadata() async {
+        self.error = nil
         self.isBusy = true
         do {
             self.imageAndMetadata.metadataContainer = try await self.globalViewModel.getImagePrivateMetadata(
@@ -21,21 +21,8 @@ struct NavigableImageView: View {
         }
         self.isBusy = false
     }
-    
-    @ViewBuilder
-    private var thumbnail: some View {
-        LazyImage(request: self.globalViewModel.getThumbnailRequest(for: self.imageAndMetadata.image)) { state in
-            if let image = state.image {
-                image
-                    .resizingMode(.aspectFill)
-            } else if state.error != nil {
-                Image(systemName: "exclamationmark.octagon.fill")
-            } else {
-                Rectangle()
-                    .redacted(reason: .placeholder)
-            }
-        }
-    }
+
+    private let roundedRectangle = RoundedRectangle(cornerRadius: 8)
     
     var body: some View {
         NavigationLink(value: self.imageAndMetadata.image.id) {
@@ -43,13 +30,17 @@ struct NavigableImageView: View {
                 Group {
                     if self.imageAndMetadata.image.lock.isLocked {
                         Image(systemName: "lock.doc.fill")
-                            .border(.gray)
+                            .font(.title2)
                     } else {
-                        self.thumbnail
+                        ImageThumbnailView(image: self.imageAndMetadata.image)
                     }
                 }
-                .cornerRadius(8)
                 .frame(width: 64, height: 64)
+                .clipShape(self.roundedRectangle)
+                .overlay {
+                    self.roundedRectangle
+                        .stroke(.gray)
+                }
                 
                 VStack(alignment: .leading) {
                     if self.imageAndMetadata.image.lock.isLocked {
@@ -60,7 +51,7 @@ struct NavigableImageView: View {
                     } else {
                         Group {
                             if let error {
-                                Text(error.localizedDescription)
+                                Label(error.localizedDescription, systemImage: "exclamationmark.triangle")
                                     .foregroundColor(.red)
                             } else if let metadata = self.imageAndMetadata.metadataContainer?.data {
                                 Text(verbatim: metadata.description)
@@ -81,13 +72,20 @@ struct NavigableImageView: View {
         }
         .contextMenu {
             ImageShareLinkView(image: self.imageAndMetadata.image)
+            if self.error != nil {
+                Divider()
+                Button(action: {
+                    Task {
+                        await self.getMetadata()
+                    }
+                }) {
+                    Label("Retry loading metadata", systemImage: "")
+                }
+            }
         }
         .task {
-            if !self.hasAttemptedMetadataLoad {
-                self.hasAttemptedMetadataLoad = true
-                if !self.imageAndMetadata.image.lock.isLocked {
-                    await self.getMetadata()
-                }
+            if !self.imageAndMetadata.image.lock.isLocked {
+                await self.getMetadata()
             }
         }
     }

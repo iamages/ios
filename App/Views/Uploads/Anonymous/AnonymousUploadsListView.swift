@@ -64,8 +64,7 @@ struct AnonymousUploadsListView: View {
     private var list: some View {
         List(self.anonymousUploads, selection: self.$splitViewModel.selectedImage) { anonymousUpload in
             NavigableAnonymousUploadView(
-                anonymousUpload: anonymousUpload,
-                splitViewModel: self.splitViewModel
+                anonymousUpload: anonymousUpload
             )
             .contextMenu {
                 ShareLink(item: .apiRootUrl.appending(path: "/images/\(anonymousUpload.id!)/embed")) {

@@ -2,7 +2,6 @@ import SwiftUI
 import OrderedCollections
 
 struct DeleteImageListenerModifier: ViewModifier {
-    @Binding var images: OrderedDictionary<String, IamagesImageAndMetadataContainer>
     @ObservedObject var splitViewModel: SplitViewModel
     
     func body(content: Content) -> some View {
@@ -14,19 +13,19 @@ struct DeleteImageListenerModifier: ViewModifier {
                 if self.splitViewModel.selectedImage == id {
                     self.splitViewModel.selectedImage = nil
                 }
-                self.images.removeValue(forKey: id)
+                withAnimation {
+                    self.splitViewModel.images.removeValue(forKey: id)
+                }
             }
     }
 }
 
 extension View {
     func deleteImageListener(
-        images: Binding<OrderedDictionary<String, IamagesImageAndMetadataContainer>>,
         splitViewModel: SplitViewModel
     ) -> some View {
         modifier(
             DeleteImageListenerModifier(
-                images: images,
                 splitViewModel: splitViewModel
             )
         )

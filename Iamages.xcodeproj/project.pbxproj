@@ -36,6 +36,10 @@
 		2E29D1FA293868DA009CE522 /* Notification.Name+Iamages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E29D1F9293868DA009CE522 /* Notification.Name+Iamages.swift */; };
 		2E29D1FC29386938009CE522 /* URL+Iamages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E29D1FB29386938009CE522 /* URL+Iamages.swift */; };
 		2E29D1FF2938DB56009CE522 /* SPConfetti in Frameworks */ = {isa = PBXBuildFile; productRef = 2E29D1FE2938DB56009CE522 /* SPConfetti */; };
+		2E36351B29758F04009CE352 /* UploadOwnershipFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E36351A29758F04009CE352 /* UploadOwnershipFooter.swift */; };
+		2E36351C29758F04009CE352 /* UploadOwnershipFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E36351A29758F04009CE352 /* UploadOwnershipFooter.swift */; };
+		2E36351E297634B5009CE352 /* ImageThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E36351D297634B5009CE352 /* ImageThumbnailView.swift */; };
+		2E36352029763574009CE352 /* CompletedUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E36351F29763573009CE352 /* CompletedUploadView.swift */; };
 		2E38DDE9294AE9CA00ACB068 /* CollectionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDE8294AE9CA00ACB068 /* CollectionsListView.swift */; };
 		2E38DDEC294AED1200ACB068 /* CollectionImagesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDEB294AED1200ACB068 /* CollectionImagesListView.swift */; };
 		2E38DDEF294AF03600ACB068 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 2E38DDEE294AF03600ACB068 /* OrderedCollections */; };
@@ -193,6 +197,9 @@
 		2E29D1F72938643D009CE522 /* CREDITS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CREDITS.md; sourceTree = "<group>"; };
 		2E29D1F9293868DA009CE522 /* Notification.Name+Iamages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification.Name+Iamages.swift"; sourceTree = "<group>"; };
 		2E29D1FB29386938009CE522 /* URL+Iamages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Iamages.swift"; sourceTree = "<group>"; };
+		2E36351A29758F04009CE352 /* UploadOwnershipFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadOwnershipFooter.swift; sourceTree = "<group>"; };
+		2E36351D297634B5009CE352 /* ImageThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageThumbnailView.swift; sourceTree = "<group>"; };
+		2E36351F29763573009CE352 /* CompletedUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedUploadView.swift; sourceTree = "<group>"; };
 		2E38DDE8294AE9CA00ACB068 /* CollectionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsListView.swift; sourceTree = "<group>"; };
 		2E38DDEB294AED1200ACB068 /* CollectionImagesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionImagesListView.swift; sourceTree = "<group>"; };
 		2E38DDF0294AF0CE00ACB068 /* NavigableCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigableCollectionView.swift; sourceTree = "<group>"; };
@@ -324,6 +331,7 @@
 				2EA5A9A02900DEBB00C9B4FC /* UploadingView.swift */,
 				2E38DEA0296916C900ACB068 /* PendingUploadView.swift */,
 				2E38DEA22969174B00ACB068 /* UploadedView.swift */,
+				2E36351F29763573009CE352 /* CompletedUploadView.swift */,
 			);
 			path = Uploads;
 			sourceTree = "<group>";
@@ -355,6 +363,7 @@
 				2E38DDF2294DEB5F00ACB068 /* NotLoggedInView.swift */,
 				2E38DE332955330000ACB068 /* QuerySuggestionsView.swift */,
 				2E38DE372955C91800ACB068 /* SWAttributionViewSwiftUI.swift */,
+				2E36351D297634B5009CE352 /* ImageThumbnailView.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -379,6 +388,7 @@
 			children = (
 				2E161345293E17DD00FC2CC8 /* Extensions */,
 				2E74ED252941C34200E30A5A /* Models */,
+				2E36351929758ED8009CE352 /* Views */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -403,6 +413,14 @@
 				2E38DE5D295DD0C000ACB068 /* View+Alerts.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		2E36351929758ED8009CE352 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2E36351A29758F04009CE352 /* UploadOwnershipFooter.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		2E38DDEA294AEC6700ACB068 /* Intents */ = {
@@ -779,6 +797,7 @@
 			files = (
 				2E38DE58295D33C100ACB068 /* EnvironmentValues+NSExtensionContext.swift in Sources */,
 				2E38DE982965ACAD00ACB068 /* Keychain+Iamages.swift in Sources */,
+				2E36351C29758F04009CE352 /* UploadOwnershipFooter.swift in Sources */,
 				2E38DE8B2965523300ACB068 /* APIErrors.swift in Sources */,
 				2E38DE54295D20D900ACB068 /* ShareView.swift in Sources */,
 				2E38DE942965995B00ACB068 /* Upload.swift in Sources */,
@@ -803,7 +822,10 @@
 				2E74ED2D29421B3A00E30A5A /* WidgetKind.swift in Sources */,
 				2E38DEA7296BC71000ACB068 /* String+Email.swift in Sources */,
 				2E38DEB02970C46200ACB068 /* View+Image.swift in Sources */,
+				2E36351E297634B5009CE352 /* ImageThumbnailView.swift in Sources */,
+				2E36352029763574009CE352 /* CompletedUploadView.swift in Sources */,
 				2E0424DA28DC92540023CE41 /* UploadsView.swift in Sources */,
+				2E36351B29758F04009CE352 /* UploadOwnershipFooter.swift in Sources */,
 				2EA89AE22920F9F700350F38 /* LoadingMetadataView.swift in Sources */,
 				2EA89AE42921FA2400350F38 /* EditImageInformationView.swift in Sources */,
 				2E29D1FA293868DA009CE522 /* Notification.Name+Iamages.swift in Sources */,

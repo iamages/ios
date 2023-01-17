@@ -58,7 +58,10 @@ struct ShareView: View {
                     Text("Ownership")
                 } footer: {
                     if !self.isLoggedIn {
-                        Text("Log in to an account in the app to privatize your photos.")
+                        UploadOwnershipFooter(
+                            isLoggedIn: self.isLoggedIn,
+                            isLocked: self.uploadModel.information.isLocked
+                        )
                     }
                 }
             }

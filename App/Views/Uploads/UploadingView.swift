@@ -7,42 +7,62 @@ struct UploadingView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Binding var uploadContainers: OrderedDictionary<UUID, IamagesUploadContainer>
-
-    @State private var isBusy: Bool = true
-    @State private var uploaded: [IamagesImage] = []
+    @State private var completedUploads: [IamagesImage] = []
+    
+    @State private var isCancelUploadsAlertPresented: Bool = false
     
     var body: some View {
         NavigationStack {
             List {
-                Section("Uploaded") {
-                    ForEach(self.uploaded) { uploaded in
-                        UploadedView(uploaded: uploaded)
+                if !self.completedUploads.isEmpty {
+                    Section("Completed") {
+                        ScrollView(.horizontal) {
+                            LazyHGrid(rows: .init(repeating: GridItem(.fixed(64), spacing: 4), count: 3)) {
+                                ForEach(self.completedUploads) { completedUpload in
+                                    CompletedUploadView(image: completedUpload)
+                                }
+                            }
+                        }
                     }
                 }
                 
-                Section("Pending") {
-                    ForEach(self.uploadContainers.values) { uploadContainer in
-                        PendingUploadView(uploadContainer: uploadContainer)
+                if !self.uploadContainers.isEmpty {
+                    Section("Uploading") {
+                        ForEach(self.uploadContainers.values) { uploadContainer in
+                            PendingUploadView(
+                                uploadContainer: uploadContainer,
+                                completedUploads: self.$completedUploads
+                            )
+                        }
                     }
                 }
             }
             .navigationTitle("Uploading")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(action: {
-                        self.dismiss()
+                        if self.uploadContainers.isEmpty {
+                            self.dismiss()
+                        } else {
+                            self.isCancelUploadsAlertPresented = true
+                        }
                     }) {
                         Label("Close", systemImage: "xmark")
                     }
-                    .disabled(self.isBusy)
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    if !self.uploadContainers.isEmpty && !self.isBusy {
-                        Button(action: {
-                            NotificationCenter.default.post(name: .retryUploads, object: nil)
-                        }) {
-                            Label("Retry failed uploads", systemImage: "exclamationmark.arrow.triangle.2.circlepath")
+                    .confirmationDialog(
+                        "Cancel uploads?",
+                        isPresented: self.$isCancelUploadsAlertPresented,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Cancel", role: .destructive) {
+                            self.dismiss()
                         }
+                        Button("Continue", role: .cancel) {
+                            self.isCancelUploadsAlertPresented = false
+                        }
+                    } message: {
+                        Text("Uncompleted uploads will be cancelled.")
                     }
                 }
             }

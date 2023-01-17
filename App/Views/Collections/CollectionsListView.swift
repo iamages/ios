@@ -192,14 +192,6 @@ struct CollectionsListView: View {
                 .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
-            #else
-            ToolbarItem {
-                Button(action: {
-                    self.globalViewModel.isNewCollectionPresented = true
-                }) {
-                    Label("New collection", systemImage: "plus")
-                }
-            }
             #endif
         }
         .navigationDestination(for: IamagesCollection.ID.self) { id in
@@ -234,13 +226,22 @@ struct CollectionsListView: View {
                         self.list
                             .navigationTitle("Select a collection")
                             .navigationBarTitleDisplayMode(.inline)
-                            .onAppear {
-                                
-                            }
                     }
                 }
             }
             .navigationTitle("Collections")
+            .sheet(isPresented: self.$globalViewModel.isNewCollectionPresented) {
+                NewCollectionView()
+            }
+            .toolbar {
+                ToolbarItem {
+                    Button(action: {
+                        self.globalViewModel.isNewCollectionPresented = true
+                    }) {
+                        Label("New collection", systemImage: "plus")
+                    }
+                }
+            }
         }
     }
 }

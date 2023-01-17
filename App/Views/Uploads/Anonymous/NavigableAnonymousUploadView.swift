@@ -3,9 +3,9 @@ import NukeUI
 
 struct NavigableAnonymousUploadView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @EnvironmentObject private var splitViewModel: SplitViewModel
     
     let anonymousUpload: AnonymousUpload
-    @ObservedObject var splitViewModel: SplitViewModel
     
     @State private var isBusy: Bool = true
     @State private var error: Error?
@@ -28,6 +28,8 @@ struct NavigableAnonymousUploadView: View {
         self.isBusy = false
     }
     
+    private let roundedRectangle = RoundedRectangle(cornerRadius: 8)
+    
     var body: some View {
         NavigationLink(value: self.anonymousUpload.id) {
             HStack {
@@ -39,11 +41,16 @@ struct NavigableAnonymousUploadView: View {
                         Image(systemName: "exclamationmark.triangle")
                     } else {
                         Rectangle()
+                            .frame(width: 64, height: 64)
                             .redacted(reason: .placeholder)
                     }
                 }
                 .frame(width: 64, height: 64)
-                .cornerRadius(8)
+                .clipShape(self.roundedRectangle)
+                .overlay {
+                    self.roundedRectangle
+                        .stroke(.gray)
+                }
             }
             VStack(alignment: .leading) {
                 if self.isBusy {
@@ -54,11 +61,14 @@ struct NavigableAnonymousUploadView: View {
                             .padding(.leading, 4)
                     }
                 } else if let imageAndMetadata = self.splitViewModel.images[self.anonymousUpload.id!] {
-                    if imageAndMetadata.image.lock.isLocked {
-                        Text("Locked image")
-                    } else {
-                        Text(imageAndMetadata.metadataContainer?.data.description ?? "No description")
+                    Group {
+                        if imageAndMetadata.image.lock.isLocked {
+                            Text("Locked image")
+                        } else {
+                            Text(imageAndMetadata.metadataContainer?.data.description ?? "No description")
+                        }
                     }
+                    .bold()
                 } else if let error {
                     Label(error.localizedDescription, systemImage: "exclamationmark.triangle")
                         .foregroundColor(.red)
@@ -66,7 +76,10 @@ struct NavigableAnonymousUploadView: View {
                 }
                 Text(self.anonymousUpload.addedOn!, format: .relative(presentation: .numeric))
                     .italic()
-            } 
+                    .font(.subheadline)
+            }
+            .padding(.leading, 4)
+            .padding(.trailing, 4)
         }
         .disabled(!self.isInImages)
         .task {
@@ -77,10 +90,13 @@ struct NavigableAnonymousUploadView: View {
     }
 }
 
-//#if DEBUG
-//struct NavigableAnonymousUploadView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NavigableAnonymousUploadView()
-//    }
-//}
-//#endif
+#if DEBUG
+struct NavigableAnonymousUploadView_Previews: PreviewProvider {
+    @StateObject private var coreDataModel = CoreDataModel()
+    
+    static var previews: some View {
+        NavigableAnonymousUploadView(anonymousUpload: AnonymousUpload())
+        
+    }
+}
+#endif

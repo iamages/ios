@@ -160,18 +160,14 @@ struct UploadContainersListView: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 EditButton()
             }
-            ToolbarItem {
-                Menu {
-                    PhotosPicker(selection: self.$photoPickerItems, matching: .images) {
-                        Label("Choose photos", systemImage: "rectangle.stack.badge.plus")
-                    }
-                    Button(action: {
-                        self.isFilePickerPresented = true
-                    }) {
-                       Label("Choose files", systemImage: "filemenu.and.selection")
-                    }
-                } label: {
-                    Label("Choose", systemImage: "plus")
+            ToolbarItemGroup {
+                PhotosPicker(selection: self.$photoPickerItems, matching: .images) {
+                    Label("Choose photos", systemImage: "rectangle.stack.badge.plus")
+                }
+                Button(action: {
+                    self.isFilePickerPresented = true
+                }) {
+                   Label("Choose files", systemImage: "filemenu.and.selection")
                 }
             }
         }

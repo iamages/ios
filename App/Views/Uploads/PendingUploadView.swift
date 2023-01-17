@@ -4,12 +4,16 @@ struct PendingUploadView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     let uploadContainer: IamagesUploadContainer
+    @Binding var completedUploads: [IamagesImage]
     
     @StateObject var model: UploadViewModel = UploadViewModel()
     
     private func upload() async {
         await self.model.upload()
         if self.model.error == nil {
+            if let uploadedImage = self.model.uploadedImage {
+                self.completedUploads.append(uploadedImage)
+            }
             NotificationCenter.default.post(name: .deleteUpload, object: self.uploadContainer.id)
         }
     }
@@ -44,9 +48,15 @@ struct PendingUploadView: View {
             self.model.file = self.uploadContainer.file
             await self.upload()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .retryUploads)) { _ in
-            Task {
-                await self.upload()
+        .contextMenu {
+            if self.model.error != nil {
+                Button(action: {
+                    Task {
+                        await self.upload()
+                    }
+                }) {
+                    Label("Retry upload", systemImage: "")
+                }
             }
         }
     }
@@ -55,7 +65,10 @@ struct PendingUploadView: View {
 #if DEBUG
 struct PendingUploadView_Previews: PreviewProvider {
     static var previews: some View {
-        PendingUploadView(uploadContainer: previewUploadContainer)
+        PendingUploadView(
+            uploadContainer: previewUploadContainer,
+            completedUploads: .constant([])
+        )
     }
 }
 #endif

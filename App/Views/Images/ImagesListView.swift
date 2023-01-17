@@ -140,6 +140,9 @@ struct ImagesListView: View {
             }
         }
         .navigationTitle("Images")
+        .fullScreenCover(isPresented: self.$globalViewModel.isUploadsPresented) {
+            UploadsView()
+        }
         .toolbar {
             ToolbarItem {
                 Button(action: {

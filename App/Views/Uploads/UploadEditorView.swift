@@ -24,9 +24,10 @@ struct UploadEditorView: View {
             } header: {
                 Text("Ownership")
             } footer: {
-                if self.information.isLocked {
-                    Text("Locked images are encrypted in the cloud using your provided password. These features will be disabled:\n· Thumbnail in images list\n· Social media embed cards.\n· Local image cache.\nYou will have to unlock locked images manually everytime you open the app. People who receive your public link also need a password to decrypt the image.")
-                }
+                UploadOwnershipFooter(
+                    isLoggedIn: self.globalViewModel.isLoggedIn,
+                    isLocked: self.information.isLocked
+                )
             }
         }
         .formStyle(.grouped)

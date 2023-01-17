@@ -54,6 +54,7 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     
     @Published var isUploading: Bool = false
     @Published var progress: Double = 0.0
+    @Published var uploadedImage: IamagesImage?
     @Published var error: LocalizedAlertError?
     
     var viewContext: NSManagedObjectContext?
@@ -159,6 +160,7 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
                 }
                 throw APICommunicationErrors.badResponse(response.statusCode, detail)
             }
+            self.uploadedImage = try self.jsond.decode(IamagesImage.self, from: data)
             if lastUserToken == nil,
                let viewContext
             {

@@ -46,10 +46,12 @@ struct AccountSettingsView: View {
                     }
                     
                     .toolbar {
-                        if self.globalViewModel.isLoggedIn {
-                            Button("Refresh") {
-                                Task {
-                                    await self.refreshUserInformation()
+                        ToolbarItem {
+                            if self.globalViewModel.isLoggedIn {
+                                Button("Refresh") {
+                                    Task {
+                                        await self.refreshUserInformation()
+                                    }
                                 }
                             }
                         }

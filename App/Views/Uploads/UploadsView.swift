@@ -63,8 +63,12 @@ struct UploadsView: View {
                             self.isNewCollectionSheetPresented = true
                             self.selectedUploadContainer = nil
                         }) {
-                            Label("Upload into collection", systemImage: "square.grid.3x1.folder.badge.plus")
+                            Label(
+                                self.globalViewModel.isLoggedIn ? "Upload into collection" : "Log in to upload into collection",
+                                systemImage: "square.grid.3x1.folder.badge.plus"
+                            )
                         }
+                        .disabled(!self.globalViewModel.isLoggedIn)
                     } label: {
                         Label("Upload", systemImage: "square.and.arrow.up.on.square")
                     }

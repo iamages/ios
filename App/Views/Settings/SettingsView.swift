@@ -43,7 +43,7 @@ struct SettingsView: View {
             #if !targetEnvironment(macCatalyst)
             .toolbar {
                 if self.horizontalSizeClass == .compact {
-                    ToolbarItem {
+                    ToolbarItem(placement: .primaryAction) {
                         self.closeButton
                     }
                 }
@@ -71,7 +71,7 @@ struct SettingsView: View {
                     #if !targetEnvironment(macCatalyst)
                     .toolbar {
                         if self.horizontalSizeClass == .regular {
-                            ToolbarItem {
+                            ToolbarItem(placement: .primaryAction) {
                                 self.closeButton
                             }
                         }
