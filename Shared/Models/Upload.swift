@@ -169,7 +169,6 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
                 let anonymousUpload = AnonymousUpload(context: viewContext)
                 anonymousUpload.id = image.id
                 anonymousUpload.ownerlessKey = UUID(uuidString: response.value(forHTTPHeaderField: "X-Iamages-Ownerless-Key")!)
-                anonymousUpload.addedOn = Date.now
                 try await viewContext.perform {
                     try viewContext.save()
                 }

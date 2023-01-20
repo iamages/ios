@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="22C65" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AnonymousUpload" representedClassName="AnonymousUpload" syncable="YES" codeGenerationType="class">
-        <attribute name="addedOn" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="ownerlessKey" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
-    <fetchRequest name="FetchAnonymousUploadsChronologically" entity="AnonymousUpload"/>
 </model>

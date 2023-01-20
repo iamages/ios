@@ -42,7 +42,6 @@
 		2E36352029763574009CE352 /* CompletedUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E36351F29763573009CE352 /* CompletedUploadView.swift */; };
 		2E38DDE9294AE9CA00ACB068 /* CollectionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDE8294AE9CA00ACB068 /* CollectionsListView.swift */; };
 		2E38DDEC294AED1200ACB068 /* CollectionImagesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDEB294AED1200ACB068 /* CollectionImagesListView.swift */; };
-		2E38DDEF294AF03600ACB068 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 2E38DDEE294AF03600ACB068 /* OrderedCollections */; };
 		2E38DDF1294AF0CE00ACB068 /* NavigableCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDF0294AF0CE00ACB068 /* NavigableCollectionView.swift */; };
 		2E38DDF3294DEB5F00ACB068 /* NotLoggedInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDF2294DEB5F00ACB068 /* NotLoggedInView.swift */; };
 		2E38DDF5294EA28900ACB068 /* EditCollectionInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDF4294EA28900ACB068 /* EditCollectionInformationView.swift */; };
@@ -89,7 +88,6 @@
 		2E38DEAB296C314500ACB068 /* Iamages.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEA8296C314500ACB068 /* Iamages.xcdatamodeld */; };
 		2E38DEB02970C46200ACB068 /* View+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEAF2970C46200ACB068 /* View+Image.swift */; };
 		2E38DEB229724E7C00ACB068 /* AnonymousUploadsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEB129724E7C00ACB068 /* AnonymousUploadsListView.swift */; };
-		2E38DEB52972523100ACB068 /* NavigableAnonymousUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEB42972523100ACB068 /* NavigableAnonymousUploadView.swift */; };
 		2E38DEB72972C84B00ACB068 /* CoreDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEB62972C84B00ACB068 /* CoreDataModel.swift */; };
 		2E38DEBA2972CC8500ACB068 /* IamagesImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEB92972CC8500ACB068 /* IamagesImage.swift */; };
 		2E38DEBB2972CCA300ACB068 /* IamagesImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEB92972CC8500ACB068 /* IamagesImage.swift */; };
@@ -235,7 +233,6 @@
 		2E38DEA9296C314500ACB068 /* Iamages.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Iamages.xcdatamodel; sourceTree = "<group>"; };
 		2E38DEAF2970C46200ACB068 /* View+Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Image.swift"; sourceTree = "<group>"; };
 		2E38DEB129724E7C00ACB068 /* AnonymousUploadsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnonymousUploadsListView.swift; sourceTree = "<group>"; };
-		2E38DEB42972523100ACB068 /* NavigableAnonymousUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigableAnonymousUploadView.swift; sourceTree = "<group>"; };
 		2E38DEB62972C84B00ACB068 /* CoreDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataModel.swift; sourceTree = "<group>"; };
 		2E38DEB92972CC8500ACB068 /* IamagesImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IamagesImage.swift; sourceTree = "<group>"; };
 		2E38DEBD2972E50800ACB068 /* SWViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWViewModel.swift; sourceTree = "<group>"; };
@@ -304,7 +301,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E38DDEF294AF03600ACB068 /* OrderedCollections in Frameworks */,
 				2E1F8F96293486DC00D6AC49 /* Nuke in Frameworks */,
 				2E61E90028F97581007B6A9E /* StoreKit.framework in Frameworks */,
 				2EA89ADD29207A2800350F38 /* AlertToast in Frameworks */,
@@ -322,7 +318,7 @@
 		2E00889D28FD6CEF00607E0B /* Uploads */ = {
 			isa = PBXGroup;
 			children = (
-				2E38DEB329724EB800ACB068 /* Anonymous */,
+				2E38DEB129724E7C00ACB068 /* AnonymousUploadsListView.swift */,
 				2E0424D928DC92540023CE41 /* UploadsView.swift */,
 				2E74ED2F2944554B00E30A5A /* UploadContainersListView.swift */,
 				2E0088A228FD8B1F00607E0B /* NavigableUploadContainerView.swift */,
@@ -451,15 +447,6 @@
 				2E9136592939A23F00B220FB /* AccountSettingsView.swift */,
 			);
 			path = Account;
-			sourceTree = "<group>";
-		};
-		2E38DEB329724EB800ACB068 /* Anonymous */ = {
-			isa = PBXGroup;
-			children = (
-				2E38DEB129724E7C00ACB068 /* AnonymousUploadsListView.swift */,
-				2E38DEB42972523100ACB068 /* NavigableAnonymousUploadView.swift */,
-			);
-			path = Anonymous;
 			sourceTree = "<group>";
 		};
 		2E5E698228B5C3D100CFCA3C = {
@@ -684,7 +671,6 @@
 				2E1F8F95293486DC00D6AC49 /* Nuke */,
 				2E1F8F97293486DC00D6AC49 /* NukeUI */,
 				2E29D1FE2938DB56009CE522 /* SPConfetti */,
-				2E38DDEE294AF03600ACB068 /* OrderedCollections */,
 			);
 			productName = Iamages;
 			productReference = 2E5E698B28B5C3D100CFCA3C /* Iamages.app */;
@@ -727,7 +713,6 @@
 				2EA89ADB29207A2800350F38 /* XCRemoteSwiftPackageReference "AlertToast" */,
 				2E1F8F94293486DC00D6AC49 /* XCRemoteSwiftPackageReference "Nuke" */,
 				2E29D1FD2938DB56009CE522 /* XCRemoteSwiftPackageReference "SPConfetti" */,
-				2E38DDED294AF03600ACB068 /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = 2E5E698C28B5C3D100CFCA3C /* Products */;
 			projectDirPath = "";
@@ -843,7 +828,6 @@
 				2E8B2FAC28B5E1150071780B /* GlobalViewModel.swift in Sources */,
 				2E38DDF7294ECD9100ACB068 /* BoolOrString.swift in Sources */,
 				2E29D1FC29386938009CE522 /* URL+Iamages.swift in Sources */,
-				2E38DEB52972523100ACB068 /* NavigableAnonymousUploadView.swift in Sources */,
 				2E29D1F429378D4B009CE522 /* AboutLinksView.swift in Sources */,
 				2E38DEC129736C7800ACB068 /* SharedWithYouListView.swift in Sources */,
 				2E4F8466290FF7F900629C27 /* AppNavigation.swift in Sources */,
@@ -1316,14 +1300,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		2E38DDED294AF03600ACB068 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-collections.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		2E5E699D28B5C79F00CFCA3C /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
@@ -1378,11 +1354,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2E29D1FD2938DB56009CE522 /* XCRemoteSwiftPackageReference "SPConfetti" */;
 			productName = SPConfetti;
-		};
-		2E38DDEE294AF03600ACB068 /* OrderedCollections */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2E38DDED294AF03600ACB068 /* XCRemoteSwiftPackageReference "swift-collections" */;
-			productName = OrderedCollections;
 		};
 		2E38DE4C2959B24800ACB068 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;

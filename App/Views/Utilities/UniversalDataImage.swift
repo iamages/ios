@@ -20,7 +20,7 @@ struct UniversalDataImage: View {
     @ViewBuilder
     private var error: some View {
         Image(systemName: "exclamationmark.octagon.fill")
-            .font(.largeTitle)
+            .font(.title2)
     }
     
     var body: some View {

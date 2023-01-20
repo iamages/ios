@@ -4,11 +4,11 @@ import WidgetKit
 
 struct ImageDetailView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @EnvironmentObject private var splitViewModel: SplitViewModel
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("selectedWidgetImageId", store: .iamagesGroup) var selectedWidgetImageId: String?
     
     @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
-    @ObservedObject var splitViewModel: SplitViewModel
 
     @State private var request: ImageRequest?
     @State private var imageLockKeySalt: Data?
@@ -165,6 +165,7 @@ struct ImageDetailView: View {
         self.key = ""
         self.imageLockKeySalt = nil
         self.request = nil
+        self.splitViewModel.isDetailViewVisible = false
     }
     
     var body: some View {
@@ -192,6 +193,9 @@ struct ImageDetailView: View {
         #if targetEnvironment(macCatalyst)
         .navigationSubtitle(self.selectedImageTitle)
         #endif
+        .onAppear {
+            self.splitViewModel.isDetailViewVisible = true
+        }
         .onDisappear(perform: self.resetView)
         .onChange(of: self.splitViewModel.selectedImage) { _ in
             self.resetView()
@@ -290,10 +294,10 @@ struct ImageDetailView: View {
 struct ImageDetailView_Previews: PreviewProvider {
     static var previews: some View {
         ImageDetailView(
-            imageAndMetadata: .constant(previewImageAndMetadata),
-            splitViewModel: SplitViewModel()
+            imageAndMetadata: .constant(previewImageAndMetadata)
         )
         .environmentObject(GlobalViewModel())
+        .environmentObject(SplitViewModel())
     }
 }
 #endif

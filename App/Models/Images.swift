@@ -40,7 +40,8 @@ struct IamagesImageMetadataContainer {
     var salt: Data? = nil
 }
 
-struct IamagesImageAndMetadataContainer {
+struct IamagesImageAndMetadataContainer: Identifiable {
+    let id: String
     var image: IamagesImage
     var metadataContainer: IamagesImageMetadataContainer?
 }

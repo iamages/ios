@@ -1,14 +1,12 @@
 import SwiftUI
-import OrderedCollections
-
 struct CollectionImagesListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @EnvironmentObject private var splitViewModel: SplitViewModel
     
     @Binding var collection: IamagesCollection
 
-    @State private var isFirstPageLoaded: Bool = false
     @State private var isBusy: Bool = false
+    @State private var isFirstAppearance: Bool = true
     @State private var isEndOfFeed: Bool = false
     @State private var error: LocalizedAlertError?
     @State private var isEditSheetPresented: Bool = false
@@ -29,7 +27,7 @@ struct CollectionImagesListView: View {
                     body: self.globalViewModel.jsone.encode(
                         Pagination(
                             query: self.queryString.isEmpty ? self.queryString : nil,
-                            lastID: self.splitViewModel.images.keys.last
+                            lastID: self.splitViewModel.images.last?.id
                         )
                     ),
                     contentType: .json,
@@ -39,8 +37,10 @@ struct CollectionImagesListView: View {
             if newImages.count < 6 {
                 self.isEndOfFeed = true
             }
-            for newImage in newImages {
-                self.splitViewModel.images[newImage.id] = IamagesImageAndMetadataContainer(image: newImage)
+            withAnimation {
+                self.splitViewModel.images.append(
+                    contentsOf: newImages.map({ IamagesImageAndMetadataContainer(id: $0.id, image: $0) })
+                )
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -49,7 +49,9 @@ struct CollectionImagesListView: View {
     }
     
     private func startFeed() async {
-        self.splitViewModel.images = [:]
+        self.splitViewModel.selectedImage = nil
+        self.splitViewModel.images = []
+        self.isEndOfFeed = false
         await self.pageFeed()
     }
     
@@ -68,7 +70,9 @@ struct CollectionImagesListView: View {
                 authStrategy: .required
             )
             withAnimation {
-                self.splitViewModel.images.removeValue(forKey: id)
+                if let i = self.splitViewModel.images.firstIndex(where: { $0.id == id }) {
+                    self.splitViewModel.images.remove(at: i)
+                }
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -107,20 +111,20 @@ struct CollectionImagesListView: View {
     
     var body: some View {
         List(selection: self.$splitViewModel.selectedImage) {
-            ForEach(self.$splitViewModel.images.values, id: \.image.id) { imageAndMetadata in
+            ForEach(self.$splitViewModel.images) { imageAndMetadata in
                 NavigableImageView(imageAndMetadata: imageAndMetadata)
                     .task {
-                        if !self.isEndOfFeed && self.splitViewModel.images.keys.last == imageAndMetadata.image.id {
+                        if !self.isEndOfFeed && self.splitViewModel.images.last?.id == imageAndMetadata.id {
                             await self.pageFeed()
                         }
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        self.removeFromCollectionButton(id: imageAndMetadata.image.id)
+                        self.removeFromCollectionButton(id: imageAndMetadata.id)
                     }
                     .contextMenu {
                         ImageShareLinkView(image: imageAndMetadata.image.wrappedValue)
                         Divider()
-                        self.removeFromCollectionButton(id: imageAndMetadata.image.id)
+                        self.removeFromCollectionButton(id: imageAndMetadata.id)
                     }
             }
             if self.isBusy {
@@ -137,9 +141,9 @@ struct CollectionImagesListView: View {
             await self.startFeed()
         }
         .task {
-            if !self.isFirstPageLoaded {
+            if self.isFirstAppearance {
+                self.isFirstAppearance = false
                 await self.startFeed()
-                self.isFirstPageLoaded = true
             }
         }
         .searchable(text: self.$queryString)

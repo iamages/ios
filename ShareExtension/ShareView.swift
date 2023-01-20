@@ -57,12 +57,10 @@ struct ShareView: View {
                 } header: {
                     Text("Ownership")
                 } footer: {
-                    if !self.isLoggedIn {
-                        UploadOwnershipFooter(
-                            isLoggedIn: self.isLoggedIn,
-                            isLocked: self.uploadModel.information.isLocked
-                        )
-                    }
+                    UploadOwnershipFooter(
+                        isLoggedIn: self.isLoggedIn,
+                        isLocked: self.uploadModel.information.isLocked
+                    )
                 }
             }
             .navigationTitle("Share to Iamages")

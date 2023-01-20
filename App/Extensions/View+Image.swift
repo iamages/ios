@@ -1,5 +1,4 @@
 import SwiftUI
-import OrderedCollections
 
 struct DeleteImageListenerModifier: ViewModifier {
     @ObservedObject var splitViewModel: SplitViewModel
@@ -7,14 +6,15 @@ struct DeleteImageListenerModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onReceive(NotificationCenter.default.publisher(for: .deleteImage)) { output in
-                guard let id = output.object as? String else {
+                guard let id = output.object as? String,
+                      let i = self.splitViewModel.images.firstIndex(where: { $0.id == id }) else {
                     return
                 }
                 if self.splitViewModel.selectedImage == id {
                     self.splitViewModel.selectedImage = nil
                 }
                 withAnimation {
-                    self.splitViewModel.images.removeValue(forKey: id)
+                    self.splitViewModel.images.remove(at: i)
                 }
             }
     }

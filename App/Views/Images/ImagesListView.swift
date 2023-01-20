@@ -1,12 +1,11 @@
 import SwiftUI
-import OrderedCollections
 
 struct ImagesListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @EnvironmentObject private var splitViewModel: SplitViewModel
 
-    @State private var isFirstPageLoaded: Bool = false
     @State private var isBusy: Bool = false
+    @State private var isFirstAppearance: Bool = true
     @State private var isEndOfFeed: Bool = false
     @State private var error: LocalizedAlertError?
     
@@ -25,7 +24,7 @@ struct ImagesListView: View {
                     body: self.globalViewModel.jsone.encode(
                         Pagination(
                             query: self.queryString.isEmpty ? nil : self.queryString,
-                            lastID: self.splitViewModel.images.keys.last
+                            lastID: self.splitViewModel.images.last?.id
                         )
                     ),
                     contentType: .json,
@@ -35,8 +34,10 @@ struct ImagesListView: View {
             if newImages.count < 6 {
                 self.isEndOfFeed = true
             }
-            for newImage in newImages {
-                self.splitViewModel.images[newImage.id] = IamagesImageAndMetadataContainer(image: newImage)
+            withAnimation {
+                self.splitViewModel.images.append(
+                    contentsOf: newImages.map({ IamagesImageAndMetadataContainer(id: $0.id, image: $0) })
+                )
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -47,9 +48,9 @@ struct ImagesListView: View {
     
     private func startFeed() async {
         self.splitViewModel.selectedImage = nil
-        self.splitViewModel.images = [:]
+        self.splitViewModel.images = []
         self.isEndOfFeed = false
-        await pageFeed()
+        await self.pageFeed()
     }
     
     private func loadSuggestions() async {
@@ -76,10 +77,10 @@ struct ImagesListView: View {
     @ViewBuilder
     private var list: some View {
         List(selection: self.$splitViewModel.selectedImage) {
-            ForEach(self.$splitViewModel.images.values, id: \.image.id) { imageAndMetadata in
+            ForEach(self.$splitViewModel.images) { imageAndMetadata in
                 NavigableImageView(imageAndMetadata: imageAndMetadata)
                     .task {
-                        if !self.isEndOfFeed && self.splitViewModel.images.keys.last == imageAndMetadata.image.id {
+                        if !self.isEndOfFeed && self.splitViewModel.images.last?.id == imageAndMetadata.wrappedValue.id {
                             await pageFeed()
                         }
                     }
@@ -94,10 +95,13 @@ struct ImagesListView: View {
         }
         .errorToast(error: self.$error)
         .task {
-            if !self.isFirstPageLoaded {
-                await startFeed()
-                self.isFirstPageLoaded = true
+            if self.isFirstAppearance {
+                self.isFirstAppearance = false
+                await self.startFeed()
             }
+        }
+        .refreshable {
+            await self.startFeed()
         }
         .searchable(text: self.$queryString)
         .task(id: self.queryString) {
@@ -111,15 +115,22 @@ struct ImagesListView: View {
                 await self.startFeed()
             }
         }
-        .refreshable {
-            await self.startFeed()
+        // Add new image on upload.
+        .onReceive(NotificationCenter.default.publisher(for: .addImage)) { output in
+            guard let image = output.object as? IamagesImage else {
+                return
+            }
+            self.splitViewModel.images.insert(
+                IamagesImageAndMetadataContainer(id: image.id, image: image),
+                at: 0
+            )
         }
         .toolbar {
             #if targetEnvironment(macCatalyst)
             ToolbarItem {
                 Button(action: {
                     Task {
-                        await startFeed()
+                        await self.startFeed()
                     }
                 }) {
                     Label("Refresh", systemImage: "arrow.clockwise")

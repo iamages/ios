@@ -1,5 +1,4 @@
 import SwiftUI
-import NukeUI
 
 struct UploadedView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
@@ -10,17 +9,7 @@ struct UploadedView: View {
         if !uploaded.lock.isLocked {
             Image(systemName: "lock.fill")
         } else {
-            LazyImage(request: self.globalViewModel.getThumbnailRequest(for: self.uploaded)) { state in
-                if let image = state.image {
-                    image
-                        .resizingMode(.aspectFill)
-                } else if state.error != nil {
-                    Image(systemName: "exclamationmark.octagon.fill")
-                } else {
-                    Rectangle()
-                        .redacted(reason: .placeholder)
-                }
-            }
+            ImageThumbnailView(image: self.uploaded)
         }
     }
 }

@@ -1,5 +1,4 @@
 import SwiftUI
-import OrderedCollections
 
 struct CollectionsListView: View {
     enum ViewMode {
@@ -14,16 +13,18 @@ struct CollectionsListView: View {
     let viewMode: ViewMode
     var imageID: String? = nil
     
-    @State private var collections: OrderedDictionary<String, IamagesCollection> = [:]
+    @State private var collections: [IamagesCollection] = []
     @State private var isBusy: Bool = false
-    @State private var isFirstPageLoaded: Bool = false
+    @State private var isFirstAppearance: Bool = true
     @State private var isEndOfFeed: Bool = false
     @State private var error: LocalizedAlertError?
     
     @State private var queryString: String = ""
     @State private var querySuggestions: [String] = []
-    
-    @State private var selectedCollectionId: String?
+
+    @State private var collectionToDelete: String?
+    @State private var isAddedToCollection: Bool = false
+    @State private var navigationPath: [String] = []
     
     private func pageFeed() async {
         self.isBusy = true
@@ -37,7 +38,7 @@ struct CollectionsListView: View {
                     body: self.globalViewModel.jsone.encode(
                         Pagination(
                             query: self.queryString.isEmpty ? nil : self.queryString,
-                            lastID: self.collections.keys.last
+                            lastID: self.collections.last?.id
                         )
                     ),
                     contentType: .json,
@@ -47,8 +48,8 @@ struct CollectionsListView: View {
             if newCollections.count < 6 {
                 self.isEndOfFeed = true
             }
-            for newCollection in newCollections {
-                self.collections[newCollection.id] = newCollection
+            withAnimation {
+                self.collections.append(contentsOf: newCollections)
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -58,7 +59,7 @@ struct CollectionsListView: View {
     }
     
     private func startFeed() async {
-        self.collections = [:]
+        self.collections = []
         await self.pageFeed()
     }
     
@@ -90,8 +91,10 @@ struct CollectionsListView: View {
                 method: .delete,
                 authStrategy: .required
             )
-            withAnimation {
-                self.collections.removeValue(forKey: id)
+            if let i = self.collections.firstIndex(where: { $0.id == id }) {
+                withAnimation {
+                    self.collections.remove(at: i)
+                }
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -101,7 +104,7 @@ struct CollectionsListView: View {
     @ViewBuilder
     private func deleteCollectionButton(id: String) -> some View {
         Button(role: .destructive, action: {
-            self.selectedCollectionId = id
+            self.collectionToDelete = id
         }) {
             Label("Delete collection", systemImage: "trash")
         }
@@ -110,22 +113,22 @@ struct CollectionsListView: View {
     @ViewBuilder
     private var list: some View {
         List {
-            ForEach(self.collections.elements, id: \.key) { collection in
-                NavigableCollectionView(collection: collection.value)
+            ForEach(self.collections) { collection in
+                NavigableCollectionView(collection: collection)
                     .task {
-                        if !self.isEndOfFeed && self.collections.keys.last == collection.key {
+                        if !self.isEndOfFeed && self.collections.last?.id == collection.id {
                             await self.pageFeed()
                         }
                     }
                     .swipeActions {
                         if self.viewMode == .normal {
-                            self.deleteCollectionButton(id: collection.key)
+                            self.deleteCollectionButton(id: collection.id)
                         }
                     }
                     .contextMenu {
-                        CollectionShareLinkView(collection: collection.value)
+                        CollectionShareLinkView(collection: collection)
                         Divider()
-                        self.deleteCollectionButton(id: collection.key)
+                        self.deleteCollectionButton(id: collection.id)
                     }
             }
             if self.isBusy {
@@ -141,9 +144,9 @@ struct CollectionsListView: View {
             await self.startFeed()
         }
         .task {
-            if !self.isFirstPageLoaded {
+            if self.isFirstAppearance {
+                self.isFirstAppearance = false
                 await startFeed()
-                self.isFirstPageLoaded = true
             }
         }
         .searchable(text: self.$queryString)
@@ -158,17 +161,26 @@ struct CollectionsListView: View {
                 await self.startFeed()
             }
         }
-        .alert("Delete collection?", isPresented: .constant(self.selectedCollectionId != nil)) {
+        .onChange(of: self.navigationPath) { path in
+            if path.isEmpty {
+                switch self.viewMode {
+                case .normal:
+                    self.splitViewModel.selectedImage = nil
+                    self.splitViewModel.images = []
+                case .picker:
+                    if self.isAddedToCollection {
+                        self.dismiss()
+                    }
+                }
+            }
+        }
+        .alert("Delete collection?", isPresented: .constant(self.collectionToDelete != nil), presenting: self.collectionToDelete) { id in
             Button("Delete", role: .destructive) {
                 Task {
-                    guard let id = self.selectedCollectionId else {
-                        return
-                    }
-                    self.selectedCollectionId = nil
                     await self.deleteCollection(id: id)
                 }
             }
-        } message: {
+        } message: { _ in
             Text("The selected collection will be deleted. The images it contains will not be deleted.")
         }
         .toolbar {
@@ -197,7 +209,9 @@ struct CollectionsListView: View {
         .navigationDestination(for: IamagesCollection.ID.self) { id in
             switch self.viewMode {
             case .normal:
-                if let collection = Binding<IamagesCollection>(self.$collections[id]) {
+                if let i = self.collections.firstIndex(where: { $0.id == id }),
+                   let collection = self.$collections[i]
+                {
                     CollectionImagesListView(collection: collection)
                         .environmentObject(self.splitViewModel)
                 } else {
@@ -205,7 +219,10 @@ struct CollectionsListView: View {
                 }
             case .picker:
                 if let imageID {
-                    AddToCollectionView(collectionID: id, imageID: imageID)
+                    AddToCollectionView(
+                        collectionID: id, imageID: imageID,
+                        isAddedToCollection: self.$isAddedToCollection
+                    )
                 } else {
                     Text("Image not provided.")
                 }
@@ -214,7 +231,7 @@ struct CollectionsListView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: self.$navigationPath) {
             Group {
                 if self.globalViewModel.userInformation == nil {
                     NotLoggedInView()

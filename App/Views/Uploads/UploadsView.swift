@@ -1,5 +1,4 @@
 import SwiftUI
-import OrderedCollections
 
 struct UploadsView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
@@ -10,7 +9,7 @@ struct UploadsView: View {
     #endif
     
     @State private var selectedUploadContainer: UUID?
-    @State private var uploadContainers: OrderedDictionary<UUID, IamagesUploadContainer> = [:]
+    @State private var uploadContainers: [IamagesUploadContainer] = []
     @State private var isBusy: Bool = false
 
     @State private var fileImportErrors: [IdentifiableLocalizedError] = []
@@ -77,10 +76,11 @@ struct UploadsView: View {
             }
         } detail: {
             Group {
-                if let id = self.selectedUploadContainer,
-                   var uploadContainer = Binding<IamagesUploadContainer>(self.$uploadContainers[id]) {
+                if let selectedUploadContainer,
+                   let i = self.uploadContainers.firstIndex(where: { $0.id == selectedUploadContainer }),
+                   var uploadContainer = self.$uploadContainers[i]
+                {
                     UploadEditorView(
-                        id: id,
                         information: uploadContainer.information
                     )
                 } else {

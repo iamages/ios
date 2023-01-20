@@ -1,12 +1,12 @@
 import SwiftUI
 import NukeUI
-import OrderedCollections
 
 struct NavigableCollectionView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     
     let collection: IamagesCollection
-    @State private var images: OrderedDictionary<String, IamagesImage> = [:]
+    
+    @State private var images: [IamagesImage] = []
     
     private func getCollectionImages() async {
         do {
@@ -19,9 +19,7 @@ struct NavigableCollectionView: View {
                     contentType: .json
                 ).0
             )
-            for newImage in newImages {
-                self.images[newImage.id] = newImage
-            }
+            self.images.append(contentsOf: newImages)
         } catch {
             print(error)
         }
@@ -50,7 +48,7 @@ struct NavigableCollectionView: View {
                         count: 2
                     ), spacing: 0) {
                     Group {
-                        ForEach(self.images.values) { image in
+                        ForEach(self.images) { image in
                             if image.lock.isLocked {
                                 Image(systemName: "lock.doc")
                             } else {
@@ -99,9 +97,7 @@ struct NavigableCollectionView: View {
             case .removeImages:
                 switch notification.edit.to {
                 case .stringArray(let ids):
-                    for id in ids {
-                        self.images.removeValue(forKey: id)
-                    }
+                    self.images.removeAll(where: { ids.contains($0.id) })
                 default:
                     break
                 }

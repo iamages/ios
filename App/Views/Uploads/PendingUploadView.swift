@@ -13,6 +13,7 @@ struct PendingUploadView: View {
         if self.model.error == nil {
             if let uploadedImage = self.model.uploadedImage {
                 self.completedUploads.append(uploadedImage)
+                NotificationCenter.default.post(name: .addImage, object: uploadedImage)
             }
             NotificationCenter.default.post(name: .deleteUpload, object: self.uploadContainer.id)
         }

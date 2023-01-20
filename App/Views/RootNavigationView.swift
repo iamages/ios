@@ -1,5 +1,4 @@
 import SwiftUI
-import OrderedCollections
 
 struct RootNavigationView: View {
     @EnvironmentObject private var appDelegate: AppDelegate
@@ -50,14 +49,14 @@ struct RootNavigationView: View {
             }
         } detail: {
             ZStack {
-                if let selectedImage = self.splitViewModel.selectedImage,
-                   let imageAndMetadata = Binding<IamagesImageAndMetadataContainer>(
-                    self.$splitViewModel.images[selectedImage]
-                ) {
+                if let id = self.splitViewModel.selectedImage,
+                   let i = self.splitViewModel.images.firstIndex(where: { $0.id == id }),
+                   let imageAndMetadata = self.$splitViewModel.images[i]
+                {
                     ImageDetailView(
-                        imageAndMetadata: imageAndMetadata,
-                        splitViewModel: self.splitViewModel
+                        imageAndMetadata: imageAndMetadata
                     )
+                    .environmentObject(self.splitViewModel)
                     // MARK: Inactive app locked image blur
                     if imageAndMetadata.wrappedValue.image.lock.isLocked == true &&
                        self.scenePhase == .inactive
@@ -74,7 +73,7 @@ struct RootNavigationView: View {
                             }
                             Spacer()
                         }
-                        .background(.regularMaterial)
+                        .background(.thickMaterial)
                     }
                 } else {
                     Text("Select an image")
@@ -97,17 +96,13 @@ struct RootNavigationView: View {
         }
         .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
             if !isLoggedIn {
-                withAnimation {
-                    self.splitViewModel.selectedImage = nil
-                }
-                self.splitViewModel.images = [:]
+                self.splitViewModel.selectedImage = nil
+                self.splitViewModel.images = []
             }
         }
         .onChange(of: self.selectedView) { _ in
-            withAnimation {
-                self.splitViewModel.selectedImage = nil
-            }
-            self.splitViewModel.images = [:]
+            self.splitViewModel.selectedImage = nil
+            self.splitViewModel.images = []
         }
         // Welcome sheet
         .modifier(AppWelcomeSheetModifier())

@@ -1,9 +1,7 @@
 import SwiftUI
-import NukeUI
-
 struct NavigableImageView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
-    
+
     @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
 
     @State private var isBusy: Bool = true
@@ -25,7 +23,7 @@ struct NavigableImageView: View {
     private let roundedRectangle = RoundedRectangle(cornerRadius: 8)
     
     var body: some View {
-        NavigationLink(value: self.imageAndMetadata.image.id) {
+        NavigationLink(value: self.imageAndMetadata.id) {
             HStack {
                 Group {
                     if self.imageAndMetadata.image.lock.isLocked {
@@ -79,7 +77,7 @@ struct NavigableImageView: View {
                         await self.getMetadata()
                     }
                 }) {
-                    Label("Retry loading metadata", systemImage: "")
+                    Label("Retry loading metadata", systemImage: "arrow.clockwise")
                 }
             }
         }
@@ -94,7 +92,9 @@ struct NavigableImageView: View {
 #if DEBUG
 struct NavigableImageView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigableImageView(imageAndMetadata: .constant(previewImageAndMetadata))
+        NavigableImageView(
+            imageAndMetadata: .constant(previewImageAndMetadata)
+        )
     }
 }
 #endif

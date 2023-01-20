@@ -3,7 +3,6 @@ import SwiftUI
 struct UploadEditorView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
 
-    let id: UUID
     @Binding var information: IamagesUploadInformation
 
     @State private var isLockWarningAlertPresented: Bool = false
@@ -43,7 +42,6 @@ struct UploadEditorView: View {
 struct UploadEditorView_Previews: PreviewProvider {
     static var previews: some View {
         UploadEditorView(
-            id: UUID(),
             information: .constant(previewUploadContainer.information)
         )
         .environmentObject(GlobalViewModel())

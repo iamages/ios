@@ -24,6 +24,7 @@ let previewImageMetadata = IamagesImageMetadata(
 )
 
 let previewImageAndMetadata = IamagesImageAndMetadataContainer(
+    id: previewImage.id,
     image: previewImage,
     metadataContainer: IamagesImageMetadataContainer(data: previewImageMetadata)
 )

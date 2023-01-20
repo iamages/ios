@@ -1,13 +1,12 @@
 import SwiftUI
 import PhotosUI
-import OrderedCollections
 
 struct UploadContainersListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.editMode) private var editMode
     
     @Binding var selectedUploadContainer: UUID?
-    @Binding var uploadContainers: OrderedDictionary<UUID, IamagesUploadContainer>
+    @Binding var uploadContainers: [IamagesUploadContainer]
     @Binding var fileImportErrors: [IdentifiableLocalizedError]
     @Binding var isBusy: Bool
     
@@ -39,8 +38,7 @@ struct UploadContainersListView: View {
                         type: mime
                     )
                 )
-                
-                self.uploadContainers[container.id] = container
+                self.uploadContainers.append(container)
             } catch {
                 if let error = error as? LocalizedError {
                     self.fileImportErrors.append(IdentifiableLocalizedError(error: error))
@@ -83,7 +81,7 @@ struct UploadContainersListView: View {
                         )
                     )
 
-                    self.uploadContainers[container.id] = container
+                    self.uploadContainers.append(container)
                 } catch {
                     self.fileImportErrors.append(IdentifiableLocalizedError(error: error as! LocalizedError))
                 }
@@ -95,15 +93,18 @@ struct UploadContainersListView: View {
         self.isBusy = false
     }
     
+    private func deleteUpload(id: UUID) {
+        if let i = self.uploadContainers.firstIndex(where: { $0.id == id }) {
+            withAnimation {
+                self.uploadContainers.remove(at: i)
+            }
+        }
+    }
+    
     @ViewBuilder
     private func deleteUploadButton(id: UUID) -> some View {
         Button(role: .destructive, action: {
-            // return is there for no reason, it just shuts the compiler up.
-            // Don't ask me why this fix works...
-            // FIXME: Conflicting arguments to generic parameter 'Result' ('Void' vs. 'IamagesUploadContainer?')
-            return withAnimation {
-                self.uploadContainers.removeValue(forKey: id)
-            }
+            self.deleteUpload(id: id)
         }) {
             Label("Delete upload", systemImage: "trash")
         }
@@ -118,25 +119,24 @@ struct UploadContainersListView: View {
                 )
             } else {
                 List(selection: self.$selectedUploadContainer) {
-                    ForEach(self.uploadContainers.values) { uploadContainer in
+                    ForEach(self.uploadContainers) { uploadContainer in
                         NavigableUploadContainerView(
                             uploadContainer: uploadContainer
                         )
-                        .swipeActions {
-                            self.deleteUploadButton(id: uploadContainer.id)
-                        }
                         .contextMenu {
                             self.deleteUploadButton(id: uploadContainer.id)
                         }
                     }
+                    .onDelete { offsets in
+                        self.uploadContainers.remove(atOffsets: offsets)
+                    }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .deleteUpload)) { output in
-                    self.selectedUploadContainer = nil
-                    guard let id = output.object as? UUID else {
-                        return
-                    }
-                    withAnimation {
-                        self.uploadContainers.removeValue(forKey: id)
+                    if let id = output.object as? UUID {
+                        if self.selectedUploadContainer == id {
+                            self.selectedUploadContainer = nil
+                        }
+                        self.deleteUpload(id: id)
                     }
                 }
             }
@@ -179,7 +179,7 @@ struct UploadContainersListView_Previews: PreviewProvider {
     static var previews: some View {
         UploadContainersListView(
             selectedUploadContainer: .constant(nil),
-            uploadContainers: .constant([:]),
+            uploadContainers: .constant([]),
             fileImportErrors: .constant([]),
             isBusy: .constant(false)
         )

@@ -7,6 +7,7 @@ struct NavigableUploadContainerView: View {
         NavigationLink(value: self.uploadContainer.id) {
             HStack {
                 UniversalDataImage(data: self.uploadContainer.file.data)
+                    .scaledToFill()
                     .frame(width: 64, height: 64)
                     .cornerRadius(8)
                 

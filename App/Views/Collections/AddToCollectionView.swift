@@ -6,6 +6,7 @@ struct AddToCollectionView: View {
     
     let collectionID: String
     let imageID: String
+    @Binding var isAddedToCollection: Bool
     
     @State private var isBusy: Bool = true
     @State private var error: Error?
@@ -25,7 +26,7 @@ struct AddToCollectionView: View {
                 contentType: .json,
                 authStrategy: .required
             )
-            self.dismiss()
+            self.isAddedToCollection = true
         } catch {
             self.isBusy = false
             self.error = error
@@ -33,7 +34,18 @@ struct AddToCollectionView: View {
     }
     
     var body: some View {
-        if let error {
+        if self.isAddedToCollection {
+            IconAndInformationView(
+                icon: "checkmark",
+                heading: "Added to collection"
+            )
+            .navigationBarBackButtonHidden()
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(1))) {
+                    self.dismiss()
+                }
+            }
+        } else if let error {
             IconAndInformationView(
                 icon: "xmark.octagon.fill",
                 heading: "Could not add image to collection",
@@ -46,6 +58,8 @@ struct AddToCollectionView: View {
             )
         } else {
             ProgressView("Adding image to collection...")
+                .navigationBarBackButtonHidden()
+                .interactiveDismissDisabled()
                 .task {
                     await self.addToCollection()
                 }
@@ -57,7 +71,8 @@ struct AddToCollectionView: View {
 struct AddToCollectionView_Previews: PreviewProvider {
     static var previews: some View {
         AddToCollectionView(
-            collectionID: "test", imageID: "test"
+            collectionID: "test", imageID: "test",
+            isAddedToCollection: .constant(false)
         )
         .environmentObject(GlobalViewModel())
     }

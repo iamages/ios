@@ -8,38 +8,37 @@ struct AnonymousUploadsListView: View {
     
     @FetchRequest(
         sortDescriptors: [
-            NSSortDescriptor(key: "addedOn", ascending: false)
+            NSSortDescriptor(key: "id", ascending: false)
         ]
     ) private var anonymousUploads: FetchedResults<AnonymousUpload>
     
     @State private var error: LocalizedAlertError?
-    @State private var imageToDelete: AnonymousUpload?
-    @State private var imageToForget: AnonymousUpload?
-    @State private var isConfirmDeleteAlertPresented: Bool = false
+
+    @State private var imageToForget: String?
     @State private var isConfirmForgetAlertPresented: Bool = false
     
-    private func deleteImage(for anonymousUpload: AnonymousUpload) async {
+    private func getImage(id: String) async {
         do {
-            try await self.globalViewModel.fetchData(
-                "/images/\(anonymousUpload.id!)",
-                method: .delete,
-                headers: [
-                    "X-Iamages-Ownerless-Key": anonymousUpload.ownerlessKey!.uuidString
-                ]
+            self.splitViewModel.images.insert(
+                IamagesImageAndMetadataContainer(
+                    id: id,
+                    image: try await self.globalViewModel.getImagePublicMetadata(id: id)
+                ),
+                at: 0
             )
-            try await self.viewContext.perform {
-                self.viewContext.delete(anonymousUpload)
-                try self.viewContext.save()
-            }
         } catch {
             self.error = LocalizedAlertError(error: error)
         }
     }
     
-    private func forgetImage(for anonymousUpload: AnonymousUpload) async {
+    private func forgetImage(id: String) async {
         do {
+            var fetchRequest = NSFetchRequest<AnonymousUpload>()
+            fetchRequest.predicate = NSPredicate(format: "id == %s", id)
             try await self.viewContext.perform {
-                self.viewContext.delete(anonymousUpload)
+                for anonymousUpload in try fetchRequest.execute() {
+                    self.viewContext.delete(anonymousUpload)
+                }
                 try self.viewContext.save()
             }
         } catch {
@@ -62,28 +61,25 @@ struct AnonymousUploadsListView: View {
     
     @ViewBuilder
     private var list: some View {
-        List(self.anonymousUploads, selection: self.$splitViewModel.selectedImage) { anonymousUpload in
-            NavigableAnonymousUploadView(
-                anonymousUpload: anonymousUpload
-            )
-            .contextMenu {
-                ShareLink(item: .apiRootUrl.appending(path: "/images/\(anonymousUpload.id!)/embed")) {
-                    Label("Share image...", systemImage: "square.and.arrow.up")
-                }
-                Divider()
-                Button(role: .destructive, action: {
-                    self.imageToDelete = anonymousUpload
-                }) {
-                    Label("Delete image", systemImage: "trash")
-                }
-                Button(role: .destructive, action: {
-                    self.imageToForget = anonymousUpload
-                }) {
-                    Label("Forget image", systemImage: "archivebox")
-                }
+        List(selection: self.$splitViewModel.selectedImage) {
+            ForEach(self.$splitViewModel.images) { image in
+                NavigableImageView(imageAndMetadata: image)
+                    .contextMenu {
+                        Button(role: .destructive, action: {
+                            self.imageToForget = image.id
+                            self.isConfirmForgetAlertPresented = true
+                        }) {
+                            Label("Forget image", systemImage: "archivebox")
+                        }
+                    }
             }
         }
-        .errorAlert(error: self.$error)
+        .errorToast(error: self.$error)
+        .task {
+            for anonymousUpload in self.anonymousUploads {
+                await self.getImage(id: anonymousUpload.id!)
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button(action: {
@@ -107,30 +103,13 @@ struct AnonymousUploadsListView: View {
             }
         }
         .alert(
-            "Delete image?",
-            isPresented: .constant(self.imageToDelete != nil),
-            presenting: self.imageToDelete
-        ) { anonymousUpload in
-            Button("Delete", role: .destructive) {
-                Task {
-                    await self.deleteImage(for: anonymousUpload)
-                }
-                self.imageToDelete = nil
-            }
-            Button("Cancel", role: .cancel) {
-                self.imageToDelete = nil
-            }
-        } message: { _ in
-            Text("The image will be deleted permanently!")
-        }
-        .alert(
             "Forget image?",
             isPresented: .constant(self.imageToForget != nil),
             presenting: self.imageToForget
-        ) { anonymousUpload in
+        ) { id in
             Button("Forget", role: .destructive) {
                 Task {
-                    await self.forgetImage(for: anonymousUpload)
+                    await self.forgetImage(id: id)
                 }
                 self.imageToForget = nil
             }
@@ -140,22 +119,13 @@ struct AnonymousUploadsListView: View {
         } message: { _ in
             Text("The image will be forgotten from this app. People with the link may still access the image.")
         }
-        .alert(
-            "Delete image?",
-            isPresented: .constant(self.imageToDelete != nil),
-            presenting: self.imageToDelete
-        ) { anonymousUpload in
-            Button("Delete", role: .destructive) {
-                Task {
-                    await self.deleteImage(for: anonymousUpload)
-                }
-                self.imageToDelete = nil
+        .onReceive(NotificationCenter.default.publisher(for: .deleteImage)) { output in
+            guard let id = output.object as? String else {
+                return
             }
-            Button("Cancel", role: .cancel) {
-                self.imageToDelete = nil
+            Task {
+                await self.forgetImage(id: id)
             }
-        } message: { _ in
-            Text("The image will be deleted permanently!")
         }
     }
     
