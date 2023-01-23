@@ -9,6 +9,8 @@ struct ImageDetailView: View {
     @AppStorage("selectedWidgetImageId", store: .iamagesGroup) var selectedWidgetImageId: String?
     
     @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
+    
+    @State private var previousIsLocked: Bool = false
 
     @State private var request: ImageRequest?
     @State private var imageLockKeySalt: Data?
@@ -40,25 +42,27 @@ struct ImageDetailView: View {
     }
     
     // Fetches metadata and image key salt
-    private func fetchMetadata(image: IamagesImage) async {
+    private func getMetadata() async {
         self.isBusy = true
 
         do {
-            self.imageAndMetadata.metadataContainer = try await self.globalViewModel.getImagePrivateMetadata(
-                for: image,
+            let metadata = try await self.globalViewModel.getImagePrivateMetadata(
+                for: self.imageAndMetadata.image,
                 key: self.key.isEmpty ? nil : self.key
             )
-            if image.lock.isLocked {
+            withAnimation {
+                self.imageAndMetadata.metadataContainer = metadata
+            }
+            if self.imageAndMetadata.image.lock.isLocked {
                 guard let salt = try await self.globalViewModel.fetchData(
-                    "/images/\(image.id)/download",
+                    "/images/\(self.imageAndMetadata.image.id)/download",
                     method: .head,
-                    authStrategy: image.isPrivate ? .required : .none
+                    authStrategy: self.imageAndMetadata.image.isPrivate ? .required : .none
                 ).1.value(forHTTPHeaderField: "X-Iamages-Lock-Salt")?.data(using: .utf8) else {
                     throw NoSaltError()
                 }
                 self.imageLockKeySalt = Data(base64Encoded: salt)
             }
-            
         } catch {
             self.error = LocalizedAlertError(error: error)
         }
@@ -115,7 +119,7 @@ struct ImageDetailView: View {
         )
         .task(id: self.isKeyAlertPresented) {
             if !self.isKeyAlertPresented && self.shouldAttemptUnlock {
-                await self.fetchMetadata(image: self.imageAndMetadata.image)
+                await self.getMetadata()
                 self.request = self.globalViewModel.getImageRequest(
                     for: self.imageAndMetadata.image,
                     key: self.key
@@ -215,6 +219,19 @@ struct ImageDetailView: View {
         }
         .toolbarRole(.editor)
         .toolbar(id: "imageDetail") {
+            ToolbarTitleMenu {
+                if !self.imageAndMetadata.isLoading &&
+                    self.imageAndMetadata.metadataContainer == nil
+                {
+                    Button(action: {
+                        Task {
+                            await self.getMetadata()
+                        }
+                    }) {
+                        Label("Retry loading metadata", systemImage: "arrow.clockwise")
+                    }
+                }
+            }
             ToolbarItem(id: "information", placement: .primaryAction) {
                 Button(action: {
                     self.isInformationSheetPresented = true
@@ -250,7 +267,6 @@ struct ImageDetailView: View {
                 }) {
                     Label("Edit", systemImage: "pencil")
                 }
-                .disabled(self.imageAndMetadata.image.lock.isLocked && self.imageLockKeySalt == nil)
             }
             ToolbarItem(id: "delete", placement: .secondaryAction) {
                 Button(role: .destructive, action: {

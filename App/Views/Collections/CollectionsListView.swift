@@ -215,7 +215,7 @@ struct CollectionsListView: View {
                     CollectionImagesListView(collection: collection)
                         .environmentObject(self.splitViewModel)
                 } else {
-                    Text("Cannot open collection.")
+                    Text("Cannot open collection")
                 }
             case .picker:
                 if let imageID {

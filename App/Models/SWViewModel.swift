@@ -1,7 +1,6 @@
 import SharedWithYou
 import SwiftUI
 
-@MainActor
 class SWViewModel: NSObject, ObservableObject, SWHighlightCenterDelegate {
     var highlightCenter = SWHighlightCenter()
     
@@ -10,9 +9,7 @@ class SWViewModel: NSObject, ObservableObject, SWHighlightCenterDelegate {
         self.highlightCenter.delegate = self
     }
 
-    nonisolated internal func highlightCenterHighlightsDidChange(_ highlightCenter: SWHighlightCenter) {
-        highlightCenter.highlights.forEach { highlight in
-            print("Received a new highlight with URL: \(highlight.url)")
-        }
+    internal func highlightCenterHighlightsDidChange(_ highlightCenter: SWHighlightCenter) {
+        NotificationCenter.default.post(name: .newSWHighlights, object: highlightCenter.highlights)
     }
 }

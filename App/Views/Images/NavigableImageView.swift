@@ -4,20 +4,22 @@ struct NavigableImageView: View {
 
     @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
 
-    @State private var isBusy: Bool = true
     @State private var error: Error?
     
     private func getMetadata() async {
         self.error = nil
-        self.isBusy = true
+        self.imageAndMetadata.isLoading = true
         do {
-            self.imageAndMetadata.metadataContainer = try await self.globalViewModel.getImagePrivateMetadata(
+            let metadata = try await self.globalViewModel.getImagePrivateMetadata(
                 for: self.imageAndMetadata.image
             )
+            withAnimation {
+                self.imageAndMetadata.metadataContainer = metadata
+            }
         } catch {
             self.error = error
         }
-        self.isBusy = false
+        self.imageAndMetadata.isLoading = false
     }
 
     private let roundedRectangle = RoundedRectangle(cornerRadius: 8)
@@ -44,7 +46,7 @@ struct NavigableImageView: View {
                     if self.imageAndMetadata.image.lock.isLocked {
                         Text("Locked image")
                             .bold()
-                    } else if self.isBusy {
+                    } else if self.imageAndMetadata.isLoading {
                         LoadingMetadataView()
                     } else {
                         Group {

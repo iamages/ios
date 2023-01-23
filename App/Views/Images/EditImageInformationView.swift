@@ -13,8 +13,7 @@ struct EditImageInformationView: View {
     @State private var newLockKey: String = ""
     @State private var currentLockKey: String = ""
     @State private var isKeyAlertPresented: Bool = false
-    
-    @State private var isLockBetaWarningAlertPresented: Bool = false
+
     @State private var isCancelAlertPresented: Bool = false
     @State private var isBusy: Bool = false
     @State private var error: LocalizedAlertError?
@@ -183,13 +182,8 @@ struct EditImageInformationView: View {
             .errorAlert(error: self.$error)
             .lockBetaWarningAlert(
                 isLocked: self.$isLocked,
-                isPresented: self.$isLockBetaWarningAlertPresented
+                currentIsLocked: self.imageAndMetadata.image.lock.isLocked
             )
-            .onChange(of: self.isLocked) { isLocked in
-                if isLocked {
-                    self.isLockBetaWarningAlertPresented = true
-                }
-            }
             .alert("Lock key required", isPresented: self.$isKeyAlertPresented) {
                 SecureField("Lock key", text: self.$currentLockKey)
                 Button("Unlock", role: .destructive) {

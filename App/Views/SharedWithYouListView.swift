@@ -1,19 +1,47 @@
 import SwiftUI
+import SharedWithYou
 
 struct SharedWithYouListView: View {
+    @EnvironmentObject private var globalViewModel: GlobalViewModel
     @EnvironmentObject private var splitViewModel: SplitViewModel
     
     @StateObject private var swViewModel = SWViewModel()
     
+    @State private var collections: [IamagesCollection] = []
+    
     @ViewBuilder
     private var list: some View {
         List {
-            ForEach(self.swViewModel.highlightCenter.highlights, id: \.self) { highlight in
-                
+            Section("Images") {
+                ForEach(self.$splitViewModel.images) { imageAndMetadata in
+                    NavigableImageView(imageAndMetadata: imageAndMetadata)
+                }
+            }
+            Section("Collections") {
+                ForEach(self.collections) { collection in
+                    NavigableCollectionView(collection: collection)
+                }
             }
         }
         .navigationDestination(for: IamagesCollection.ID.self) { id in
-            
+            if let i = self.collections.firstIndex(where: { $0.id == id }),
+               let collection = self.$collections[i]
+            {
+                CollectionImagesListView(collection: collection)
+                    .environmentObject(self.splitViewModel)
+            } else {
+                Text("Cannot open collection")
+            }
+        }
+        .task {
+            for highlight in self.swViewModel.highlightCenter.highlights {
+                
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .newSWHighlights)) { output in
+            guard let highlights = output.object as? [SWHighlight] else {
+                return
+            }
         }
     }
     

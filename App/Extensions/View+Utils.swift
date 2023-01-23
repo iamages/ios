@@ -58,10 +58,17 @@ extension View {
 
 struct LockBetaWarningAlertModifier: ViewModifier {
     @Binding var isLocked: Bool
-    @Binding var isPresented: Bool
+    let currentIsLocked: Bool
+
+    @State private var isPresented: Bool = false
     
     func body(content: Content) -> some View {
         content
+            .onChange(of: self.isLocked) { isLocked in
+                if !currentIsLocked && self.isLocked {
+                    self.isPresented = true
+                }
+            }
             .alert("Enable lock?", isPresented: self.$isPresented) {
                 Button("Enable", role: .destructive) {
                     self.isPresented = false
@@ -79,12 +86,12 @@ struct LockBetaWarningAlertModifier: ViewModifier {
 extension View {
     func lockBetaWarningAlert(
         isLocked: Binding<Bool>,
-        isPresented: Binding<Bool>
+        currentIsLocked: Bool
     ) -> some View {
         modifier(
             LockBetaWarningAlertModifier(
                 isLocked: isLocked,
-                isPresented: isPresented
+                currentIsLocked: currentIsLocked
             )
         )
     }

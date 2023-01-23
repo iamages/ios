@@ -33,7 +33,7 @@ struct UploadEditorView: View {
         .navigationTitle("Editor")
         .lockBetaWarningAlert(
             isLocked: self.$information.isLocked,
-            isPresented: self.$isLockWarningAlertPresented
+            currentIsLocked: false
         )
     }
 }

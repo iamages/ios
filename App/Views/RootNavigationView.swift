@@ -1,9 +1,17 @@
 import SwiftUI
+import StoreKit
 
 struct RootNavigationView: View {
     @EnvironmentObject private var appDelegate: AppDelegate
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.scenePhase) private var scenePhase
+
+    // FIXME: requestReview crashes app on launch.
+    #if !targetEnvironment(macCatalyst)
+    @Environment(\.requestReview) private var requestReview
+    @AppStorage("openedSinceLastReviewCount")
+    private var openedSinceLastReviewCount: Int = 0
+    #endif
     
     @StateObject private var splitViewModel: SplitViewModel = SplitViewModel()
     
@@ -109,6 +117,14 @@ struct RootNavigationView: View {
         #if targetEnvironment(macCatalyst)
         .hideMacTitlebar()
         #else
+        // Review requesting
+        .onAppear {
+            self.openedSinceLastReviewCount += 1
+            if self.openedSinceLastReviewCount >= 10 {
+                self.requestReview()
+                self.openedSinceLastReviewCount = 0
+            }
+        }
         .sheet(isPresented: self.$globalViewModel.isNewCollectionPresented) {
             NewCollectionView()
         }

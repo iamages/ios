@@ -7,4 +7,5 @@ extension Notification.Name {
     static let editCollection: Self = .init("editCollection")
     static let uploadComplete: Self = .init("uploadComplete")
     static let deleteUpload: Self = .init("deleteUpload")
+    static let newSWHighlights: Self = .init("newSWHighlights")
 }

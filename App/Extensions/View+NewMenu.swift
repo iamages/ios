@@ -1,3 +1,4 @@
+#if !targetEnvironment(macCatalyst)
 import SwiftUI
 
 struct NewMenuModifier: ViewModifier {
@@ -33,3 +34,4 @@ extension View {
         modifier(NewMenuModifier(globalViewModel: globalViewModel))
     }
 }
+#endif
