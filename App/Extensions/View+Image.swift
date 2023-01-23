@@ -11,7 +11,9 @@ struct DeleteImageListenerModifier: ViewModifier {
                     return
                 }
                 if self.splitViewModel.selectedImage == id {
-                    self.splitViewModel.selectedImage = nil
+                    withAnimation {
+                        self.splitViewModel.selectedImage = nil
+                    }
                 }
                 withAnimation {
                     self.splitViewModel.images.remove(at: i)

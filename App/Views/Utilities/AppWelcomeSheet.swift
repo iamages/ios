@@ -205,6 +205,7 @@ struct AppWelcomeView_Previews: PreviewProvider {
 #endif
 
 struct AppWelcomeSheetModifier: ViewModifier {
+    @AppStorage("NSQuitAlwaysKeepsWindows") private var shouldAlwaysKeepWindows: Bool?
     @AppStorage("hasPresentedWelcome") private var hasPresentedWelcome: Bool = false
     
     @State private var isPresented: Bool = false
@@ -214,6 +215,7 @@ struct AppWelcomeSheetModifier: ViewModifier {
             .onAppear {
                 if !self.hasPresentedWelcome {
                     self.isPresented = true
+                    self.shouldAlwaysKeepWindows = false
                 }
             }
             .sheet(isPresented: self.$isPresented, onDismiss: {

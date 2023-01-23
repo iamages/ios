@@ -54,8 +54,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         
         self.jsone.dateEncodingStrategy = .iso8601
         self.jsond.dateDecodingStrategy = .iso8601
-        
-        ImagePipeline.shared = ImagePipeline(configuration: .withDataCache)
+
         (ImagePipeline.shared.configuration.dataLoader as? DataLoader)?.delegate = self
         
         do {
@@ -338,5 +337,29 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             },
             options: options
         )
+    }
+    
+    // Makes sure username and password meets standards.
+    func validateCredentials(
+        username: String? = nil,
+        password: String? = nil,
+        email: String? = nil,
+        isSigningUp: Bool = false
+    ) throws {
+        if let username,
+           username.firstMatch(of: try Regex("[\\s]")) != nil,
+           username.count < 3
+        {
+            throw LoginErrors.invalidUsername
+        }
+        if let password,
+           password.count < 6
+        {
+            throw LoginErrors.invalidPassword(isSigningUp)
+        }
+        if let email,
+           !email.isEmail() {
+            throw LoginErrors.invalidEmail
+        }
     }
 }

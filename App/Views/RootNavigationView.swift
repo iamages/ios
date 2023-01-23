@@ -4,17 +4,13 @@ struct RootNavigationView: View {
     @EnvironmentObject private var appDelegate: AppDelegate
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.scenePhase) private var scenePhase
-
-    @State private var isWelcomeSheetPresented: Bool = false
     
     @StateObject private var splitViewModel: SplitViewModel = SplitViewModel()
-
-    @State private var selectedView: AppUserViews = .images
     
     var body: some View {
         NavigationSplitView {
             Group {
-                switch self.selectedView {
+                switch self.splitViewModel.selectedView {
                 case .images:
                     ImagesListView()
                 case .collections:
@@ -29,7 +25,7 @@ struct RootNavigationView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarTitleMenu {
-                    Picker("View", selection: self.$selectedView.animation()) {
+                    Picker("View", selection: self.$splitViewModel.selectedView.animation()) {
                         ForEach(AppUserViews.allCases) { view in
                             Label(view.localizedName, systemImage: view.icon)
                                 .tag(view)
@@ -77,20 +73,22 @@ struct RootNavigationView: View {
                     }
                 } else {
                     Text("Select an image")
+                        #if targetEnvironment(macCatalyst)
+                        .navigationSubtitle("")
+                        #endif
                 }
             }
         }
         // For Mac Catalyst window title
-        .navigationTitle(self.selectedView.localizedName)
+        .navigationTitle(self.splitViewModel.selectedView.localizedName)
         // Handle quick actions
-        .onChange(of: self.scenePhase) { phase in
-            if phase == .active,
-               let quickActionType = self.appDelegate.shortcutItem?.type,
+        .onChange(of: self.appDelegate.shortcutItem) { item in
+            if let quickActionType = self.appDelegate.shortcutItem?.type,
                let appView = AppUserViews(rawValue: quickActionType)
             {
                 AppDelegate.shortcutItem = nil
                 withAnimation {
-                    self.selectedView = appView
+                    self.splitViewModel.selectedView = appView
                 }
             }
         }
@@ -100,7 +98,7 @@ struct RootNavigationView: View {
                 self.splitViewModel.images = []
             }
         }
-        .onChange(of: self.selectedView) { _ in
+        .onChange(of: self.splitViewModel.selectedView) { _ in
             self.splitViewModel.selectedImage = nil
             self.splitViewModel.images = []
         }
@@ -111,11 +109,16 @@ struct RootNavigationView: View {
         #if targetEnvironment(macCatalyst)
         .hideMacTitlebar()
         #else
+        .sheet(isPresented: self.$globalViewModel.isNewCollectionPresented) {
+            NewCollectionView()
+        }
+        .fullScreenCover(isPresented: self.$globalViewModel.isUploadsPresented) {
+            UploadsView()
+        }
         .fullScreenCover(isPresented: self.$globalViewModel.isSettingsPresented) {
             SettingsView()
         }
         #endif
-        
     }
 }
 

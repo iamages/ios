@@ -2,7 +2,8 @@ import Foundation
 
 enum LoginErrors: Error {
     case invalidUsername
-    case invalidPassword
+    case invalidPassword(Bool)
+    case invalidEmail
     case signupComplete
 }
 
@@ -11,8 +12,10 @@ extension LoginErrors: LocalizedError {
         switch self {
         case .invalidUsername:
             return NSLocalizedString("The provided username is invalid.", comment: "")
-        case .invalidPassword:
+        case .invalidPassword(_):
             return NSLocalizedString("The provided password is invalid.", comment: "")
+        case .invalidEmail:
+            return NSLocalizedString("The provided email is invalid.", comment: "")
         case .signupComplete:
             return NSLocalizedString("Your account has been created.", comment: "")
         }
@@ -22,8 +25,14 @@ extension LoginErrors: LocalizedError {
         switch self {
         case .invalidUsername:
             return NSLocalizedString("Make your username has at least 3 characters and no spaces before, in, or after itself.", comment: "")
-        case .invalidPassword:
-            return NSLocalizedString("Your password needs to have at least 6 characters. Do not use commonly guessable sequences, and consider a longer password.", comment: "")
+        case .invalidPassword(let isSigningUp):
+            var localizedString = NSLocalizedString("Your password needs to have at least 6 characters.", comment: "")
+            if isSigningUp {
+                localizedString += " " + NSLocalizedString("Do not use commonly guessable sequences, and consider a longer password.", comment: "")
+            }
+            return localizedString
+        case .invalidEmail:
+            return NSLocalizedString("A valid one should look like this: you@example.com", comment: "")
         case .signupComplete:
             return NSLocalizedString("Login to use your new account.", comment: "")
         }
@@ -73,10 +82,11 @@ struct IdentifiableLocalizedError: Identifiable {
     var error: LocalizedError
 }
 
-struct NoIDError: LocalizedError {
-    let errorDescription = NSLocalizedString("No image ID available.", comment: "")
-}
-
 struct NoSaltError: LocalizedError {
     let errorDescription: String? = NSLocalizedString("Salt is missing.", comment: "")
+}
+
+struct PasswordMismatchError: LocalizedError {
+    let errorDescription: String? = NSLocalizedString("Passwords don't match", comment: "")
+    let recoverySuggestion: String? = NSLocalizedString("Check both passwords for mismatches.", comment: "")
 }

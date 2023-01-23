@@ -247,18 +247,9 @@ struct CollectionsListView: View {
                 }
             }
             .navigationTitle("Collections")
-            .sheet(isPresented: self.$globalViewModel.isNewCollectionPresented) {
-                NewCollectionView()
-            }
-            .toolbar {
-                ToolbarItem {
-                    Button(action: {
-                        self.globalViewModel.isNewCollectionPresented = true
-                    }) {
-                        Label("New collection", systemImage: "plus")
-                    }
-                }
-            }
+            #if !targetEnvironment(macCatalyst)
+            .newMenuToolbarItem(globalViewModel: self.globalViewModel)
+            #endif
         }
     }
 }

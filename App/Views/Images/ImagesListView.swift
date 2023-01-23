@@ -151,18 +151,9 @@ struct ImagesListView: View {
             }
         }
         .navigationTitle("Images")
-        .fullScreenCover(isPresented: self.$globalViewModel.isUploadsPresented) {
-            UploadsView()
-        }
-        .toolbar {
-            ToolbarItem {
-                Button(action: {
-                    self.globalViewModel.isUploadsPresented = true
-                }) {
-                    Label("New upload", systemImage: "plus")
-                }
-            }
-        }
+        #if !targetEnvironment(macCatalyst)
+        .newMenuToolbarItem(globalViewModel: self.globalViewModel)
+        #endif
     }
 }
 

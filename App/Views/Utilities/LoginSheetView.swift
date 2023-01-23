@@ -7,25 +7,22 @@ struct LoginSheetView: View {
     
     @State private var usernameInput: String = ""
     @State private var passwordInput: String = ""
+    @State private var emailInput: String = ""
+    @State private var isSigningUp: Bool = false
+    
+    @State private var isPasswordResetSheetPresented: Bool = false
     
     @State private var error: LocalizedAlertError?
     
     @State private var isBusy: Bool = false
     
-    private func validateCredentials() throws {
-        if usernameInput.firstMatch(of: try Regex("[\\s]")) != nil ||
-           usernameInput.count < 3 {
-            throw LoginErrors.invalidUsername
-        }
-        if passwordInput.count < 6 {
-            throw LoginErrors.invalidPassword
-        }
-    }
-    
     private func login() async {
         self.isBusy = true
         do {
-            try self.validateCredentials()
+            try self.globalViewModel.validateCredentials(
+                username: self.usernameInput,
+                password: self.passwordInput
+            )
             try await self.globalViewModel.login(
                 username: self.usernameInput,
                 password: self.passwordInput
@@ -41,7 +38,11 @@ struct LoginSheetView: View {
     private func signup() async {
         self.isBusy = true
         do {
-            try self.validateCredentials()
+            try self.globalViewModel.validateCredentials(
+                username: self.usernameInput,
+                password: self.passwordInput,
+                email: self.emailInput.isEmpty ? nil : self.emailInput
+            )
             try await self.globalViewModel.signup(
                 username: self.usernameInput,
                 password: self.passwordInput
@@ -58,15 +59,17 @@ struct LoginSheetView: View {
             Form {
                 TextField("Username", text: self.$usernameInput)
                 SecureField("Password", text: self.$passwordInput)
-                Button("Login") {
-                    Task {
-                        await self.login()
-                    }
+                if self.isSigningUp {
+                    TextField("Email (optional)", text: self.$emailInput)
                 }
-                .disabled(self.isBusy)
-                Button("Sign up") {
+                Toggle("I want to make a new account", isOn: self.$isSigningUp)
+                Button(self.isSigningUp ? "Sign up" : "Login") {
                     Task {
-                        await self.signup()
+                        if self.isSigningUp {
+                            await self.signup()
+                        } else {
+                            await self.login()
+                        }
                     }
                 }
                 .disabled(self.isBusy)
@@ -89,11 +92,16 @@ struct LoginSheetView: View {
             .navigationBarTitleDisplayMode(.inline)
             .errorAlert(error: self.$error)
 
-            Button("Forgot your password?", role: .destructive) {
-                
+            Button("Forgot your password?") {
+                self.isPasswordResetSheetPresented = true
             }
+            .foregroundColor(.red)
             .disabled(self.isBusy)
+            .sheet(isPresented: self.$isPasswordResetSheetPresented) {
+                PasswordResetView()
+            }
         }
+        .interactiveDismissDisabled(self.isBusy)
     }
 }
 

@@ -165,7 +165,6 @@ struct ImageDetailView: View {
         self.key = ""
         self.imageLockKeySalt = nil
         self.request = nil
-        self.splitViewModel.isDetailViewVisible = false
     }
     
     var body: some View {
@@ -193,9 +192,6 @@ struct ImageDetailView: View {
         #if targetEnvironment(macCatalyst)
         .navigationSubtitle(self.selectedImageTitle)
         #endif
-        .onAppear {
-            self.splitViewModel.isDetailViewVisible = true
-        }
         .onDisappear(perform: self.resetView)
         .onChange(of: self.splitViewModel.selectedImage) { _ in
             self.resetView()
