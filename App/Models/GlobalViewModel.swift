@@ -154,7 +154,6 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             )
             self.lastUserToken = newLastUserToken
             try self.keychain.setDataWithKey(self.jsone.encode(newLastUserToken), key: .lastUserToken)
-            try await self.getUserInformation()
         } else {
             throw APICommunicationErrors.notLoggedIn
         }

@@ -84,7 +84,9 @@ struct NavigableImageView: View {
             }
         }
         .task {
-            if !self.imageAndMetadata.image.lock.isLocked {
+            if self.imageAndMetadata.metadataContainer == nil &&
+               !self.imageAndMetadata.image.lock.isLocked
+            {
                 await self.getMetadata()
             }
         }

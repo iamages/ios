@@ -43,7 +43,7 @@ struct UploadingView: View {
             .navigationTitle("Uploading")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .primaryAction) {
                     Button(action: {
                         if self.uploadContainers.isEmpty {
                             self.dismiss()

@@ -114,7 +114,7 @@ struct CollectionImagesListView: View {
             ForEach(self.$splitViewModel.images) { imageAndMetadata in
                 NavigableImageView(imageAndMetadata: imageAndMetadata)
                     .task {
-                        if !self.isEndOfFeed && self.splitViewModel.images.last?.id == imageAndMetadata.id {
+                        if !self.isEndOfFeed && self.splitViewModel.images.last?.id == imageAndMetadata.wrappedValue.id {
                             await self.pageFeed()
                         }
                     }

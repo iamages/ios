@@ -328,7 +328,6 @@
 		2E00889D28FD6CEF00607E0B /* Uploads */ = {
 			isa = PBXGroup;
 			children = (
-				2E38DEB129724E7C00ACB068 /* AnonymousUploadsListView.swift */,
 				2E0424D928DC92540023CE41 /* UploadsView.swift */,
 				2E74ED2F2944554B00E30A5A /* UploadContainersListView.swift */,
 				2E0088A228FD8B1F00607E0B /* NavigableUploadContainerView.swift */,
@@ -555,6 +554,7 @@
 				2EA89ADA291F5B2B00350F38 /* Collections */,
 				2E91365029399FC700B220FB /* Settings */,
 				2E38DEC029736C7800ACB068 /* SharedWithYouListView.swift */,
+				2E38DEB129724E7C00ACB068 /* AnonymousUploadsListView.swift */,
 				2E8B2FAF28B72D7F0071780B /* RootNavigationView.swift */,
 			);
 			path = Views;

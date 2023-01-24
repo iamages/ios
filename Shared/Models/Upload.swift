@@ -89,6 +89,8 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     
     func upload() async {
         self.isUploading = true
+        self.error = nil
+        self.progress = 0.0
 
         var uploadRequest = URLRequest(url: .apiRootUrl.appending(path: "/images", directoryHint: .isDirectory))
         uploadRequest.httpMethod = HTTPMethod.post.rawValue

@@ -30,6 +30,7 @@ struct LoginSheetView: View {
             WidgetCenter.shared.reloadAllTimelines()
             self.dismiss()
         } catch {
+            print(error)
             self.error = LocalizedAlertError(error: error)
         }
         self.isBusy = false

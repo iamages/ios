@@ -126,9 +126,13 @@ struct EditImageInformationView: View {
     }
     
     func checkHasChanges() -> Bool {
-        if self.description != self.imageAndMetadata.metadataContainer?.data.description ||
-            self.isPrivate != self.imageAndMetadata.image.isPrivate ||
-            self.isLocked != self.imageAndMetadata.image.lock.isLocked
+        if self.isPrivate != self.imageAndMetadata.image.isPrivate ||
+           self.isLocked != self.imageAndMetadata.image.lock.isLocked
+        {
+            return true
+        }
+        if let currentDescription = self.imageAndMetadata.metadataContainer?.data.description,
+           currentDescription != self.description
         {
             return true
         }
@@ -151,8 +155,10 @@ struct EditImageInformationView: View {
                 } else {
                     if self.imageAndMetadata.image.lock.isLocked {
                         Label("Unlock this file to edit its metadata.", systemImage: "lock")
-                    } else {
+                    } else if self.imageAndMetadata.isLoading {
                         LoadingMetadataView()
+                    } else {
+                        Text("Metadata not available.")
                     }
                 }
                 Section {
