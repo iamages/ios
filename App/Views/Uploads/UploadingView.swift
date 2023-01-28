@@ -3,9 +3,9 @@ import NukeUI
 
 struct UploadingView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @EnvironmentObject private var uploadsViewModel: UploadsViewModel
     @Environment(\.dismiss) private var dismiss
 
-    @Binding var uploadContainers: [IamagesUploadContainer]
     @State private var completedUploads: [IamagesImage] = []
     
     @State private var isCancelUploadsAlertPresented: Bool = false
@@ -14,23 +14,31 @@ struct UploadingView: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(alignment: .leading) {
-                    if !self.completedUploads.isEmpty {
-                        Text("Completed")
-                            .bold()
-                            .foregroundColor(.gray)
-                        ScrollView(.horizontal) {
-                            LazyHGrid(rows: [GridItem(.fixed(64), spacing: 4)]) {
-                                ForEach(self.completedUploads) { completedUpload in
-                                    CompletedUploadView(image: completedUpload)
+                    Text("Completed")
+                        .bold()
+                        .foregroundColor(.gray)
+                    ScrollView(.horizontal) {
+                        LazyHGrid(rows: [GridItem(.fixed(64), spacing: 4)]) {
+                            ForEach(self.completedUploads) { completedUpload in
+                                CompletedUploadView(image: completedUpload)
+                            }
+                            if self.uploadsViewModel.uploadContainers.count - self.completedUploads.count > 1 {
+                                ForEach((1...(self.uploadsViewModel.uploadContainers.count-self.completedUploads.count)).reversed(), id: \.self) { _ in
+                                    Rectangle()
+                                        .fill(.gray)
+                                        .redacted(reason: .placeholder)
+                                        .frame(width: 64, height: 64)
+                                        .cornerRadius(8)
                                 }
                             }
                         }
                     }
-                    if !self.uploadContainers.isEmpty {
+                    if !self.uploadsViewModel.uploadContainers.isEmpty {
+                        Divider()
                         Text("Uploading")
                             .bold()
                             .foregroundColor(.gray)
-                        ForEach(self.uploadContainers) { uploadContainer in
+                        ForEach(self.uploadsViewModel.uploadContainers) { uploadContainer in
                             PendingUploadView(
                                 uploadContainer: uploadContainer,
                                 completedUploads: self.$completedUploads
@@ -45,7 +53,7 @@ struct UploadingView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
-                        if self.uploadContainers.isEmpty {
+                        if self.uploadsViewModel.uploadContainers.isEmpty {
                             self.dismiss()
                         } else {
                             self.isCancelUploadsAlertPresented = true
@@ -76,10 +84,9 @@ struct UploadingView: View {
 #if DEBUG
 struct UploadingView_Previews: PreviewProvider {
     static var previews: some View {
-        UploadingView(
-            uploadContainers: .constant([])
-        )
-        .environmentObject(GlobalViewModel())
+        UploadingView()
+            .environmentObject(GlobalViewModel())
+            .environmentObject(UploadsViewModel())
     }
 }
 #endif

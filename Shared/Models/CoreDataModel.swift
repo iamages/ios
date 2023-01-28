@@ -17,8 +17,5 @@ class CoreDataModel: ObservableObject {
                 fatalError("Couldn't load store '\(description.debugDescription)': \(error.localizedDescription)")
             }
         }
-        
-        self.container.viewContext.automaticallyMergesChangesFromParent = true
-        self.container.viewContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
     }
 }

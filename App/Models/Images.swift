@@ -44,6 +44,7 @@ struct IamagesImageAndMetadataContainer: Identifiable {
     let id: String
     var isLoading: Bool = true
     var image: IamagesImage
+    var ownerlessKey: UUID? = nil
     var metadataContainer: IamagesImageMetadataContainer?
 }
 

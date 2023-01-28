@@ -22,7 +22,6 @@ struct ImageDetailView: View {
     @State private var isEditInformationSheetPresented: Bool = false
     @State private var isCollectionPickerSheetPresented: Bool = false
 
-    @State private var isDeleteDialogPresented: Bool = false
     @State private var isBusy: Bool = false
     @State private var error: LocalizedAlertError?
     
@@ -39,6 +38,13 @@ struct ImageDetailView: View {
                 return NSLocalizedString("Loading metadata...", comment: "")
             }
         }
+    }
+    
+    private var canPerformOwnerTasks: Bool {
+        if let username = self.globalViewModel.userInformation?.username {
+            return self.imageAndMetadata.image.owner == username
+        }
+        return false
     }
     
     // Fetches metadata and image key salt
@@ -68,26 +74,6 @@ struct ImageDetailView: View {
         }
         
         self.isBusy = false
-    }
-    
-    private func delete() async {
-        self.isBusy = true
-        
-        do {
-            try await self.globalViewModel.fetchData(
-                "/images/\(self.imageAndMetadata.image.id)",
-                method: .delete,
-                authStrategy: .required
-            )
-            NotificationCenter.default.post(
-                name: .deleteImage,
-                object: self.imageAndMetadata.image.id
-            )
-            self.isBusy = false
-        } catch {
-            self.isBusy = false
-            self.error = LocalizedAlertError(error: error)
-        }
     }
     
     private func toggleWidgetImage(id: String) {
@@ -163,6 +149,7 @@ struct ImageDetailView: View {
                 ProgressView()
             }
         }
+        .pipeline(self.globalViewModel.imageLoadingPipeline)
     }
     
     private func resetView() {
@@ -260,6 +247,7 @@ struct ImageDetailView: View {
                 }) {
                     Label("Add to collection", systemImage: "folder.badge.plus")
                 }
+                .disabled(!self.globalViewModel.isLoggedIn)
             }
             ToolbarItem(id: "edit", placement: .secondaryAction) {
                 Button(action: {
@@ -267,25 +255,18 @@ struct ImageDetailView: View {
                 }) {
                     Label("Edit", systemImage: "pencil")
                 }
+                .disabled(!self.canPerformOwnerTasks)
             }
             ToolbarItem(id: "delete", placement: .secondaryAction) {
                 Button(role: .destructive, action: {
-                    self.isDeleteDialogPresented = true
+                    self.splitViewModel.imageToDelete = self.imageAndMetadata
                 }) {
                     Label("Delete", systemImage: "trash")
                 }
-                .confirmationDialog("Delete image?", isPresented: self.$isDeleteDialogPresented, titleVisibility: .visible) {
-                    Button("Delete", role: .destructive) {
-                        Task {
-                            await self.delete()
-                        }
-                    }
-                    Button("Cancel", role: .cancel) {
-                        self.isDeleteDialogPresented = false
-                    }
-                } message: {
-                    Text("You cannot revert this action.")
-                }
+                .disabled(
+                    !self.canPerformOwnerTasks &&
+                    imageAndMetadata.ownerlessKey == nil
+                )
             }
             ToolbarItem(id: "relock", placement: .secondaryAction) {
                 if self.imageAndMetadata.image.lock.isLocked {

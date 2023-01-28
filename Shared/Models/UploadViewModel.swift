@@ -73,7 +73,7 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         totalBytesSent: Int64,
         totalBytesExpectedToSend: Int64
     ) {
-        DispatchQueue.main.sync {
+        DispatchQueue.main.async {
             self.progress = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
         }
     }
@@ -164,13 +164,14 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             }
             self.uploadedImage = try self.jsond.decode(IamagesImage.self, from: data)
             if lastUserToken == nil,
-               let viewContext
+               let viewContext,
+               let uploadedImage,
+               let ownerlessKeyString = response.value(forHTTPHeaderField: "X-Iamages-Ownerless-Key"),
+               let ownerlessKey = UUID(uuidString: ownerlessKeyString)
             {
-                let image = try self.jsond.decode(IamagesImage.self, from: data)
-
                 let anonymousUpload = AnonymousUpload(context: viewContext)
-                anonymousUpload.id = image.id
-                anonymousUpload.ownerlessKey = UUID(uuidString: response.value(forHTTPHeaderField: "X-Iamages-Ownerless-Key")!)
+                anonymousUpload.id = uploadedImage.id
+                anonymousUpload.ownerlessKey = ownerlessKey
                 try await viewContext.perform {
                     try viewContext.save()
                 }

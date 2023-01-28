@@ -6,23 +6,23 @@ struct AnonymousUploadsListView: View {
     @EnvironmentObject private var splitViewModel: SplitViewModel
     @Environment(\.managedObjectContext) private var viewContext
     
-    @FetchRequest(
-        sortDescriptors: [
-            NSSortDescriptor(key: "id", ascending: false)
-        ]
-    ) private var anonymousUploads: FetchedResults<AnonymousUpload>
+    @FetchRequest(sortDescriptors: [
+        NSSortDescriptor(key: "id", ascending: true)
+    ]) private var anonymousUploads: FetchedResults<AnonymousUpload>
     
+    @State private var isFirstAppearance: Bool = true
     @State private var error: LocalizedAlertError?
 
-    @State private var imageToForget: String?
+    @State private var imageToForget: IamagesImageAndMetadataContainer?
     @State private var isConfirmForgetAlertPresented: Bool = false
     
-    private func getImage(id: String) async {
+    private func getImage(for anonymousUpload: AnonymousUpload) async {
         do {
             self.splitViewModel.images.insert(
                 IamagesImageAndMetadataContainer(
-                    id: id,
-                    image: try await self.globalViewModel.getImagePublicMetadata(id: id)
+                    id: anonymousUpload.id!,
+                    image: try await self.globalViewModel.getImagePublicMetadata(id: anonymousUpload.id!),
+                    ownerlessKey: anonymousUpload.ownerlessKey!
                 ),
                 at: 0
             )
@@ -33,8 +33,9 @@ struct AnonymousUploadsListView: View {
     
     private func forgetImage(id: String) async {
         do {
-            var fetchRequest = NSFetchRequest<AnonymousUpload>()
-            fetchRequest.predicate = NSPredicate(format: "id == %s", id)
+            let fetchRequest = NSFetchRequest<AnonymousUpload>()
+            fetchRequest.entity = AnonymousUpload.entity()
+            fetchRequest.predicate = NSPredicate(format: "id == %@", id)
             try await self.viewContext.perform {
                 for anonymousUpload in try fetchRequest.execute() {
                     self.viewContext.delete(anonymousUpload)
@@ -62,22 +63,46 @@ struct AnonymousUploadsListView: View {
     @ViewBuilder
     private var list: some View {
         List(selection: self.$splitViewModel.selectedImage) {
-            ForEach(self.$splitViewModel.images) { image in
-                NavigableImageView(imageAndMetadata: image)
+            ForEach(self.$splitViewModel.images) { imageAndMetadata in
+                NavigableImageView(imageAndMetadata: imageAndMetadata)
                     .contextMenu {
                         Button(role: .destructive, action: {
-                            self.imageToForget = image.id
-                            self.isConfirmForgetAlertPresented = true
+                            self.imageToForget = imageAndMetadata.wrappedValue
                         }) {
                             Label("Forget image", systemImage: "archivebox")
+                        }
+                        Button(role: .destructive, action: {
+                            self.splitViewModel.imageToDelete = imageAndMetadata.wrappedValue
+                        }) {
+                            Label("Delete image", systemImage: "trash")
                         }
                     }
             }
         }
         .errorToast(error: self.$error)
+        .onReceive(NotificationCenter.default.publisher(for: NSManagedObjectContext.didSaveObjectsNotification)) { output in
+            guard let anonymousUploads = output.userInfo?[NSInsertedObjectsKey] as? Set<AnonymousUpload> else {
+                return
+            }
+            for anonymousUpload in anonymousUploads {
+                Task {
+                    await self.getImage(for: anonymousUpload)
+                }
+            }
+        }
         .task {
+            if self.isFirstAppearance {
+                self.isFirstAppearance = false
+                for anonymousUpload in self.anonymousUploads {
+                    await self.getImage(for: anonymousUpload)
+                }
+            }
+        }
+        .refreshable {
+            self.splitViewModel.selectedImage = nil
+            self.splitViewModel.images = []
             for anonymousUpload in self.anonymousUploads {
-                await self.getImage(id: anonymousUpload.id!)
+                await self.getImage(for: anonymousUpload)
             }
         }
         .toolbar {
@@ -106,18 +131,22 @@ struct AnonymousUploadsListView: View {
             "Forget image?",
             isPresented: .constant(self.imageToForget != nil),
             presenting: self.imageToForget
-        ) { id in
+        ) { imageAndMetadata in
             Button("Forget", role: .destructive) {
                 Task {
-                    await self.forgetImage(id: id)
+                    await self.forgetImage(id: imageAndMetadata.id)
                 }
                 self.imageToForget = nil
             }
             Button("Cancel", role: .cancel) {
                 self.imageToForget = nil
             }
-        } message: { _ in
-            Text("The image will be forgotten from this app. People with the link may still access the image.")
+        } message: { imageAndMetadata in
+            if let description = imageAndMetadata.metadataContainer?.data.description {
+                Text("'\(description)' will be forgotten from this app. People with the link may still access the image.")
+            } else {
+                Text("The image will be forgotten from this app. People with the link may still access the image.")
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .deleteImage)) { output in
             guard let id = output.object as? String else {

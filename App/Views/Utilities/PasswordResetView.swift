@@ -2,26 +2,26 @@ import SwiftUI
 import Combine
 
 struct PasswordResetView: View {
-    enum Views {
+    enum Page {
         case reset
         case done
     }
     
+    enum Field {
+        case email
+        case code
+    }
+    
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.dismiss) private var dismiss
-    private let secondsFormatter = DateComponentsFormatter()
-    
-    init() {
-        self.secondsFormatter.allowedUnits = [.minute, .second]
-        self.secondsFormatter.unitsStyle = .full
-    }
 
-    @State private var path: [Views] = []
+    @State private var path: [Page] = []
     @State private var isBusy: Bool = false
     @State private var email: String = ""
     @State private var code: String = ""
     @State private var newPassword1: String = ""
     @State private var newPassword2: String = ""
+    @FocusState private var focusedField: Field?
     
     @State private var error: LocalizedAlertError?
     
@@ -72,97 +72,120 @@ struct PasswordResetView: View {
             self.isBusy = false
     }
     
+    @ViewBuilder
+    private var emailInputView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("1")
+                .font(.largeTitle)
+                .bold()
+            Text("Input your email")
+                .font(.title)
+            TextField("Email", text: self.$email)
+                .font(.title3)
+                .textFieldStyle(.roundedBorder)
+                .keyboardType(.emailAddress)
+                .focused(self.$focusedField, equals: .email)
+            Text("If you did not add an email to your account, password recovery will not be possible.")
+            Spacer()
+        }
+        .padding()
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            self.focusedField = .email
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    self.dismiss()
+                }
+                .disabled(self.isBusy)
+            }
+            ToolbarItem {
+                if self.isBusy {
+                    ProgressView()
+                } else {
+                    Button("Next") {
+                        Task {
+                            await self.getCode()
+                        }
+                    }
+                    .disabled(!self.email.isEmail())
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var resetPasswordView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("2")
+                .font(.largeTitle)
+                .bold()
+            Text("Input your code & new password")
+                .font(.title)
+            Group {
+                TextField("Code", text: self.$code)
+                    .keyboardType(.numberPad)
+                    .focused(self.$focusedField, equals: .code)
+                    .onReceive(Just(self.code)) { newValue in
+                        let filtered = newValue.filter { "0123456789".contains($0) }
+                        if filtered != newValue {
+                            self.code = filtered
+                        }
+                    }
+                SecureField("New password", text: self.$newPassword1)
+                SecureField("New password, again", text: self.$newPassword2)
+            }
+            .textFieldStyle(.roundedBorder)
+            .font(.title3)
+            Text("You can find the code in your email inbox.\nIf you do not see it, check the spam folder.")
+            Spacer()
+        }
+        .padding()
+        .onAppear {
+            self.focusedField = .code
+        }
+        .toolbar {
+            ToolbarItem {
+                if self.isBusy {
+                    ProgressView()
+                } else {
+                    Button("Reset") {
+                        Task {
+                            await self.resetPassword()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var doneView: some View {
+        IconAndInformationView(
+            icon: "checkmark",
+            heading: "Password reset complete",
+            subheading: "You can now login with your new password"
+        )
+        .navigationBarBackButtonHidden()
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(2))) {
+                self.dismiss()
+            }
+        }
+    }
+    
     var body: some View {
         NavigationStack(path: self.$path) {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("1")
-                    .font(.largeTitle)
-                    .bold()
-                Text("Input your email")
-                    .font(.title)
-                TextField("Email", text: self.$email)
-                    .font(.title3)
-                    .textFieldStyle(.roundedBorder)
-                Text("If you did not add an email to your account, password recovery will not be possible.")
-                Spacer()
-            }
-            .padding()
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        self.dismiss()
-                    }
-                    .disabled(self.isBusy)
-                }
-                ToolbarItem {
-                    if self.isBusy {
-                        ProgressView()
-                    } else {
-                        Button("Next") {
-                            Task {
-                                await self.getCode()
-                            }
-                        }
-                        .disabled(!self.email.isEmail())
+            self.emailInputView
+                .navigationDestination(for: Page.self) { view in
+                    switch view {
+                    case .reset:
+                        self.resetPasswordView
+                    case .done:
+                        self.doneView
                     }
                 }
-            }
-            .navigationDestination(for: Views.self) { view in
-                switch view {
-                case .reset:
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("2")
-                            .font(.largeTitle)
-                            .bold()
-                        Text("Input your code & new password")
-                            .font(.title)
-                        Group {
-                            TextField("Code", text: self.$code)
-                                .keyboardType(.numberPad)
-                                .onReceive(Just(self.code)) { newValue in
-                                    let filtered = newValue.filter { "0123456789".contains($0) }
-                                    if filtered != newValue {
-                                        self.code = filtered
-                                    }
-                                }
-                            SecureField("New password", text: self.$newPassword1)
-                            SecureField("New password, again", text: self.$newPassword2)
-                        }
-                        .textFieldStyle(.roundedBorder)
-                        .font(.title3)
-                        Text("You can find the code in your email inbox.\nIf you do not see it, check the spam folder.")
-                        Spacer()
-                    }
-                    .padding()
-                    .toolbar {
-                        ToolbarItem {
-                            if self.isBusy {
-                                ProgressView()
-                            } else {
-                                Button("Reset") {
-                                    Task {
-                                        await self.resetPassword()
-                                    }
-                                }
-                            }
-                        }
-                        
-                    }
-                case .done:
-                    IconAndInformationView(
-                        icon: "checkmark",
-                        heading: "Password reset complete",
-                        subheading: "You can now login with your new password"
-                    )
-                    .navigationBarBackButtonHidden()
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(2))) {
-                            self.dismiss()
-                        }
-                    }
-                }
-            }
         }
         .errorAlert(error: self.$error)
     }

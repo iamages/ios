@@ -1,6 +1,7 @@
 import SwiftUI
 struct NavigableImageView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @EnvironmentObject private var splitViewModel: SplitViewModel
 
     @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
 
@@ -20,6 +21,15 @@ struct NavigableImageView: View {
             self.error = error
         }
         self.imageAndMetadata.isLoading = false
+    }
+    
+    @ViewBuilder
+    private var deleteImageButton: some View {
+        Button(role: .destructive, action: {
+            self.splitViewModel.imageToDelete = self.imageAndMetadata
+        }) {
+            Label("Delete image", systemImage: "trash")
+        }
     }
 
     private let roundedRectangle = RoundedRectangle(cornerRadius: 8)
@@ -71,9 +81,7 @@ struct NavigableImageView: View {
             }
         }
         .contextMenu {
-            ImageShareLinkView(image: self.imageAndMetadata.image)
             if self.error != nil {
-                Divider()
                 Button(action: {
                     Task {
                         await self.getMetadata()
@@ -81,6 +89,12 @@ struct NavigableImageView: View {
                 }) {
                     Label("Retry loading metadata", systemImage: "arrow.clockwise")
                 }
+                Divider()
+            }
+            ImageShareLinkView(image: self.imageAndMetadata.image)
+            Divider()
+            if self.imageAndMetadata.image.owner == self.globalViewModel.userInformation?.username {
+                self.deleteImageButton
             }
         }
         .task {
@@ -99,6 +113,8 @@ struct NavigableImageView_Previews: PreviewProvider {
         NavigableImageView(
             imageAndMetadata: .constant(previewImageAndMetadata)
         )
+        .environmentObject(GlobalViewModel())
+        .environmentObject(SplitViewModel())
     }
 }
 #endif

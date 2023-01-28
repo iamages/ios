@@ -31,8 +31,7 @@ struct ShareView: View {
             Form {
                 Section {
                     HStack {
-                        TextField("Description", text: self.$uploadModel.information.description, axis: .vertical)
-                            .lineLimit(2)
+                        TextField("Description", text: self.$uploadModel.information.description)
                             .focused(self.$focusedField, equals: .description)
                         Spacer()
                         Group {

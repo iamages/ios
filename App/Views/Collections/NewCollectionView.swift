@@ -10,6 +10,7 @@ struct NewCollectionView: View {
     )
     @State private var error: LocalizedAlertError?
     
+    @FocusState private var isDescriptionFieldFocused: Bool
     @State private var isBusy: Bool = false
     @State private var isSuccessPresented: Bool = false
     
@@ -47,13 +48,9 @@ struct NewCollectionView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
+                Section("Description") {
                     TextField("Description", text: self.$newCollection.description)
-                } footer: {
-                    if self.newCollection.description.isEmpty ||
-                        self.newCollection.description.count > 255 {
-                        Text("The description must be between 1-255 characters.")
-                    }
+                        .focused(self.$isDescriptionFieldFocused)
                 }
                 Section("Ownership") {
                     Toggle("Private", isOn: self.$newCollection.isPrivate)
@@ -62,6 +59,9 @@ struct NewCollectionView: View {
             .errorAlert(error: self.$error)
             .navigationTitle("New collection")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                self.isDescriptionFieldFocused = true
+            }
             .navigationDestination(isPresented: self.$isSuccessPresented) {
                 self.success
             }

@@ -8,6 +8,8 @@ struct SharedWithYouListView: View {
     @StateObject private var swViewModel = SWViewModel()
     
     @State private var collections: [IamagesCollection] = []
+    @State private var collectionToDelete: IamagesCollection?
+    @State private var navigationPath: [String] = []
     
     @ViewBuilder
     private var list: some View {
@@ -23,6 +25,18 @@ struct SharedWithYouListView: View {
                 }
             }
         }
+        .modifier(
+            DeleteCollectionListenerModifier(
+                collections: self.$collections,
+                navigationPath: self.$navigationPath
+            )
+        )
+        .modifier(
+            DeleteCollectionAlertModifier(
+                collectionToDelete: self.$collectionToDelete,
+                globalViewModel: self.globalViewModel
+            )
+        )
         .navigationDestination(for: IamagesCollection.ID.self) { id in
             if let i = self.collections.firstIndex(where: { $0.id == id }),
                let collection = self.$collections[i]
@@ -54,7 +68,9 @@ struct SharedWithYouListView: View {
                     subheading: "Iamages embed links sent to you via Messages will appear here."
                 )
             } else {
-                self.list
+                NavigationStack(path: self.$navigationPath) {
+                    self.list
+                }
             }
         }
         .navigationTitle("Shared with You")

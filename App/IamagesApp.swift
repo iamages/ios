@@ -47,6 +47,7 @@ struct IamagesApp: App {
             UploadsView()
                 .hideMacTitlebar()
                 .environmentObject(self.globalViewModel)
+                .environment(\.managedObjectContext, self.coreDataModel.container.viewContext)
         }
         
         WindowGroup("New collection", id: "newCollection") {

@@ -11,7 +11,7 @@ struct CollectionImagesListView: View {
     @State private var error: LocalizedAlertError?
     @State private var isEditSheetPresented: Bool = false
     
-    @State private var removeImageID: String?
+    @State private var imageToRemove: IamagesImageAndMetadataContainer?
     
     @State private var queryString: String = ""
     @State private var querySuggestions: [String] = []
@@ -101,9 +101,11 @@ struct CollectionImagesListView: View {
     }
     
     @ViewBuilder
-    private func removeFromCollectionButton(id: String) -> some View {
+    private func removeFromCollectionButton(
+        for imageAndMetadata: IamagesImageAndMetadataContainer
+    ) -> some View {
         Button(role: .destructive, action: {
-            self.removeImageID = id
+            self.imageToRemove = imageAndMetadata
         }) {
             Label("Remove from collection", systemImage: "rectangle.stack.badge.minus")
         }
@@ -112,20 +114,17 @@ struct CollectionImagesListView: View {
     var body: some View {
         List(selection: self.$splitViewModel.selectedImage) {
             ForEach(self.$splitViewModel.images) { imageAndMetadata in
-                NavigableImageView(imageAndMetadata: imageAndMetadata)
-                    .task {
-                        if !self.isEndOfFeed && self.splitViewModel.images.last?.id == imageAndMetadata.wrappedValue.id {
-                            await self.pageFeed()
-                        }
+                NavigableImageView(
+                    imageAndMetadata: imageAndMetadata
+                )
+                .contextMenu {
+                    self.removeFromCollectionButton(for: imageAndMetadata.wrappedValue)
+                }
+                .task {
+                    if !self.isEndOfFeed && self.splitViewModel.images.last?.id == imageAndMetadata.wrappedValue.id {
+                        await self.pageFeed()
                     }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        self.removeFromCollectionButton(id: imageAndMetadata.id)
-                    }
-                    .contextMenu {
-                        ImageShareLinkView(image: imageAndMetadata.image.wrappedValue)
-                        Divider()
-                        self.removeFromCollectionButton(id: imageAndMetadata.id)
-                    }
+                }
             }
             if self.isBusy {
                 HStack {
@@ -163,18 +162,27 @@ struct CollectionImagesListView: View {
                 collection: self.$collection
             )
         }
-        .alert("Remove from collection?", isPresented: .constant(self.removeImageID != nil)) {
+        .alert(
+            "Remove from collection?",
+            isPresented: .constant(self.imageToRemove != nil),
+            presenting: self.imageToRemove
+        ) { imageAndMetadata in
             Button("Remove", role: .destructive) {
                 Task {
-                    guard let id = self.removeImageID else {
-                        return
-                    }
-                    self.removeImageID = nil
-                    await removeImage(id: id)
+                    await removeImage(id: imageAndMetadata.id)
                 }
+                self.imageToRemove = nil
             }
-        } message: {
-            Text("The selected image will be removed from the collection. You will need to add it back again to see it in this collection.")
+            Button("Cancel", role: .cancel) {
+                self.imageToRemove = nil
+            }
+        } message: { imageAndMetadata in
+            if let description = imageAndMetadata.metadataContainer?.data.description {
+                Text("'\(description)' will be removed from this collection!")
+            } else {
+                Text("The selected image will be removed from the collection!")
+            }
+            
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -189,6 +197,7 @@ struct CollectionImagesListView: View {
             ToolbarItem {
                 CollectionShareLinkView(collection: self.collection)
             }
+            #if targetEnvironment(macCatalyst)
             ToolbarItem {
                 Button(action: {
                     Task {
@@ -200,6 +209,7 @@ struct CollectionImagesListView: View {
                 .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
+            #endif
         }
     }
 }

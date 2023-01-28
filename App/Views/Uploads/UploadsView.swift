@@ -8,12 +8,7 @@ struct UploadsView: View {
     @Environment(\.dismiss) private var dismiss
     #endif
     
-    @State private var selectedUploadContainer: UUID?
-    @State private var uploadContainers: [IamagesUploadContainer] = []
-    @State private var isBusy: Bool = false
-
-    @State private var fileImportErrors: [IdentifiableLocalizedError] = []
-    @State private var isImportErrorsSheetPresented: Bool = false
+    @StateObject private var uploadsViewModel = UploadsViewModel()
     
     // TODO: Collection information
     @State private var isNewCollectionSheetPresented: Bool = false
@@ -21,68 +16,55 @@ struct UploadsView: View {
     
     var body: some View {
         NavigationSplitView {
-            UploadContainersListView(
-                selectedUploadContainer: self.$selectedUploadContainer,
-                uploadContainers: self.$uploadContainers,
-                fileImportErrors: self.$fileImportErrors,
-                isBusy: self.$isBusy
-            )
-            .toolbar {
-                #if !targetEnvironment(macCatalyst)
-                ToolbarItem(placement: .navigationBarLeading) {
-                    if self.horizontalSizeClass == .compact {
-                        Button(action: {
-                            self.dismiss()
-                        }) {
-                            Label("Close", systemImage: "xmark")
+            UploadContainersListView()
+                .environmentObject(self.uploadsViewModel)
+                .toolbar {
+                    #if !targetEnvironment(macCatalyst)
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        if self.horizontalSizeClass == .compact {
+                            Button(action: {
+                                self.dismiss()
+                            }) {
+                                Label("Close", systemImage: "xmark")
+                            }
+                            .keyboardShortcut("w")
                         }
-                        .keyboardShortcut("w")
+                    }
+                    #endif
+                    ToolbarItem(placement: .primaryAction) {
+                        Menu {
+                            Button(action: {
+                                self.isUploadingCoverPresented = true
+                                self.uploadsViewModel.selectedUploadContainer = nil
+                            }) {
+                                Label("Upload separately", systemImage: "square.and.arrow.up.on.square")
+                            }
+                            Button(action: {
+                                self.isNewCollectionSheetPresented = true
+                                self.uploadsViewModel.selectedUploadContainer = nil
+                            }) {
+                                Label(
+                                    self.globalViewModel.isLoggedIn ? "Upload into collection" : "Log in to upload into collection",
+                                    systemImage: "square.grid.3x1.folder.badge.plus"
+                                )
+                            }
+                            .disabled(!self.globalViewModel.isLoggedIn)
+                        } label: {
+                            Label("Upload", systemImage: "square.and.arrow.up.on.square")
+                        }
+                        .disabled(self.uploadsViewModel.uploadContainers.isEmpty || self.uploadsViewModel.isBusy)
                     }
                 }
-                #endif
-                ToolbarItem {
-                    if !self.fileImportErrors.isEmpty {
-                        Button(action: {
-                            self.isImportErrorsSheetPresented = true
-                        }) {
-                            Label("Import errors", systemImage: "exclamationmark.octagon")
-                        }
-                        .badge(self.fileImportErrors.count)
-                    }
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
-                        Button(action: {
-                            self.isUploadingCoverPresented = true
-                            self.selectedUploadContainer = nil
-                        }) {
-                            Label("Upload separately", systemImage: "square.and.arrow.up.on.square")
-                        }
-                        Button(action: {
-                            self.isNewCollectionSheetPresented = true
-                            self.selectedUploadContainer = nil
-                        }) {
-                            Label(
-                                self.globalViewModel.isLoggedIn ? "Upload into collection" : "Log in to upload into collection",
-                                systemImage: "square.grid.3x1.folder.badge.plus"
-                            )
-                        }
-                        .disabled(!self.globalViewModel.isLoggedIn)
-                    } label: {
-                        Label("Upload", systemImage: "square.and.arrow.up.on.square")
-                    }
-                    .disabled(self.uploadContainers.isEmpty || self.isBusy)
-                }
-            }
         } detail: {
             Group {
-                if let selectedUploadContainer,
-                   let i = self.uploadContainers.firstIndex(where: { $0.id == selectedUploadContainer }),
-                   var uploadContainer = self.$uploadContainers[i]
+                if let id = self.uploadsViewModel.selectedUploadContainer,
+                   let i = self.uploadsViewModel.uploadContainers.firstIndex(where: { $0.id == id }),
+                   let uploadContainer = self.$uploadsViewModel.uploadContainers[i]
                 {
                     UploadEditorView(
-                        information: uploadContainer.information
+                        uploadContainer: uploadContainer
                     )
+                    .environmentObject(self.uploadsViewModel)
                 } else {
                     Text("Select an upload to edit")
                         .navigationTitle("")
@@ -104,15 +86,12 @@ struct UploadsView: View {
             }
         }
         .navigationTitle("Uploads")
+        #if targetEnvironment(macCatalyst)
+        .navigationSubtitle("\(self.uploadsViewModel.uploadContainers.count) image\(self.uploadsViewModel.uploadContainers.count > 1 || self.uploadsViewModel.uploadContainers.isEmpty ? "s" : "")")
+        #endif
         .fullScreenCover(isPresented: self.$isUploadingCoverPresented) {
-            UploadingView(
-                uploadContainers: self.$uploadContainers
-            )
-        }
-        .sheet(isPresented: self.$isImportErrorsSheetPresented) {
-            UploadImportErrorsView(
-                errors: self.$fileImportErrors
-            )
+            UploadingView()
+                .environmentObject(self.uploadsViewModel)
         }
         .sheet(isPresented: self.$isNewCollectionSheetPresented, onDismiss: {
             self.isUploadingCoverPresented = true

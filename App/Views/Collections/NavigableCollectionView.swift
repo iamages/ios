@@ -29,6 +29,8 @@ struct NavigableCollectionView: View {
         LazyImage(request: self.globalViewModel.getThumbnailRequest(for: image)) { state in
             if let image = state.image {
                 image
+                    .animatedImageRenderingEnabled(false)
+                    .videoRenderingEnabled(false)
                     .resizingMode(.aspectFill)
             } else if state.error != nil {
                 Image(systemName: "exclamationmark.octagon")
@@ -38,6 +40,8 @@ struct NavigableCollectionView: View {
             }
         }
     }
+    
+    private let roundedRectangle = RoundedRectangle(cornerRadius: 8)
 
     var body: some View {
         NavigationLink(value: self.collection.id) {
@@ -55,7 +59,7 @@ struct NavigableCollectionView: View {
                                 self.collectionImageView(for: image)
                             }
                         }
-                        if 4-self.images.count > 1 {
+                        if self.images.count < 4 {
                             ForEach((1...(4-self.images.count)).reversed(), id: \.self) { _ in
                                 Rectangle()
                                     .fill(.gray)
@@ -67,7 +71,11 @@ struct NavigableCollectionView: View {
                     .clipped()
                 }
                 .frame(width: 64, height: 64)
-                .cornerRadius(8)
+                .clipShape(self.roundedRectangle)
+                .overlay {
+                    self.roundedRectangle
+                        .stroke(.gray)
+                }
             }
             VStack(alignment: .leading) {
                 Text(self.collection.description)

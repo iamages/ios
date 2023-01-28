@@ -50,6 +50,7 @@ struct NewItemCommands: Commands {
                     self.openWindow(id: "newCollection")
                 }
                 .keyboardShortcut("n", modifiers: [.shift, .command])
+                .disabled(!self.globalViewModel.isLoggedIn)
                 Divider()
                 Button("Window") {
                     self.openWindow(id: "main")

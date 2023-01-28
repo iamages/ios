@@ -18,7 +18,7 @@ struct NewMenuModifier: ViewModifier {
                         Button(action: {
                             self.globalViewModel.isNewCollectionPresented = true
                         }) {
-                            Label("Collection", systemImage: "folder.badge.plus")
+                            Label(self.globalViewModel.isLoggedIn ? "Collection" : "Log in to upload into collection", systemImage: "folder.badge.plus")
                         }
                         .disabled(!self.globalViewModel.isLoggedIn || self.globalViewModel.isUploadsPresented)
                     } label: {
@@ -26,12 +26,6 @@ struct NewMenuModifier: ViewModifier {
                     }
                 }
             }
-    }
-}
-
-extension View {
-    func newMenuToolbarItem(globalViewModel: GlobalViewModel) -> some View {
-        modifier(NewMenuModifier(globalViewModel: globalViewModel))
     }
 }
 #endif

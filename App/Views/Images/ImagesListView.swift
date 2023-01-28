@@ -80,7 +80,9 @@ struct ImagesListView: View {
             ForEach(self.$splitViewModel.images) { imageAndMetadata in
                 NavigableImageView(imageAndMetadata: imageAndMetadata)
                     .task {
-                        if !self.isEndOfFeed && self.splitViewModel.images.last?.id == imageAndMetadata.wrappedValue.id {
+                        if !self.isEndOfFeed &&
+                            self.splitViewModel.images.last?.id == imageAndMetadata.wrappedValue.id
+                        {
                             await pageFeed()
                         }
                     }
@@ -152,7 +154,7 @@ struct ImagesListView: View {
         }
         .navigationTitle("Images")
         #if !targetEnvironment(macCatalyst)
-        .newMenuToolbarItem(globalViewModel: self.globalViewModel)
+        .modifier(NewMenuModifier(globalViewModel: self.globalViewModel))
         #endif
     }
 }

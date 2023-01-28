@@ -3,26 +3,25 @@ import PhotosUI
 
 struct UploadContainersListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @EnvironmentObject private var uploadsViewModel: UploadsViewModel
     @Environment(\.editMode) private var editMode
-    
-    @Binding var selectedUploadContainer: UUID?
-    @Binding var uploadContainers: [IamagesUploadContainer]
-    @Binding var fileImportErrors: [IdentifiableLocalizedError]
-    @Binding var isBusy: Bool
-    
-    @State private var error: LocalizedAlertError?
 
+    @State private var error: LocalizedAlertError?
     @State private var isFilePickerPresented: Bool = false
     @State private var photoPickerItems: [PhotosPickerItem] = []
-
+    
     private func handleImagesPicked() async {
-        self.isBusy = true
+        self.uploadsViewModel.isBusy = true
         
         for image in self.photoPickerItems {
             do {
-                guard let data: Data = try await image.loadTransferable(type: Data.self) else {
+                guard let data = try await image.loadTransferable(type: Data.self) else {
                     throw FileImportErrors.loadPhotoFromLibraryFailure
                 }
+                if data.count > self.globalViewModel.maxImageSize {
+                    throw FileImportErrors.tooLarge(image.itemIdentifier ?? "Unknown", data.count)
+                }
+                
                 guard let type: UTType = image.supportedContentTypes.first,
                       let mime: String = type.preferredMIMEType else {
                     throw FileImportErrors.noType("Photo library file")
@@ -38,21 +37,18 @@ struct UploadContainersListView: View {
                         type: mime
                     )
                 )
-                self.uploadContainers.append(container)
+                self.uploadsViewModel.uploadContainers.append(container)
             } catch {
-                if let error = error as? LocalizedError {
-                    self.fileImportErrors.append(IdentifiableLocalizedError(error: error))
-                }
-                
+                self.error = LocalizedAlertError(error: error)
             }
         }
         self.photoPickerItems = []
         
-        self.isBusy = false
+        self.uploadsViewModel.isBusy = false
     }
     
     private func handleFilePicked(_ result: Result<[URL], Error>) {
-        self.isBusy = true
+        self.uploadsViewModel.isBusy = true
 
         switch result {
         case .success(let urls):
@@ -81,72 +77,45 @@ struct UploadContainersListView: View {
                         )
                     )
 
-                    self.uploadContainers.append(container)
+                    self.uploadsViewModel.uploadContainers.append(container)
                 } catch {
-                    self.fileImportErrors.append(IdentifiableLocalizedError(error: error as! LocalizedError))
+                    self.error = LocalizedAlertError(error: error)
                 }
             }
         case .failure(let error):
             self.error = LocalizedAlertError(error: error)
         }
         
-        self.isBusy = false
+        self.uploadsViewModel.isBusy = false
     }
-    
-    private func deleteUpload(id: UUID) {
-        if let i = self.uploadContainers.firstIndex(where: { $0.id == id }) {
-            withAnimation {
-                self.uploadContainers.remove(at: i)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func deleteUploadButton(id: UUID) -> some View {
-        Button(role: .destructive, action: {
-            self.deleteUpload(id: id)
-        }) {
-            Label("Delete upload", systemImage: "trash")
-        }
-    }
-    
+
     var body: some View {
         Group {
-            if self.uploadContainers.isEmpty {
+            if self.uploadsViewModel.uploadContainers.isEmpty {
                 IconAndInformationView(
                     icon: "questionmark.folder",
                     heading: "No images added"
                 )
             } else {
-                List(selection: self.$selectedUploadContainer) {
-                    ForEach(self.uploadContainers) { uploadContainer in
+                List(selection: self.$uploadsViewModel.selectedUploadContainer) {
+                    ForEach(self.uploadsViewModel.uploadContainers) { uploadContainer in
                         NavigableUploadContainerView(
                             uploadContainer: uploadContainer
                         )
                         .contextMenu {
-                            self.deleteUploadButton(id: uploadContainer.id)
+                            Button(role: .destructive, action: {
+                                self.uploadsViewModel.deleteUpload(id: uploadContainer.id)
+                            }) {
+                                Label("Delete upload", systemImage: "trash")
+                            }
                         }
-                    }
-                    .onDelete { offsets in
-                        self.uploadContainers.remove(atOffsets: offsets)
-                    }
-                }
-                .onReceive(NotificationCenter.default.publisher(for: .deleteUpload)) { output in
-                    if let id = output.object as? UUID {
-                        if self.selectedUploadContainer == id {
-                            self.selectedUploadContainer = nil
-                        }
-                        self.deleteUpload(id: id)
                     }
                 }
             }
         }
         .navigationTitle("Uploads")
         .navigationBarTitleDisplayMode(.inline)
-        #if targetEnvironment(macCatalyst)
-        .navigationSubtitle("\(self.uploadContainers.count) image\(self.uploadContainers.count > 1 || self.uploadContainers.isEmpty ? "s" : "")")
-        #endif
-        .errorAlert(error: self.$error)
+        .errorToast(error: self.$error)
         .task(id: self.photoPickerItems) {
             await self.handleImagesPicked()
         }
@@ -156,18 +125,23 @@ struct UploadContainersListView: View {
             allowsMultipleSelection: true,
             onCompletion: self.handleFilePicked
         )
+        
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 EditButton()
             }
             ToolbarItemGroup {
-                PhotosPicker(selection: self.$photoPickerItems, matching: .images) {
-                    Label("Choose photos", systemImage: "rectangle.stack.badge.plus")
-                }
-                Button(action: {
-                    self.isFilePickerPresented = true
-                }) {
-                   Label("Choose files", systemImage: "filemenu.and.selection")
+                if self.uploadsViewModel.isBusy {
+                    ProgressView()
+                } else {
+                    PhotosPicker(selection: self.$photoPickerItems, matching: .images) {
+                        Label("Choose photos", systemImage: "rectangle.stack.badge.plus")
+                    }
+                    Button(action: {
+                        self.isFilePickerPresented = true
+                    }) {
+                       Label("Choose files", systemImage: "filemenu.and.selection")
+                    }
                 }
             }
         }
@@ -177,13 +151,9 @@ struct UploadContainersListView: View {
 #if DEBUG
 struct UploadContainersListView_Previews: PreviewProvider {
     static var previews: some View {
-        UploadContainersListView(
-            selectedUploadContainer: .constant(nil),
-            uploadContainers: .constant([]),
-            fileImportErrors: .constant([]),
-            isBusy: .constant(false)
-        )
-        .environmentObject(GlobalViewModel())
+        UploadContainersListView()
+            .environmentObject(GlobalViewModel())
+            .environmentObject(UploadsViewModel())
     }
 }
 #endif

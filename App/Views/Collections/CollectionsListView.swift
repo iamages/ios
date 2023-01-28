@@ -22,7 +22,7 @@ struct CollectionsListView: View {
     @State private var queryString: String = ""
     @State private var querySuggestions: [String] = []
 
-    @State private var collectionToDelete: String?
+    @State private var collectionToDelete: IamagesCollection?
     @State private var isAddedToCollection: Bool = false
     @State private var navigationPath: [String] = []
     
@@ -84,32 +84,6 @@ struct CollectionsListView: View {
         }
     }
     
-    private func deleteCollection(id: String) async {
-        do {
-            try await self.globalViewModel.fetchData(
-                "/collections/\(id)",
-                method: .delete,
-                authStrategy: .required
-            )
-            if let i = self.collections.firstIndex(where: { $0.id == id }) {
-                withAnimation {
-                    self.collections.remove(at: i)
-                }
-            }
-        } catch {
-            self.error = LocalizedAlertError(error: error)
-        }
-    }
-    
-    @ViewBuilder
-    private func deleteCollectionButton(id: String) -> some View {
-        Button(role: .destructive, action: {
-            self.collectionToDelete = id
-        }) {
-            Label("Delete collection", systemImage: "trash")
-        }
-    }
-    
     @ViewBuilder
     private var list: some View {
         List {
@@ -120,15 +94,14 @@ struct CollectionsListView: View {
                             await self.pageFeed()
                         }
                     }
-                    .swipeActions {
-                        if self.viewMode == .normal {
-                            self.deleteCollectionButton(id: collection.id)
-                        }
-                    }
                     .contextMenu {
                         CollectionShareLinkView(collection: collection)
                         Divider()
-                        self.deleteCollectionButton(id: collection.id)
+                        Button(role: .destructive, action: {
+                            self.collectionToDelete = collection
+                        }) {
+                            Label("Delete collection", systemImage: "trash")
+                        }
                     }
             }
             if self.isBusy {
@@ -174,15 +147,18 @@ struct CollectionsListView: View {
                 }
             }
         }
-        .alert("Delete collection?", isPresented: .constant(self.collectionToDelete != nil), presenting: self.collectionToDelete) { id in
-            Button("Delete", role: .destructive) {
-                Task {
-                    await self.deleteCollection(id: id)
-                }
-            }
-        } message: { _ in
-            Text("The selected collection will be deleted. The images it contains will not be deleted.")
-        }
+        .modifier(
+            DeleteCollectionListenerModifier(
+                collections: self.$collections,
+                navigationPath: self.$navigationPath
+            )
+        )
+        .modifier(
+            DeleteCollectionAlertModifier(
+                collectionToDelete: self.$collectionToDelete,
+                globalViewModel: self.globalViewModel
+            )
+        )
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 if self.viewMode == .picker {
@@ -248,7 +224,7 @@ struct CollectionsListView: View {
             }
             .navigationTitle("Collections")
             #if !targetEnvironment(macCatalyst)
-            .newMenuToolbarItem(globalViewModel: self.globalViewModel)
+            .modifier(NewMenuModifier(globalViewModel: self.globalViewModel))
             #endif
         }
     }

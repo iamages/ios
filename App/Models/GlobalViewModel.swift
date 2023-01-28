@@ -49,13 +49,18 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     @Published var isNewCollectionPresented: Bool = false
     #endif
     
+    let maxImageSize: Int = 30000000 // 30MB
+    
+    var thumbnailLoadingPipeline = ImagePipeline(configuration: .withURLCache)
+    var imageLoadingPipeline = ImagePipeline(configuration: .withDataCache)
+    
     override init() {
         super.init()
         
         self.jsone.dateEncodingStrategy = .iso8601
         self.jsond.dateDecodingStrategy = .iso8601
 
-        (ImagePipeline.shared.configuration.dataLoader as? DataLoader)?.delegate = self
+        (self.thumbnailLoadingPipeline.configuration.dataLoader as? DataLoader)?.delegate = self
         
         do {
             if let userInformation = try self.keychain.getDataWithKey(.userInformation) {
@@ -114,6 +119,10 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         request.httpBody = body
         
         request.addValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
+        
+        for header in headers {
+            request.addValue(header.value, forHTTPHeaderField: header.key)
+        }
         
         if self.addAuthStrategies.contains(authStrategy) && self.isLoggedIn {
             try await self.addUserTokenToRequest(to: &request)
@@ -360,5 +369,28 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
            !email.isEmail() {
             throw LoginErrors.invalidEmail
         }
+    }
+    
+    func editUserInformation(using userEdit: IamagesUserEdit) async throws {
+        try await self.fetchData(
+            "/users/",
+            method: .patch,
+            body: self.jsone.encode(userEdit),
+            contentType: .json,
+            authStrategy: .required
+        )
+        switch userEdit.change {
+        case .password:
+            try self.keychain.setStringWithKey(userEdit.to!, key: .password)
+        case .email:
+            self.userInformation?.email = userEdit.to
+            if let userInformation {
+                try self.keychain.setDataWithKey(try self.jsone.encode(userInformation), key: .userInformation)
+            }
+        }
+    }
+    
+    func getCollectionInformation(id: String) async throws {
+        
     }
 }

@@ -57,6 +57,8 @@ struct EditImageInformationView: View {
                         edit.imageLockKey = try self.getImageLockKey()
                     }
                     self.edits.append(edit)
+                    // Remove cache
+                    self.globalViewModel.imageLoadingPipeline.cache.removeCachedData(for: self.globalViewModel.getImageRequest(for: self.imageAndMetadata.image))
                 } else {
                     self.edits.append(
                         IamagesImageEdit(

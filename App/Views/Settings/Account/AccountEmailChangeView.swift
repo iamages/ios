@@ -16,6 +16,8 @@ struct AccountEmailChangeView: View {
     var isEmailValid: Bool {
         return self.newEmail.isEmail()
     }
+    
+    @State private var isRemoveEmailAlertPresented: Bool = false
 
     @State private var error: LocalizedAlertError?
     
@@ -23,26 +25,69 @@ struct AccountEmailChangeView: View {
         self.isBusy = true
         
         do {
+            try await self.globalViewModel.editUserInformation(
+                using: IamagesUserEdit(change: .email, to: self.newEmail)
+            )
+            self.isBusy = false
             self.dismiss()
         } catch {
+            self.isBusy = false
+            self.error = LocalizedAlertError(error: error)
+        }
+    }
+    
+    private func removeEmail() async {
+        self.isBusy = true
+        
+        do {
+            try await self.globalViewModel.editUserInformation(
+                using: IamagesUserEdit(change: .email, to: nil)
+            )
+            self.isBusy = false
+            self.dismiss()
+        } catch {
+            self.isBusy = false
             self.error = LocalizedAlertError(error: error)
         }
     }
     
     var body: some View {
         Form {
-            LabeledContent("Current email", value: self.globalViewModel.userInformation?.email ?? "None")
-            LabeledContent("New email") {
-                TextField("Email", text: self.$newEmail)
-                    .multilineTextAlignment(.trailing)
-                    .focused(self.$focusedField, equals: .newEmail)
+            Section {
+                LabeledContent("Current email", value: self.globalViewModel.userInformation?.email ?? "None")
+                LabeledContent("New email") {
+                    TextField("Email", text: self.$newEmail)
+                        .multilineTextAlignment(.trailing)
+                        .keyboardType(.emailAddress)
+                        .focused(self.$focusedField, equals: .newEmail)
+                }
+                Button("Change email") {
+                    Task {
+                        await self.changeEmail()
+                    }
+                }
+                .disabled(self.isBusy || !self.isEmailValid)
             }
-            Button("Change email") {
-                Task {
-                    await self.changeEmail()
+            if self.globalViewModel.userInformation?.email != nil {
+                Section {
+                    Button("Remove email", role: .destructive) {
+                        self.isRemoveEmailAlertPresented = true
+                    }
+                    .confirmationDialog(
+                        "Remove email?",
+                        isPresented: self.$isRemoveEmailAlertPresented,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Remove", role: .destructive) {
+                            Task {
+                                await self.removeEmail()
+                            }
+                        }
+                    } message: {
+                        Text("Without an email, you will not be able to reset your password.")
+                    }
                 }
             }
-            .disabled(self.isBusy || !self.isEmailValid)
         }
         .navigationTitle("Change email")
         .navigationBarTitleDisplayMode(.inline)

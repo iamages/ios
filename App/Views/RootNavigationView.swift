@@ -4,6 +4,7 @@ import StoreKit
 struct RootNavigationView: View {
     @EnvironmentObject private var appDelegate: AppDelegate
     @EnvironmentObject private var globalViewModel: GlobalViewModel
+    @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.scenePhase) private var scenePhase
 
     // FIXME: requestReview crashes app on launch.
@@ -113,7 +114,22 @@ struct RootNavigationView: View {
         // Welcome sheet
         .modifier(AppWelcomeSheetModifier())
         // Delete image listener
-        .deleteImageListener(splitViewModel: self.splitViewModel)
+        .modifier(
+            DeleteImageListenerModifier(
+                splitViewModel: self.splitViewModel
+            )
+        )
+        .modifier(
+            DeleteImageAlertModifier(
+                splitViewModel: self.splitViewModel,
+                globalViewModel: self.globalViewModel
+            )
+        )
+        .modifier(
+            OpenURLModifier(
+                globalViewModel: self.globalViewModel
+            )
+        )
         #if targetEnvironment(macCatalyst)
         .hideMacTitlebar()
         #else

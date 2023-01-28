@@ -2,7 +2,7 @@ import Foundation
 
 struct IamagesUser: Codable {
     let username: String
-    let email: String?
+    var email: String?
     let createdOn: Date
     
     enum CodingKeys: String, CodingKey {
@@ -27,4 +27,14 @@ struct IamagesPasswordReset: Codable {
         case code
         case newPassword = "new_password"
     }
+}
+
+struct IamagesUserEdit: Codable {
+    enum Changeable: String, Codable {
+        case password
+        case email
+    }
+    
+    let change: Changeable
+    let to: String?
 }

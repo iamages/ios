@@ -2,6 +2,12 @@ import SwiftUI
 import WidgetKit
 
 struct LoginSheetView: View {
+    enum Field {
+        case username
+        case password
+        case email
+    }
+    
     @EnvironmentObject var globalViewModel: GlobalViewModel
     @Environment(\.dismiss) private var dismiss
     
@@ -9,6 +15,7 @@ struct LoginSheetView: View {
     @State private var passwordInput: String = ""
     @State private var emailInput: String = ""
     @State private var isSigningUp: Bool = false
+    @FocusState private var focusedField: Field?
     
     @State private var isPasswordResetSheetPresented: Bool = false
     
@@ -59,9 +66,12 @@ struct LoginSheetView: View {
         NavigationStack {
             Form {
                 TextField("Username", text: self.$usernameInput)
+                    .focused(self.$focusedField, equals: .username)
                 SecureField("Password", text: self.$passwordInput)
+                    .focused(self.$focusedField, equals: .password)
                 if self.isSigningUp {
                     TextField("Email (optional)", text: self.$emailInput)
+                        .focused(self.$focusedField, equals: .email)
                 }
                 Toggle("I want to make a new account", isOn: self.$isSigningUp)
                 Button(self.isSigningUp ? "Sign up" : "Login") {
@@ -76,6 +86,9 @@ struct LoginSheetView: View {
                 .disabled(self.isBusy)
             }
             .formStyle(.grouped)
+            .onAppear {
+                self.focusedField = .username
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel) {
