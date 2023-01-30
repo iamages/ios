@@ -3,7 +3,9 @@ import Foundation
 // Credits:
 // https://www.avanderlee.com/swiftui/error-alert-presenting/
 
-struct LocalizedAlertError: LocalizedError, Equatable {
+struct LocalizedAlertError: LocalizedError, Equatable, Identifiable {
+    let id = UUID()
+    
     let underlyingError: LocalizedError
     var errorDescription: String? {
         underlyingError.errorDescription
@@ -18,6 +20,6 @@ struct LocalizedAlertError: LocalizedError, Equatable {
     }
     
     static func ==(lhs: LocalizedAlertError, rhs: LocalizedAlertError) -> Bool {
-        return lhs.localizedDescription == rhs.localizedDescription && lhs.recoverySuggestion == rhs.recoverySuggestion
+        return lhs.id == rhs.id
     }
 }

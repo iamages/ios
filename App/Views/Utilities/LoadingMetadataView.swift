@@ -6,6 +6,7 @@ struct LoadingMetadataView: View {
             ProgressView()
             Text("Loading metadata...")
                 .foregroundColor(.gray)
+                .padding(.leading, 4)
         }
     }
 }

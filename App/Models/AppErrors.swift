@@ -85,23 +85,3 @@ struct PasswordMismatchError: LocalizedError {
     let errorDescription: String? = NSLocalizedString("Passwords don't match", comment: "")
     let recoverySuggestion: String? = NSLocalizedString("Check both passwords for mismatches.", comment: "")
 }
-
-enum FieldRequirementError: Error {
-    case imageDescription
-}
-
-extension FieldRequirementError: LocalizedError {
-    public var errorDescription: String? {
-        switch self {
-        case .imageDescription:
-            return NSLocalizedString("Image description requirement", comment: "")
-        }
-    }
-    
-    public var recoverySuggestion: String? {
-        switch self {
-        case .imageDescription:
-            return NSLocalizedString("Has to be between 1-255 characters.", comment: "")
-        }
-    }
-}

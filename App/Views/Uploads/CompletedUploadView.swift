@@ -21,8 +21,10 @@ struct CompletedUploadView: View {
     }
 }
 
+#if DEBUG
 struct CompletedUploadView_Previews: PreviewProvider {
     static var previews: some View {
         CompletedUploadView(image: previewImage)
     }
 }
+#endif

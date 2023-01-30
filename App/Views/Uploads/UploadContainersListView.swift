@@ -5,6 +5,12 @@ struct UploadContainersListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @EnvironmentObject private var uploadsViewModel: UploadsViewModel
     @Environment(\.editMode) private var editMode
+    
+    @AppStorage("uploadDefaults.isPrivate", store: .iamagesGroup)
+    private var isPrivateDefault: Bool = false
+    
+    @AppStorage("uploadDefaults.isLocked", store: .iamagesGroup)
+    private var isLockedDefault: Bool = false
 
     @State private var error: LocalizedAlertError?
     @State private var isFilePickerPresented: Bool = false
@@ -31,12 +37,15 @@ struct UploadContainersListView: View {
                     throw FileImportErrors.unsupportedType("Photo library file", mime)
                 }
                 
-                let container = IamagesUploadContainer(
+                var container = IamagesUploadContainer(
                     file: IamagesUploadFile(
                         data: data,
                         type: mime
                     )
                 )
+                container.information.isPrivate = self.isPrivateDefault
+                container.information.isLocked = self.isLockedDefault
+                
                 self.uploadsViewModel.uploadContainers.append(container)
             } catch {
                 self.error = LocalizedAlertError(error: error)
@@ -70,12 +79,14 @@ struct UploadContainersListView: View {
                         throw FileImportErrors.unsupportedType(url.lastPathComponent, type)
                     }
                     
-                    let container = IamagesUploadContainer(
+                    var container = IamagesUploadContainer(
                         file: IamagesUploadFile(
                             data: try Data(contentsOf: url),
                             type: type
                         )
                     )
+                    container.information.isPrivate = self.isPrivateDefault
+                    container.information.isLocked = self.isLockedDefault
 
                     self.uploadsViewModel.uploadContainers.append(container)
                 } catch {

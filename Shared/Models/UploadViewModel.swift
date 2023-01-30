@@ -32,10 +32,41 @@ struct IamagesUploadFile: Hashable {
     var type: String
 }
 
-struct IamagesUploadContainer: Identifiable, Hashable {
+struct IamagesUploadContainer: Identifiable {
     let id: UUID = UUID()
     var information: IamagesUploadInformation = IamagesUploadInformation()
     var file: IamagesUploadFile
+    
+    func validate() throws {
+        if self.information.description.isEmpty || self.information.description.count > 255 {
+            throw FieldRequirementError.imageDescription
+        }
+        if self.information.isLocked && self.information.lockKey.isEmpty {
+            throw FieldRequirementError.missingLockKey
+        }
+        if self.file.data.count > 30000000 {
+            throw FieldRequirementError.imageToLarge
+        }
+    }
+}
+
+enum UploadContainerValidationError: Error {
+    case withContainer(String, LocalizedError)
+}
+
+extension UploadContainerValidationError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .withContainer(let description, let error):
+            return "\(error.localizedDescription) for '\(description.isEmpty ? "No description yet" : description)'"
+        }
+    }
+    var recoverySuggestion: String? {
+        switch self {
+        case .withContainer(_, let error):
+            return error.recoverySuggestion
+        }
+    }
 }
 
 struct NoImageDataError: LocalizedError {
@@ -88,9 +119,22 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     }
     
     func upload() async {
+        // Reset progress
         self.isUploading = true
         self.error = nil
         self.progress = 0.0
+        
+        // Validate upload
+        do {
+            guard let file else {
+                throw NoImageDataError()
+            }
+            try IamagesUploadContainer(information: self.information, file: file).validate()
+        } catch {
+            self.error = LocalizedAlertError(error: error)
+            self.isUploading = false
+            return
+        }
 
         var uploadRequest = URLRequest(url: .apiRootUrl.appending(path: "/images", directoryHint: .isDirectory))
         uploadRequest.httpMethod = HTTPMethod.post.rawValue
@@ -124,11 +168,8 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             if let lastUserToken {
                 uploadRequest.addValue("\(lastUserToken.token.tokenType) \(lastUserToken.token.accessToken)", forHTTPHeaderField: "Authorization")
             }
-            
-            guard let file else {
-                throw NoImageDataError()
-            }
-            let mimeType = file.type.components(separatedBy: "/")
+
+            let mimeType = self.file!.type.components(separatedBy: "/")
             
             let form: MultipartFormData = try MultipartFormData(
                 boundary: try Boundary(uncheckedBoundary: "iamages")
@@ -144,7 +185,7 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
                     ContentDisposition(name: "file", filename: "image.bin")
                     ContentType(mediaType: MediaType(type: mimeType[0], subtype: mimeType[1]))
                 } body: {
-                    file.data
+                    self.file!.data
                 }
             }
             uploadRequest.httpBody = form.httpBody

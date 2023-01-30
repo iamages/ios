@@ -25,7 +25,9 @@ struct RootNavigationView: View {
                 case .collections:
                     CollectionsListView(viewMode: .normal)
                 case .sharedWithYou:
-                    SharedWithYouListView()
+                    // SharedWithYouListView() TODO: Complete Shared with You
+                    IconAndInformationView(icon: "box.truck", heading: "Coming soon", subheading: "We're getting this ready. Check back soon!")
+                        .navigationTitle("Shared with You")
                 case .anonymousUploads:
                     AnonymousUploadsListView()
                 }

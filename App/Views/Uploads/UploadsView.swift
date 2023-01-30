@@ -9,10 +9,27 @@ struct UploadsView: View {
     #endif
     
     @StateObject private var uploadsViewModel = UploadsViewModel()
-    
-    // TODO: Collection information
+
     @State private var isNewCollectionSheetPresented: Bool = false
     @State private var isUploadingCoverPresented: Bool = false
+    
+    @State private var error: LocalizedAlertError?
+    
+    private func validateUploads() throws {
+        self.uploadsViewModel.isBusy = true
+        for uploadContainer in self.uploadsViewModel.uploadContainers {
+            do {
+                try uploadContainer.validate()
+            } catch {
+                throw UploadContainerValidationError.withContainer(
+                    uploadContainer.information.description,
+                    error as! LocalizedError
+                )
+            }
+        }
+        self.uploadsViewModel.selectedUploadContainer = nil
+        self.uploadsViewModel.isBusy = false
+    }
     
     var body: some View {
         NavigationSplitView {
@@ -34,14 +51,24 @@ struct UploadsView: View {
                     ToolbarItem(placement: .primaryAction) {
                         Menu {
                             Button(action: {
-                                self.isUploadingCoverPresented = true
-                                self.uploadsViewModel.selectedUploadContainer = nil
+                                do {
+                                    try self.validateUploads()
+                                    self.isUploadingCoverPresented = true
+                                } catch {
+                                    self.uploadsViewModel.isBusy = false
+                                    self.error = LocalizedAlertError(error: error)
+                                }
                             }) {
                                 Label("Upload separately", systemImage: "square.and.arrow.up.on.square")
                             }
                             Button(action: {
-                                self.isNewCollectionSheetPresented = true
-                                self.uploadsViewModel.selectedUploadContainer = nil
+                                do {
+                                    try self.validateUploads()
+                                    self.isNewCollectionSheetPresented = true
+                                } catch {
+                                    self.uploadsViewModel.isBusy = false
+                                    self.error = LocalizedAlertError(error: error)
+                                }
                             }) {
                                 Label(
                                     self.globalViewModel.isLoggedIn ? "Upload into collection" : "Log in to upload into collection",
@@ -89,6 +116,7 @@ struct UploadsView: View {
         #if targetEnvironment(macCatalyst)
         .navigationSubtitle("\(self.uploadsViewModel.uploadContainers.count) image\(self.uploadsViewModel.uploadContainers.count > 1 || self.uploadsViewModel.uploadContainers.isEmpty ? "s" : "")")
         #endif
+        .errorAlert(error: self.$error)
         .fullScreenCover(isPresented: self.$isUploadingCoverPresented) {
             UploadingView()
                 .environmentObject(self.uploadsViewModel)

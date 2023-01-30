@@ -22,35 +22,19 @@ struct NavigableImageView: View {
         }
         self.imageAndMetadata.isLoading = false
     }
-    
-    @ViewBuilder
-    private var deleteImageButton: some View {
-        Button(role: .destructive, action: {
-            self.splitViewModel.imageToDelete = self.imageAndMetadata
-        }) {
-            Label("Delete image", systemImage: "trash")
-        }
-    }
 
     private let roundedRectangle = RoundedRectangle(cornerRadius: 8)
     
     var body: some View {
         NavigationLink(value: self.imageAndMetadata.id) {
             HStack {
-                Group {
-                    if self.imageAndMetadata.image.lock.isLocked {
-                        Image(systemName: "lock.doc.fill")
-                            .font(.title2)
-                    } else {
-                        ImageThumbnailView(image: self.imageAndMetadata.image)
+                ImageThumbnailView(image: self.imageAndMetadata.image)
+                    .frame(width: 64, height: 64)
+                    .clipShape(self.roundedRectangle)
+                    .overlay {
+                        self.roundedRectangle
+                            .stroke(.gray)
                     }
-                }
-                .frame(width: 64, height: 64)
-                .clipShape(self.roundedRectangle)
-                .overlay {
-                    self.roundedRectangle
-                        .stroke(.gray)
-                }
                 
                 VStack(alignment: .leading) {
                     if self.imageAndMetadata.image.lock.isLocked {
@@ -94,7 +78,11 @@ struct NavigableImageView: View {
             ImageShareLinkView(image: self.imageAndMetadata.image)
             Divider()
             if self.imageAndMetadata.image.owner == self.globalViewModel.userInformation?.username {
-                self.deleteImageButton
+                Button(role: .destructive, action: {
+                    self.splitViewModel.imageToDelete = self.imageAndMetadata
+                }) {
+                    Label("Delete image", systemImage: "trash")
+                }
             }
         }
         .task {

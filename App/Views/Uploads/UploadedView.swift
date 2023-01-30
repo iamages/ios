@@ -14,8 +14,10 @@ struct UploadedView: View {
     }
 }
 
+#if DEBUG
 struct UploadedView_Previews: PreviewProvider {
     static var previews: some View {
         UploadedView(uploaded: previewImage)
     }
 }
+#endif

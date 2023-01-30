@@ -4,16 +4,24 @@ import KeychainAccess
 struct ShareView: View {
     private enum Field {
         case description
+        case lockKey
     }
     
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.extensionContext) private var extensionContext
+
+    @AppStorage("uploadDefaults.isPrivate", store: .iamagesGroup)
+    private var isPrivateDefault: Bool = false
+    
+    @AppStorage("uploadDefaults.isLocked", store: .iamagesGroup)
+    private var isLockedDefault: Bool = false
     
     @StateObject private var uploadModel = UploadViewModel()
     @StateObject private var coreDataModel = CoreDataModel()
 
     @FocusState private var focusedField: Field?
     @State private var isLoggedIn: Bool = false
+    @State private var isBusy: Bool = true
     
     private func dismiss() {
         self.extensionContext!.completeRequest(returningItems: nil)
@@ -21,7 +29,7 @@ struct ShareView: View {
     
     private func upload() async {
         await self.uploadModel.upload()
-        if self.uploadModel.error == nil && !self.uploadModel.isUploading {
+        if self.uploadModel.error == nil {
             self.dismiss()
         }
     }
@@ -52,6 +60,7 @@ struct ShareView: View {
                     Toggle("Locked", isOn: self.$uploadModel.information.isLocked)
                     if self.uploadModel.information.isLocked {
                         SecureField("Lock key", text: self.$uploadModel.information.lockKey)
+                            .focused(self.$focusedField, equals: .lockKey)
                     }
                 } header: {
                     Text("Ownership")
@@ -68,7 +77,7 @@ struct ShareView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", action: self.dismiss)
                         .keyboardShortcut(.escape)
-                        .disabled(self.uploadModel.isUploading)
+                        .disabled(self.uploadModel.isUploading || self.isBusy)
                         .tint(self.uploadModel.information.description.isEmpty ? .none : .red)
                 }
                 ToolbarItem(placement: .primaryAction) {
@@ -77,36 +86,44 @@ struct ShareView: View {
                             await self.upload()
                         }
                     }
-                    .disabled(self.uploadModel.file == nil || self.uploadModel.isUploading)
+                    .disabled(self.uploadModel.file == nil || self.uploadModel.isUploading || self.isBusy)
                 }
                 ToolbarItem(placement: .principal) {
                     if self.uploadModel.isUploading {
                         ProgressView(value: self.uploadModel.progress, total: 100.0)
+                    } else if self.isBusy {
+                        ProgressView()
                     }
                 }
             }
         }
         .tint(.orange)
         .errorAlert(error: self.$uploadModel.error)
-        .onChange(of: self.uploadModel.information.isLocked) { _ in
+        .onChange(of: self.uploadModel.information.isLocked) { isLocked in
             self.uploadModel.information.lockKey = ""
-        }
-        .onAppear {
-            self.uploadModel.viewContext = self.coreDataModel.container.viewContext
-            self.focusedField = .description
-            self.isLoggedIn = self.uploadModel.checkLoggedIn()
+            if isLocked {
+                self.focusedField = .lockKey
+            } else {
+                self.focusedField = .description
+            }
         }
         // Refresh isLoggedIn on focus, in case user logs in somewhere else.
         // Wish there was a better solution for this.
         .onChange(of: self.scenePhase) { phase in
             if phase == .active {
+                self.isBusy = true
                 self.isLoggedIn = self.uploadModel.checkLoggedIn()
                 if !self.isLoggedIn {
                     self.uploadModel.information.isPrivate = false
                 }
+                self.isBusy = false
             }
         }
         .onAppear {
+            self.uploadModel.viewContext = self.coreDataModel.container.viewContext
+            self.focusedField = .description
+            self.isLoggedIn = self.uploadModel.checkLoggedIn()
+
             guard let itemProvider = (self.extensionContext!.inputItems.first as? NSExtensionItem)?.attachments?.first,
                   let contentType = itemProvider.registeredContentTypes.first else {
                 self.uploadModel.error = LocalizedAlertError(error: NoImageDataError())
@@ -116,16 +133,21 @@ struct ShareView: View {
                 DispatchQueue.main.async {
                     if let error {
                         self.uploadModel.error = LocalizedAlertError(error: error)
+                        self.isBusy = false
                         return
                     }
                     guard let data else {
                         self.uploadModel.error = LocalizedAlertError(error: error)
+                        self.isBusy = false
                         return
                     }
                     self.uploadModel.file = IamagesUploadFile(
                         data: data,
                         type: contentType.preferredMIMEType!
                     )
+                    self.uploadModel.information.isPrivate = self.isPrivateDefault
+                    self.uploadModel.information.isLocked = self.isLockedDefault
+                    self.isBusy = false
                 }
             }
         }

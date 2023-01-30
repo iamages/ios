@@ -12,6 +12,7 @@ struct EditCollectionInformationView: View {
     @State private var isBusy: Bool = false
     @State private var error: LocalizedAlertError?
     @State private var isCancelAlertPresented: Bool = false
+    @FocusState private var isDescriptionFieldFocused: Bool
     
     private func edit() async {
         self.isBusy = true
@@ -62,6 +63,7 @@ struct EditCollectionInformationView: View {
             Form {
                 Section("Description") {
                     TextField("Description cannot be empty!", text: self.$description)
+                        .focused(self.$isDescriptionFieldFocused)
                 }
                 Section("Ownership") {
                     Toggle("Private", isOn: self.$isPrivate)
@@ -73,6 +75,7 @@ struct EditCollectionInformationView: View {
             .onAppear {
                 self.description = self.collection.description
                 self.isPrivate = self.collection.isPrivate
+                self.isDescriptionFieldFocused = true
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

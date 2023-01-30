@@ -12,6 +12,7 @@ struct CollectionImagesListView: View {
     @State private var isEditSheetPresented: Bool = false
     
     @State private var imageToRemove: IamagesImageAndMetadataContainer?
+    @State private var collectionToDelete: IamagesCollection?
     
     @State private var queryString: String = ""
     @State private var querySuggestions: [String] = []
@@ -100,17 +101,6 @@ struct CollectionImagesListView: View {
         }
     }
     
-    @ViewBuilder
-    private func removeFromCollectionButton(
-        for imageAndMetadata: IamagesImageAndMetadataContainer
-    ) -> some View {
-        Button(role: .destructive, action: {
-            self.imageToRemove = imageAndMetadata
-        }) {
-            Label("Remove from collection", systemImage: "rectangle.stack.badge.minus")
-        }
-    }
-    
     var body: some View {
         List(selection: self.$splitViewModel.selectedImage) {
             ForEach(self.$splitViewModel.images) { imageAndMetadata in
@@ -118,7 +108,11 @@ struct CollectionImagesListView: View {
                     imageAndMetadata: imageAndMetadata
                 )
                 .contextMenu {
-                    self.removeFromCollectionButton(for: imageAndMetadata.wrappedValue)
+                    Button(role: .destructive, action: {
+                        self.imageToRemove = imageAndMetadata.wrappedValue
+                    }) {
+                        Label("Remove from collection", systemImage: "rectangle.stack.badge.minus")
+                    }
                 }
                 .task {
                     if !self.isEndOfFeed && self.splitViewModel.images.last?.id == imageAndMetadata.wrappedValue.id {
@@ -184,6 +178,12 @@ struct CollectionImagesListView: View {
             }
             
         }
+        .modifier(
+            DeleteCollectionAlertModifier(
+                collectionToDelete: self.$collectionToDelete,
+                globalViewModel: self.globalViewModel
+            )
+        )
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 if self.collection.owner == self.globalViewModel.userInformation?.username {
@@ -196,6 +196,13 @@ struct CollectionImagesListView: View {
             }
             ToolbarItem {
                 CollectionShareLinkView(collection: self.collection)
+            }
+            ToolbarItem {
+                Button(role: .destructive) {
+                    self.collectionToDelete = self.collection
+                } label: {
+                    Label("Delete collection", systemImage: "trash")
+                }
             }
             #if targetEnvironment(macCatalyst)
             ToolbarItem {

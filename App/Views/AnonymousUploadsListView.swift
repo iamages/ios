@@ -2,33 +2,58 @@ import SwiftUI
 import CoreData
 
 struct AnonymousUploadsListView: View {
+    struct LoadingError: Identifiable {
+        let id: String
+        let anonymousUpload: AnonymousUpload
+        let error: Error
+    }
+
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @EnvironmentObject private var splitViewModel: SplitViewModel
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(sortDescriptors: [
-        NSSortDescriptor(key: "id", ascending: true)
+        NSSortDescriptor(key: "id", ascending: false)
     ]) private var anonymousUploads: FetchedResults<AnonymousUpload>
     
     @State private var isFirstAppearance: Bool = true
+    @State private var isLoading: Bool = true
     @State private var error: LocalizedAlertError?
+    @State private var loadingErrors: [LoadingError] = []
 
     @State private var imageToForget: IamagesImageAndMetadataContainer?
+    @State private var anonymousUploadToForget: AnonymousUpload?
     @State private var isConfirmForgetAlertPresented: Bool = false
     
-    private func getImage(for anonymousUpload: AnonymousUpload) async {
-        do {
-            self.splitViewModel.images.insert(
-                IamagesImageAndMetadataContainer(
-                    id: anonymousUpload.id!,
-                    image: try await self.globalViewModel.getImagePublicMetadata(id: anonymousUpload.id!),
-                    ownerlessKey: anonymousUpload.ownerlessKey!
-                ),
-                at: 0
-            )
-        } catch {
-            self.error = LocalizedAlertError(error: error)
+    private func getImage(for anonymousUpload: AnonymousUpload) async throws -> IamagesImageAndMetadataContainer {
+        return IamagesImageAndMetadataContainer(
+            id: anonymousUpload.id!,
+            image: try await self.globalViewModel.getImagePublicMetadata(id: anonymousUpload.id!),
+            ownerlessKey: anonymousUpload.ownerlessKey!
+        )
+    }
+    
+    private func collectAnonymousImages() async {
+        self.isLoading = true
+        self.splitViewModel.selectedImage = nil
+        self.splitViewModel.images = []
+        self.loadingErrors = []
+        var images: [IamagesImageAndMetadataContainer] = []
+        for anonymousUpload in self.anonymousUploads {
+            do {
+                images.append(try await self.getImage(for: anonymousUpload))
+            } catch {
+                self.loadingErrors.append(
+                    LoadingError(
+                        id: anonymousUpload.id!,
+                        anonymousUpload: anonymousUpload,
+                        error: error
+                    )
+                )
+            }
         }
+        self.splitViewModel.images = images
+        self.isLoading = false
     }
     
     private func forgetImage(id: String) async {
@@ -47,6 +72,12 @@ struct AnonymousUploadsListView: View {
         }
     }
     
+    private func forgetAnonymousUpload(for anonymousUpload: AnonymousUpload) async {
+        await self.viewContext.perform {
+            self.viewContext.delete(anonymousUpload)
+        }
+    }
+    
     private func forgetAll() async {
         do {
             try await self.viewContext.perform {
@@ -57,6 +88,24 @@ struct AnonymousUploadsListView: View {
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
+        }
+    }
+    
+    @ViewBuilder
+    private func getLoadingErrorView(for loadingError: LoadingError) -> some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(loadingError.anonymousUpload.id!)
+                    .bold()
+                Text(loadingError.error.localizedDescription)
+            }
+            Spacer()
+            Button(role: .destructive) {
+                self.anonymousUploadToForget = loadingError.anonymousUpload
+            } label: {
+                Label("Forget upload", systemImage: "archivebox")
+                    .labelStyle(.iconOnly)
+            }
         }
     }
     
@@ -78,31 +127,73 @@ struct AnonymousUploadsListView: View {
                         }
                     }
             }
+            if self.isLoading {
+                ProgressView("Loading images...")
+            }
+            if !self.loadingErrors.isEmpty {
+                Section("Errors") {
+                    ForEach(self.loadingErrors) { loadingError in
+                        self.getLoadingErrorView(for: loadingError)
+                    }
+                }
+            }
         }
         .errorToast(error: self.$error)
         .onReceive(NotificationCenter.default.publisher(for: NSManagedObjectContext.didSaveObjectsNotification)) { output in
-            guard let anonymousUploads = output.userInfo?[NSInsertedObjectsKey] as? Set<AnonymousUpload> else {
-                return
-            }
-            for anonymousUpload in anonymousUploads {
-                Task {
-                    await self.getImage(for: anonymousUpload)
+            // Deleting anonymous uploads
+            Task {
+                guard let anonymousUploads = output.userInfo?[NSDeletedObjectsKey] as? Set<AnonymousUpload> else {
+                    return
                 }
+                for anonymousUpload in anonymousUploads {
+                    if let i = self.loadingErrors.firstIndex(where: { $0.id == anonymousUpload.id }) {
+                        self.loadingErrors.remove(at: i)
+                    }
+                    if let i = self.splitViewModel.images.firstIndex(where: { $0.id == anonymousUpload.id }) {
+                        if self.splitViewModel.selectedImage == anonymousUpload.id {
+                            withAnimation {
+                                self.splitViewModel.selectedImage = nil
+                            }
+                        }
+                        withAnimation {
+                            self.splitViewModel.images.remove(at: i)
+                        }
+                    }
+                }
+            }
+            // Adding new anonymousUploads
+            Task {
+                guard let anonymousUploads = output.userInfo?[NSInsertedObjectsKey] as? Set<AnonymousUpload> else {
+                    return
+                }
+                self.isLoading = true
+                var images: [IamagesImageAndMetadataContainer] = []
+                for anonymousUpload in anonymousUploads {
+                    do {
+                        images.insert(try await self.getImage(for: anonymousUpload), at: 0)
+                    } catch {
+                        self.loadingErrors.append(
+                            LoadingError(
+                                id: anonymousUpload.id!,
+                                anonymousUpload: anonymousUpload,
+                                error: error
+                            )
+                        )
+                    }
+                }
+                self.splitViewModel.images.insert(contentsOf: images, at: 0)
+                self.isLoading = false
             }
         }
         .task {
             if self.isFirstAppearance {
                 self.isFirstAppearance = false
-                for anonymousUpload in self.anonymousUploads {
-                    await self.getImage(for: anonymousUpload)
-                }
+                await self.collectAnonymousImages()
             }
         }
         .refreshable {
-            self.splitViewModel.selectedImage = nil
-            self.splitViewModel.images = []
-            for anonymousUpload in self.anonymousUploads {
-                await self.getImage(for: anonymousUpload)
+            if !self.isLoading {
+                await self.collectAnonymousImages()
             }
         }
         .toolbar {
@@ -147,6 +238,23 @@ struct AnonymousUploadsListView: View {
             } else {
                 Text("The image will be forgotten from this app. People with the link may still access the image.")
             }
+        }
+        .alert(
+            "Forget image?",
+            isPresented: .constant(self.anonymousUploadToForget != nil),
+            presenting: self.anonymousUploadToForget
+        ) { anonymousUpload in
+            Button("Forget", role: .destructive) {
+                Task {
+                    await self.forgetAnonymousUpload(for: anonymousUpload)
+                }
+                self.anonymousUploadToForget = nil
+            }
+            Button("Cancel", role: .cancel) {
+                self.anonymousUploadToForget = nil
+            }
+        } message: { anonymousUpload in
+            Text("'\(anonymousUpload.id!)' will be forgotten from this app. People with the link may still access the image.")
         }
         .onReceive(NotificationCenter.default.publisher(for: .deleteImage)) { output in
             guard let id = output.object as? String else {

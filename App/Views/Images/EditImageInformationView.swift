@@ -1,6 +1,11 @@
 import SwiftUI
 
 struct EditImageInformationView: View {
+    enum Field {
+        case description
+        case lockKey
+    }
+    
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.dismiss) private var dismiss
 
@@ -12,11 +17,12 @@ struct EditImageInformationView: View {
     @State private var isLocked: Bool = false
     @State private var newLockKey: String = ""
     @State private var currentLockKey: String = ""
+    
     @State private var isKeyAlertPresented: Bool = false
-
     @State private var isCancelAlertPresented: Bool = false
     @State private var isBusy: Bool = false
     @State private var error: LocalizedAlertError?
+    @FocusState private var focusedField: Field?
     
     @State private var edits: [IamagesImageEdit] = []
     
@@ -147,6 +153,7 @@ struct EditImageInformationView: View {
                 if let metadata = self.imageAndMetadata.metadataContainer {
                     Section {
                         TextField("Description", text: self.$description)
+                            .focused(self.$focusedField, equals: .description)
                     } header: {
                         Text("Description")
                     } footer: {
@@ -168,6 +175,7 @@ struct EditImageInformationView: View {
                     Toggle("Lock (Beta)", isOn: self.$isLocked)
                     if self.isLocked && !self.imageAndMetadata.image.lock.isLocked {
                         SecureField("Lock key", text: self.$newLockKey)
+                            .focused(self.$focusedField, equals: .lockKey)
                     }
                 } header: {
                     Text("Privacy")
@@ -188,10 +196,23 @@ struct EditImageInformationView: View {
                 }
             }
             .errorAlert(error: self.$error)
+            .navigationTitle("Edit image information")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                self.focusedField = .description
+            }
+            .onChange(of: self.isLocked) { isLocked in
+                if isLocked && !self.imageAndMetadata.image.lock.isLocked {
+                    self.focusedField = .lockKey
+                } else {
+                    self.focusedField = .description
+                }
+            }
             .lockBetaWarningAlert(
                 isLocked: self.$isLocked,
                 currentIsLocked: self.imageAndMetadata.image.lock.isLocked
             )
+            
             .alert("Lock key required", isPresented: self.$isKeyAlertPresented) {
                 SecureField("Lock key", text: self.$currentLockKey)
                 Button("Unlock", role: .destructive) {
@@ -202,8 +223,6 @@ struct EditImageInformationView: View {
             } message: {
                 Text("To edit this locked image, input your lock key.")
             }
-            .navigationTitle("Edit image information")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

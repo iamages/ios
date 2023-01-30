@@ -22,7 +22,7 @@ struct UploadingView: View {
                             ForEach(self.completedUploads) { completedUpload in
                                 CompletedUploadView(image: completedUpload)
                             }
-                            if self.uploadsViewModel.uploadContainers.count - self.completedUploads.count > 1 {
+                            if self.uploadsViewModel.uploadContainers.count - self.completedUploads.count > 0 {
                                 ForEach((1...(self.uploadsViewModel.uploadContainers.count-self.completedUploads.count)).reversed(), id: \.self) { _ in
                                     Rectangle()
                                         .fill(.gray)
