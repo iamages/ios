@@ -223,6 +223,11 @@ struct CollectionsListView: View {
                 }
             }
             .navigationTitle("Collections")
+            .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
+                if isLoggedIn {
+                    self.isFirstAppearance = true
+                }
+            }
             #if !targetEnvironment(macCatalyst)
             .modifier(NewMenuModifier(globalViewModel: self.globalViewModel))
             #endif

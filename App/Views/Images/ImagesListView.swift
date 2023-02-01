@@ -152,6 +152,11 @@ struct ImagesListView: View {
                 self.list
             }
         }
+        .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
+            if isLoggedIn {
+                self.isFirstAppearance = true
+            }
+        }
         .navigationTitle("Images")
         #if !targetEnvironment(macCatalyst)
         .modifier(NewMenuModifier(globalViewModel: self.globalViewModel))

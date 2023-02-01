@@ -50,7 +50,7 @@ struct ImageWidgetEntryView : View {
                     .fill(.orange.gradient)
             }
         }
-        .widgetURL(URL(string: "iamages://images")?.appending(path: self.entry.id ?? "/"))
+        .widgetURL(URL(string: "iamages://api/images/\(self.entry.id ?? "")/embed"))
     }
 }
 

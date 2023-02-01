@@ -55,7 +55,8 @@ struct LoginSheetView: View {
                 username: self.usernameInput,
                 password: self.passwordInput
             )
-            throw LoginErrors.signupComplete
+            self.error = LocalizedAlertError(error: LoginErrors.signupComplete)
+            self.isSigningUp = false
         } catch {
             self.error = LocalizedAlertError(error: error)
         }

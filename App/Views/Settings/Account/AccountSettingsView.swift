@@ -11,6 +11,16 @@ struct AccountSettingsView: View {
     
     @State private var error: LocalizedAlertError?
     
+    private func deleteUser() async {
+        self.isBusy = true
+        do {
+            try await self.globalViewModel.deleteUser()
+        } catch {
+            self.error = LocalizedAlertError(error: error)
+        }
+        self.isBusy = false
+    }
+    
     private func logout() {
         do {
             try self.globalViewModel.logout()
@@ -53,6 +63,7 @@ struct AccountSettingsView: View {
                                         await self.refreshUserInformation()
                                     }
                                 }
+                                .disabled(self.isBusy)
                             }
                         }
                     }
@@ -69,9 +80,24 @@ struct AccountSettingsView: View {
                     Button("Delete account", role: .destructive) {
                         self.isDeleteAccountAlertPresented = true
                     }
+                    .disabled(self.isBusy)
+                    .confirmationDialog(
+                        "Delete user?",
+                        isPresented: self.$isDeleteAccountAlertPresented,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Delete", role: .destructive) {
+                            Task {
+                                await self.deleteUser()
+                            }
+                        }
+                    } message: {
+                        Text("Everything, from your images and collections, will be wiped, forever! Make sure you have already backed up your data before continuing!")
+                    }
                     Button("Log out") {
                         self.isLogoutConfirmationDialogPresented = true
                     }
+                    .disabled(self.isBusy)
                     .confirmationDialog(
                         "Log out?",
                         isPresented: self.$isLogoutConfirmationDialogPresented,

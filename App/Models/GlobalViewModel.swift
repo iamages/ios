@@ -75,12 +75,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         }
     }
     
-    private func addUserTokenToRequest(to request: inout URLRequest) async throws {
-        if self.lastUserToken == nil || Date.now.timeIntervalSince(self.lastUserToken!.date) > 1800 {
-            try await self.fetchUserToken()
-        }
-        request.addValue("\(self.lastUserToken!.token.tokenType) \(self.lastUserToken!.token.accessToken)", forHTTPHeaderField: "Authorization")
-    }
+    // MARK: URLSession delegate methods
     
     internal func urlSession(
         _ session: URLSession,
@@ -100,6 +95,8 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         }
         return newRequest
     }
+    
+    // MARK: Convenience REST request function
     
     func fetchData(
         _ endpoint: String,
@@ -146,6 +143,15 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         return (data, response)
     }
     
+    // MARK: User
+    
+    private func addUserTokenToRequest(to request: inout URLRequest) async throws {
+        if self.lastUserToken == nil || Date.now.timeIntervalSince(self.lastUserToken!.date) > 1800 {
+            try await self.fetchUserToken()
+        }
+        request.addValue("\(self.lastUserToken!.token.tokenType) \(self.lastUserToken!.token.accessToken)", forHTTPHeaderField: "Authorization")
+    }
+    
     private func fetchUserToken() async throws {
         if let username = try self.keychain.getStringWithKey(.username),
            let password = try self.keychain.getStringWithKey(.password) {
@@ -181,6 +187,25 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         try self.keychain.setDataWithKey(self.jsone.encode(userInformation), key: .userInformation)
     }
     
+    func editUserInformation(using userEdit: IamagesUserEdit) async throws {
+        try await self.fetchData(
+            "/users/",
+            method: .patch,
+            body: self.jsone.encode(userEdit),
+            contentType: .json,
+            authStrategy: .required
+        )
+        switch userEdit.change {
+        case .password:
+            try self.keychain.setStringWithKey(userEdit.to!, key: .password)
+        case .email:
+            self.userInformation?.email = userEdit.to
+            if let userInformation {
+                try self.keychain.setDataWithKey(try self.jsone.encode(userInformation), key: .userInformation)
+            }
+        }
+    }
+    
     func login(username: String, password: String) async throws {
         do {
             try self.keychain.setStringWithKey(username, key: .username)
@@ -212,6 +237,13 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         self.userInformation = nil
         self.lastUserToken = nil
     }
+    
+    func deleteUser() async throws {
+        try await self.fetchData("/users/", method: .delete, authStrategy: .required)
+        try self.logout()
+    }
+    
+    // MARK: Locked images
     
     func hashKey(for key: String, salt: Data) throws -> Argon2SwiftResult {
         return try Argon2Swift.hashPasswordBytes(
@@ -261,6 +293,8 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             tag: tag
         )
     }
+    
+    // MARK: Images
     
     func getImagePublicMetadata(id: String) async throws -> IamagesImage {
         return try self.jsond.decode(
@@ -347,6 +381,11 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         )
     }
     
+    // MARK: Collections
+    func getCollectionInformation(id: String) async throws {
+        
+    }
+    
     // Makes sure username and password meets standards.
     func validateCredentials(
         username: String? = nil,
@@ -369,28 +408,5 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
            !email.isEmail() {
             throw LoginErrors.invalidEmail
         }
-    }
-    
-    func editUserInformation(using userEdit: IamagesUserEdit) async throws {
-        try await self.fetchData(
-            "/users/",
-            method: .patch,
-            body: self.jsone.encode(userEdit),
-            contentType: .json,
-            authStrategy: .required
-        )
-        switch userEdit.change {
-        case .password:
-            try self.keychain.setStringWithKey(userEdit.to!, key: .password)
-        case .email:
-            self.userInformation?.email = userEdit.to
-            if let userInformation {
-                try self.keychain.setDataWithKey(try self.jsone.encode(userInformation), key: .userInformation)
-            }
-        }
-    }
-    
-    func getCollectionInformation(id: String) async throws {
-        
     }
 }

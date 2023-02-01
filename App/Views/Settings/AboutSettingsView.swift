@@ -6,21 +6,18 @@ struct AboutSettingsView: View {
     @ViewBuilder
     private var credits: some View {
         ScrollView {
-            Group {
-                if let creditsUrl = Bundle.main.url(forResource: "CREDITS", withExtension: "md"),
-                   let creditsText = try? String(contentsOf: creditsUrl, encoding: .utf8),
-                   let creditsMarkdown = try? AttributedString(
-                        markdown: creditsText,
-                        options: AttributedString.MarkdownParsingOptions(
-                            interpretedSyntax: .inlineOnlyPreservingWhitespace
-                        )
-                   ) {
-                    Text(creditsMarkdown)
-                } else {
-                    Text("We could not retrieve credits at the moment. Try again later.")
-                }
+            if let creditsUrl = Bundle.main.url(forResource: "CREDITS", withExtension: "md"),
+               let creditsText = try? String(contentsOf: creditsUrl, encoding: .utf8),
+               let creditsMarkdown = try? AttributedString(
+                    markdown: creditsText,
+                    options: AttributedString.MarkdownParsingOptions(
+                        interpretedSyntax: .inlineOnlyPreservingWhitespace
+                    )
+               ) {
+                Text(creditsMarkdown)
+            } else {
+                Text("We could not retrieve credits at the moment. Try again later.")
             }
-            .padding(.all, 6)
         }
         .navigationTitle("Credits")
         .onAppear {
@@ -34,16 +31,13 @@ struct AboutSettingsView: View {
     @ViewBuilder
     private var license: some View {
         ScrollView {
-            Group {
-                if let licenseUrl = Bundle.main.url(forResource: "LICENSE", withExtension: "txt"),
-                   let licenseString = try? String(contentsOf: licenseUrl, encoding: .utf8)
-                {
-                    Text(licenseString)
-                } else {
-                    Text("We could not retrieve license at the moment. Try again later.")
-                }
+            if let licenseUrl = Bundle.main.url(forResource: "LICENSE", withExtension: "txt"),
+               let licenseString = try? String(contentsOf: licenseUrl, encoding: .utf8)
+            {
+                Text(licenseString)
+            } else {
+                Text("We could not retrieve license at the moment. Try again later.")
             }
-            .padding(.all, 6)
         }
         .navigationTitle("License")
         .onAppear {
@@ -70,9 +64,6 @@ struct AboutSettingsView: View {
                 }
                 .frame(width: 64, height: 64)
                 .scaledToFit()
-                #if !targetEnvironment(macCatalyst)
-                .cornerRadius(256 / 6.4)
-                #endif
 
                 VStack(alignment: .leading) {
                     Text("Iamages")

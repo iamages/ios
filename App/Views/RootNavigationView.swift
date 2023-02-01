@@ -84,6 +84,7 @@ struct RootNavigationView: View {
                     }
                 } else {
                     Text("Select an image")
+                        .navigationTitle("")
                         #if targetEnvironment(macCatalyst)
                         .navigationSubtitle("")
                         #endif
