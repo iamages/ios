@@ -39,7 +39,7 @@ struct NewCollectionView: View {
         .padding()
         .navigationBarBackButtonHidden()
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(3))) {
+            DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(2))) {
                 self.dismiss()
             }
         }

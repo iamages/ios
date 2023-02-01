@@ -2,14 +2,15 @@ import SwiftUI
 
 struct AddToCollectionView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
-    @Environment(\.dismiss) private var dismiss
     
     let collectionID: String
     let imageID: String
-    @Binding var isAddedToCollection: Bool
+    // Pops the sheet instead of navigating back to collections list.
+    let rootDismissFunction: () -> Void
     
-    @State private var isBusy: Bool = true
+    @State private var isBusy = true
     @State private var error: Error?
+    @State private var isAddedToCollection = false
     
     private func addToCollection() async {
         self.isBusy = true
@@ -42,7 +43,7 @@ struct AddToCollectionView: View {
             .navigationBarBackButtonHidden()
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(1))) {
-                    self.dismiss()
+                    self.rootDismissFunction()
                 }
             }
         } else if let error {
@@ -72,7 +73,7 @@ struct AddToCollectionView_Previews: PreviewProvider {
     static var previews: some View {
         AddToCollectionView(
             collectionID: "test", imageID: "test",
-            isAddedToCollection: .constant(false)
+            rootDismissFunction: {}
         )
         .environmentObject(GlobalViewModel())
     }

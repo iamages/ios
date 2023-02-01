@@ -23,7 +23,6 @@ struct CollectionsListView: View {
     @State private var querySuggestions: [String] = []
 
     @State private var collectionToDelete: IamagesCollection?
-    @State private var isAddedToCollection: Bool = false
     @State private var navigationPath: [String] = []
     
     private func pageFeed() async {
@@ -135,16 +134,9 @@ struct CollectionsListView: View {
             }
         }
         .onChange(of: self.navigationPath) { path in
-            if path.isEmpty {
-                switch self.viewMode {
-                case .normal:
-                    self.splitViewModel.selectedImage = nil
-                    self.splitViewModel.images = []
-                case .picker:
-                    if self.isAddedToCollection {
-                        self.dismiss()
-                    }
-                }
+            if path.isEmpty && self.viewMode == .normal {
+                self.splitViewModel.selectedImage = nil
+                self.splitViewModel.images = []
             }
         }
         .modifier(
@@ -197,7 +189,7 @@ struct CollectionsListView: View {
                 if let imageID {
                     AddToCollectionView(
                         collectionID: id, imageID: imageID,
-                        isAddedToCollection: self.$isAddedToCollection
+                        rootDismissFunction: self.dismiss.callAsFunction
                     )
                 } else {
                     Text("Image not provided.")
