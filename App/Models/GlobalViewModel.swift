@@ -51,16 +51,13 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     
     let maxImageSize: Int = 30000000 // 30MB
     
-    var thumbnailLoadingPipeline = ImagePipeline(configuration: .withURLCache)
-    var imageLoadingPipeline = ImagePipeline(configuration: .withDataCache)
-    
     override init() {
         super.init()
         
         self.jsone.dateEncodingStrategy = .iso8601
         self.jsond.dateDecodingStrategy = .iso8601
-
-        (self.thumbnailLoadingPipeline.configuration.dataLoader as? DataLoader)?.delegate = self
+        
+        ImagePipeline.shared = ImagePipeline(configuration: .withDataCache(sizeLimit: 512))
         
         do {
             if let userInformation = try self.keychain.getDataWithKey(.userInformation) {
@@ -339,20 +336,18 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     }
     
     func getThumbnailRequest(for image: IamagesImage) -> ImageRequest {
-        var request: URLRequest = URLRequest(url: URL.apiRootUrl.appending(path: "/thumbnails/\(image.id)"))
-        if image.isPrivate && self.isLoggedIn {
-            if Date.now.timeIntervalSince(self.lastUserToken!.date) > 1800 {
-                Task {
-                    try await self.fetchUserToken()
-                }
-            }
-            request.addValue("\(self.lastUserToken!.token.tokenType) \(self.lastUserToken!.token.accessToken)", forHTTPHeaderField: "Authorization")
-        }
-        return ImageRequest(urlRequest: request, processors: [.resize(width: 64)])
+        let path = "/thumbnails/\(image.id)\(image.file.typeExtension)"
+        return ImageRequest(id: path, data: {
+            try await self.fetchData(
+                path,
+                method: .get,
+                authStrategy: image.isPrivate ? .required : .none
+            ).0
+        }, processors: [.resize(width: 64)])
     }
     
     func getImageRequest(for image: IamagesImage, key: String? = nil) -> ImageRequest {
-        let path: String = "/images/\(image.id)/download"
+        let path: String = "/images/\(image.id)\(image.file.typeExtension)"
         var options: ImageRequest.Options = []
         if image.lock.isLocked {
             options.insert(.disableDiskCache)
@@ -361,7 +356,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         return ImageRequest(
             id: path,
             data: {
-                let (data, response): (Data, HTTPURLResponse) = try await self.fetchData(
+                let (data, response) = try await self.fetchData(
                     path,
                     method: .get,
                     authStrategy: image.isPrivate ? .required : .none
@@ -379,6 +374,11 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             },
             options: options
         )
+    }
+    
+    func removeImageFromCache(for image: IamagesImage) {
+        ImagePipeline.shared.cache.removeCachedImage(for: self.getImageRequest(for: image))
+        ImagePipeline.shared.cache.removeCachedImage(for: self.getThumbnailRequest(for: image))
     }
     
     // MARK: Collections

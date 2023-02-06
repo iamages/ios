@@ -5,7 +5,10 @@ let previewImage = IamagesImage(
     createdOn: Date.now,
     owner: "jkelol111",
     isPrivate: false,
-    contentType: .jpeg,
+    file: IamagesImage.File(
+        contentType: .jpeg,
+        typeExtension: ".jpg"
+    ),
     lock: IamagesImage.Lock(
         isLocked: false,
         version: .aes128gcm_argon2

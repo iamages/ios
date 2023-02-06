@@ -10,7 +10,6 @@ struct EditImageInformationView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
-    @Binding var imageLockKeySalt: Data?
     
     @State private var description: String = ""
     @State private var isPrivate: Bool = false
@@ -18,6 +17,7 @@ struct EditImageInformationView: View {
     @State private var newLockKey: String = ""
     @State private var currentLockKey: String = ""
     
+    @State private var isLockWarningAlertPresented: Bool = false
     @State private var isKeyAlertPresented: Bool = false
     @State private var isCancelAlertPresented: Bool = false
     @State private var isBusy: Bool = false
@@ -34,7 +34,7 @@ struct EditImageInformationView: View {
     }
     
     func getImageLockKey() throws -> Data {
-        guard let salt = self.imageLockKeySalt else {
+        guard let salt = self.imageAndMetadata.image.file.salt else {
             throw NoSaltError()
         }
         return try self.globalViewModel.hashKey(for: self.currentLockKey, salt: salt).hashData()
@@ -63,8 +63,6 @@ struct EditImageInformationView: View {
                         edit.imageLockKey = try self.getImageLockKey()
                     }
                     self.edits.append(edit)
-                    // Remove cache
-                    self.globalViewModel.imageLoadingPipeline.cache.removeCachedData(for: self.globalViewModel.getImageRequest(for: self.imageAndMetadata.image))
                 } else {
                     self.edits.append(
                         IamagesImageEdit(
@@ -96,9 +94,6 @@ struct EditImageInformationView: View {
                         authStrategy: .required
                     ).0
                 )
-                if let lockVersion = response.lockVersion {
-                    self.imageAndMetadata.image.lock.version = lockVersion
-                }
                 switch edit.change {
                 case .isPrivate:
                     switch edit.to {
@@ -111,7 +106,17 @@ struct EditImageInformationView: View {
                     switch edit.to {
                     case .string(_):
                         self.imageAndMetadata.image.lock.isLocked = true
+                        self.imageAndMetadata.image.lock.version = response.lockVersion
+                        if let file = response.file {
+                            self.imageAndMetadata.image.file = file
+                        }
+                        self.imageAndMetadata.metadataContainer?.salt = response.metadataSalt
+                        self.globalViewModel.removeImageFromCache(for: self.imageAndMetadata.image)
                     case .bool(_):
+                        if let file = response.file {
+                            self.imageAndMetadata.image.file = file
+                        }
+                        self.imageAndMetadata.metadataContainer?.salt = nil
                         self.imageAndMetadata.image.lock.isLocked = false
                         self.imageAndMetadata.image.lock.version = nil
                     default:
@@ -173,6 +178,11 @@ struct EditImageInformationView: View {
                 Section {
                     Toggle("Private", isOn: self.$isPrivate)
                     Toggle("Lock (Beta)", isOn: self.$isLocked)
+                        .disabled(
+                            self.imageAndMetadata.image.lock.isLocked &&
+                            (self.imageAndMetadata.image.file.salt == nil ||
+                            self.imageAndMetadata.metadataContainer?.salt == nil)
+                        )
                     if self.isLocked && !self.imageAndMetadata.image.lock.isLocked {
                         SecureField("Lock key", text: self.$newLockKey)
                             .focused(self.$focusedField, equals: .lockKey)
@@ -208,11 +218,22 @@ struct EditImageInformationView: View {
                     self.focusedField = .description
                 }
             }
-            .lockBetaWarningAlert(
-                isLocked: self.$isLocked,
-                currentIsLocked: self.imageAndMetadata.image.lock.isLocked
-            )
-            
+            .onChange(of: self.isLocked) { isLocked in
+                if !self.imageAndMetadata.image.lock.isLocked && self.isLocked {
+                    self.isLockWarningAlertPresented = true
+                }
+            }
+            .alert("Enable lock?", isPresented: self.$isLockWarningAlertPresented) {
+                Button("Enable", role: .destructive) {
+                    self.isLockWarningAlertPresented = false
+                }
+                Button("Disable", role: .cancel) {
+                    self.isLocked = false
+                    self.isLockWarningAlertPresented = false
+                }
+            } message: {
+                Text("This feature is currently in beta. We are not responsible for any data loss sustained by continuing.")
+            }
             .alert("Lock key required", isPresented: self.$isKeyAlertPresented) {
                 SecureField("Lock key", text: self.$currentLockKey)
                 Button("Unlock", role: .destructive) {
@@ -261,8 +282,7 @@ struct EditImageInformationView: View {
 struct EditImageInformationView_Previews: PreviewProvider {
     static var previews: some View {
         EditImageInformationView(
-            imageAndMetadata: .constant(previewImageAndMetadata),
-            imageLockKeySalt: .constant(Data())
+            imageAndMetadata: .constant(previewImageAndMetadata)
         )
         .environmentObject(GlobalViewModel())
     }

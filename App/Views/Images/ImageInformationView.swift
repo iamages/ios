@@ -26,7 +26,7 @@ struct ImageInformationView: View {
                         if self.imageAndMetadata.image.lock.isLocked {
                             LabeledContent("File type", value: metadata.realContentType?.localizedDescription ?? "Unknown")
                         } else {
-                            LabeledContent("File type", value: self.imageAndMetadata.image.contentType.localizedDescription ?? "Unknown")
+                            LabeledContent("File type", value: self.imageAndMetadata.image.file.contentType.localizedDescription ?? "Unknown")
                         }
                     }
                 } else {

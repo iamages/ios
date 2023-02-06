@@ -59,7 +59,7 @@ fileprivate struct NewestImagesWidgetProvider: TimelineProvider {
         if let newestImage {
             entry.id = newestImage.id
             do {
-                var thumbnailRequest = URLRequest(url: .apiRootUrl.appending(path: "/thumbnails/\(newestImage.id)"))
+                var thumbnailRequest = URLRequest(url: .apiRootUrl.appending(path: "/thumbnails/\(newestImage.id)\(newestImage.file.typeExtension)"))
                 if newestImage.isPrivate {
                     try await self.userManager.getUserToken(for: &thumbnailRequest)
                 }

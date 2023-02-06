@@ -13,7 +13,6 @@ struct ImageDetailView: View {
     @State private var previousIsLocked: Bool = false
 
     @State private var request: ImageRequest?
-    @State private var imageLockKeySalt: Data?
     @State private var key: String = ""
     @State private var isKeyAlertPresented: Bool = false
     @State private var shouldAttemptUnlock: Bool = false
@@ -61,13 +60,13 @@ struct ImageDetailView: View {
             }
             if self.imageAndMetadata.image.lock.isLocked {
                 guard let salt = try await self.globalViewModel.fetchData(
-                    "/images/\(self.imageAndMetadata.image.id)/download",
+                    "/images/\(self.imageAndMetadata.image.id)\(self.imageAndMetadata.image.file.typeExtension)",
                     method: .head,
                     authStrategy: self.imageAndMetadata.image.isPrivate ? .required : .none
                 ).1.value(forHTTPHeaderField: "X-Iamages-Lock-Salt")?.data(using: .utf8) else {
                     throw NoSaltError()
                 }
-                self.imageLockKeySalt = Data(base64Encoded: salt)
+                self.imageAndMetadata.image.file.salt = Data(base64Encoded: salt)
             }
         } catch {
             self.error = LocalizedAlertError(error: error)
@@ -149,13 +148,17 @@ struct ImageDetailView: View {
                 ProgressView()
             }
         }
-        .pipeline(self.globalViewModel.imageLoadingPipeline)
     }
     
     private func resetView() {
+        // Fix for out of range exception.
+        if let i = self.splitViewModel.images.firstIndex(where: { $0.id == self.imageAndMetadata.id }) {
+            self.splitViewModel.images[i].metadataContainer?.salt = nil
+            self.splitViewModel.images[i].image.file.salt = nil
+        }
         self.key = ""
-        self.imageLockKeySalt = nil
         self.request = nil
+        
     }
     
     var body: some View {
@@ -194,8 +197,7 @@ struct ImageDetailView: View {
         }
         .sheet(isPresented: self.$isEditInformationSheetPresented) {
             EditImageInformationView(
-                imageAndMetadata: self.$imageAndMetadata,
-                imageLockKeySalt: self.$imageLockKeySalt
+                imageAndMetadata: self.$imageAndMetadata
             )
         }
         .sheet(isPresented: self.$isCollectionPickerSheetPresented) {
@@ -208,7 +210,8 @@ struct ImageDetailView: View {
         .toolbar(id: "imageDetail") {
             ToolbarTitleMenu {
                 if !self.imageAndMetadata.isLoading &&
-                    self.imageAndMetadata.metadataContainer == nil
+                    self.imageAndMetadata.metadataContainer == nil ||
+                    (self.imageAndMetadata.image.lock.isLocked && self.imageAndMetadata.image.file.salt == nil)
                 {
                     Button(action: {
                         Task {
@@ -270,10 +273,7 @@ struct ImageDetailView: View {
             }
             ToolbarItem(id: "relock", placement: .secondaryAction) {
                 if self.imageAndMetadata.image.lock.isLocked {
-                    Button(role: .destructive, action: {
-                        self.request = nil
-                        self.imageAndMetadata.metadataContainer = nil
-                    }) {
+                    Button(role: .destructive, action: self.resetView) {
                         Label("Relock", systemImage: "lock")
                     }
                     .disabled(self.request == nil)

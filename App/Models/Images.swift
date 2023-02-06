@@ -58,10 +58,26 @@ struct IamagesImageEdit: Codable {
     struct Response: Codable {
         let ok: Bool
         let lockVersion: IamagesImage.Lock.Version?
+        let file: IamagesImage.File?
+        var metadataSalt: Data? = nil
         
         enum CodingKeys: String, CodingKey {
             case ok
             case lockVersion = "lock_version"
+            case file
+            case metadataSalt = "metadata_salt"
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.ok = try container.decode(Bool.self, forKey: .ok)
+            self.lockVersion = try container.decodeIfPresent(IamagesImage.Lock.Version.self, forKey: .lockVersion)
+            self.file = try container.decodeIfPresent(IamagesImage.File.self, forKey: .file)
+            if let metadataSalt = try container.decodeIfPresent(String.self, forKey: .metadataSalt),
+               let metadataSaltData = metadataSalt.data(using: .utf8)
+            {
+                self.metadataSalt = Data(base64Encoded: metadataSaltData)
+            }
         }
     }
     

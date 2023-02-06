@@ -12,7 +12,6 @@ struct UploadEditorView: View {
     @Binding var uploadContainer: IamagesUploadContainer
 
     @FocusState private var focusedField: Field?
-    @State private var isLockWarningAlertPresented: Bool = false
 
     var body: some View {
         Form {
@@ -20,13 +19,12 @@ struct UploadEditorView: View {
                 TextField("1-255 characters", text: self.$uploadContainer.information.description)
                     .focused(self.$focusedField, equals: .description)
             }
-//            
             Section {
                 Toggle("Private", isOn: self.$uploadContainer.information.isPrivate)
                     .disabled(!self.globalViewModel.isLoggedIn)
-                Toggle("Lock", isOn: self.$uploadContainer.information.isLocked)
+                Toggle("Lock (Beta)", isOn: self.$uploadContainer.information.isLocked)
                 if self.uploadContainer.information.isLocked {
-                    SecureField("Password", text: self.$uploadContainer.information.lockKey)
+                    SecureField("Lock key", text: self.$uploadContainer.information.lockKey)
                         .focused(self.$focusedField, equals: .lockKey)
                 }
             } header: {
@@ -41,10 +39,6 @@ struct UploadEditorView: View {
         .formStyle(.grouped)
         .navigationTitle("Editor")
         .navigationBarTitleDisplayMode(.inline)
-        .lockBetaWarningAlert(
-            isLocked: self.$uploadContainer.information.isLocked,
-            currentIsLocked: false
-        )
         .onAppear {
             self.focusedField = .description
         }
@@ -54,7 +48,6 @@ struct UploadEditorView: View {
             } else {
                 self.focusedField = .description
             }
-            self.uploadContainer.information.lockKey = ""
         }
         .toolbar {
             ToolbarItem {

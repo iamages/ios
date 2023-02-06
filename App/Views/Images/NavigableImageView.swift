@@ -56,7 +56,7 @@ struct NavigableImageView: View {
                     }
                     HStack {
                         Image(systemName: self.imageAndMetadata.image.isPrivate ? "eye.slash.fill" : "eye.slash")
-                        Image(systemName: self.imageAndMetadata.image.contentType == .gif ? "figure.run.square.stack.fill" : "figure.run.square.stack")
+                        Image(systemName: self.imageAndMetadata.image.file.contentType == .gif ? "figure.run.square.stack.fill" : "figure.run.square.stack")
                     }
                         
                 }
@@ -90,6 +90,8 @@ struct NavigableImageView: View {
                !self.imageAndMetadata.image.lock.isLocked
             {
                 await self.getMetadata()
+            } else {
+                self.imageAndMetadata.isLoading = false
             }
         }
     }

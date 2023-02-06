@@ -65,7 +65,7 @@ fileprivate struct SelectedImageWidgetProvider: TimelineProvider {
                 // Set entry image ID, now that we know the image can be accessed.
                 entry.id = image.id
 
-                var thumbnailRequest = URLRequest(url: .apiRootUrl.appending(path: "/images/\(imageId)/download"))
+                var thumbnailRequest = URLRequest(url: .apiRootUrl.appending(path: "/thumbnails/\(imageId)\(image.file.typeExtension)"))
                 if requiresAuth {
                     try await self.userManager.getUserToken(for: &thumbnailRequest)
                 }

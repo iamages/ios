@@ -26,7 +26,6 @@ struct ImageThumbnailView: View {
                     }
                 }
             }
-            .pipeline(self.globalViewModel.thumbnailLoadingPipeline)
         }
     }
 }
