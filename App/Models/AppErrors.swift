@@ -24,7 +24,7 @@ extension LoginErrors: LocalizedError {
     public var recoverySuggestion: String? {
         switch self {
         case .invalidUsername:
-            return NSLocalizedString("Make your username has at least 3 characters and no spaces before, in, or after itself.", comment: "")
+            return NSLocalizedString("Make sure your username has at least 3 characters and no spaces before, in, or after itself.", comment: "")
         case .invalidPassword(let isSigningUp):
             var localizedString = NSLocalizedString("Your password needs to have at least 6 characters.", comment: "")
             if isSigningUp {

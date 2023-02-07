@@ -395,7 +395,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         isSigningUp: Bool = false
     ) throws {
         if let username,
-           username.firstMatch(of: try Regex("[\\s]")) != nil,
+           username.firstMatch(of: try Regex(" +")) != nil ||
            username.count < 3
         {
             throw LoginErrors.invalidUsername

@@ -97,6 +97,13 @@ struct TipJarSettingsView: View {
                 duration: 3
             )
             .confettiParticle(\.velocity, 600)
+            .toolbar {
+                ToolbarItem {
+                    if self.isBusy {
+                        ProgressView()
+                    }
+                }
+            }
         ForEach(self.iaps) { iap in
             Button(action: {
                 Task {
