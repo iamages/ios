@@ -1,0 +1,65 @@
+{
+  "identifier" : "0BBD69F6",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "1611451046",
+      "localizations" : [
+        {
+          "description" : "Help us afford devices to test our apps on.",
+          "displayName" : "Large Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "me.jkelol111.Iamages.Tips.Large",
+      "referenceName" : "Iamages - Large Tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "1611450695",
+      "localizations" : [
+        {
+          "description" : "Keep our developers fed and motivated.",
+          "displayName" : "Medium Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "me.jkelol111.Iamages.Tips.Medium",
+      "referenceName" : "Iamages - Medium Tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "1611449182",
+      "localizations" : [
+        {
+          "description" : "Keeps our servers running for one month.",
+          "displayName" : "Small Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "me.jkelol111.Iamages.Tips.Small",
+      "referenceName" : "Iamages - Small Tip",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "1611306062",
+    "_developerTeamID" : "2VZNUT7D2E",
+    "_lastSynchronizedDate" : 688147431.08092999
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 2,
+    "minor" : 0
+  }
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>iamages</string>
+			</array>
+		</dict>
+	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict/>
+	</dict>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>photo.stack</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Images</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>images</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>folder</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Collections</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>collections</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>shared.with.you</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Shared with You</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>sharedWithYou</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>person.fill.questionmark</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Anonymous Uploads</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>anonymousUploads</string>
+		</dict>
+	</array>
+</dict>
+</plist>
