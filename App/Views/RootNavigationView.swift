@@ -58,7 +58,7 @@ struct RootNavigationView: View {
             ZStack {
                 if let id = self.splitViewModel.selectedImage,
                    let i = self.splitViewModel.images.firstIndex(where: { $0.id == id }),
-                   let imageAndMetadata = self.$splitViewModel.images[i]
+                   let imageAndMetadata = self.$splitViewModel.images[safe: i]
                 {
                     ImageDetailView(
                         imageAndMetadata: imageAndMetadata
@@ -113,6 +113,15 @@ struct RootNavigationView: View {
         .onChange(of: self.splitViewModel.selectedView) { _ in
             self.splitViewModel.selectedImage = nil
             self.splitViewModel.images = []
+        }
+        .onChange(of: self.splitViewModel.selectedImage) { [oldSelectedImage = self.splitViewModel.selectedImage] _ in
+            if let i = self.splitViewModel.images.firstIndex(where: { $0.id == oldSelectedImage }),
+               let imageAndMetadata = self.splitViewModel.images[safe: i],
+               imageAndMetadata.image.lock.isLocked
+            {
+                self.splitViewModel.images[i].metadataContainer = nil
+                self.splitViewModel.images[i].image.file.salt = nil
+            }
         }
         // Welcome sheet
         .modifier(AppWelcomeSheetModifier())

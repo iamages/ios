@@ -151,14 +151,8 @@ struct ImageDetailView: View {
     }
     
     private func resetView() {
-        // Fix for out of range exception.
-        if let i = self.splitViewModel.images.firstIndex(where: { $0.id == self.imageAndMetadata.id }) {
-            self.splitViewModel.images[i].metadataContainer?.salt = nil
-            self.splitViewModel.images[i].image.file.salt = nil
-        }
         self.key = ""
         self.request = nil
-        
     }
     
     var body: some View {

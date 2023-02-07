@@ -111,7 +111,7 @@ struct EditImageInformationView: View {
                             self.imageAndMetadata.image.file = file
                         }
                         self.imageAndMetadata.metadataContainer?.salt = response.metadataSalt
-                        self.globalViewModel.removeImageFromCache(for: self.imageAndMetadata.image)
+                        await self.globalViewModel.removeImageFromCache(for: self.imageAndMetadata.image)
                     case .bool(_):
                         if let file = response.file {
                             self.imageAndMetadata.image.file = file

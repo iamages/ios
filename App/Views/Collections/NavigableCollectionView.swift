@@ -25,21 +25,21 @@ struct NavigableCollectionView: View {
         }
     }
     
-    private func collectionImageView(for image: IamagesImage) -> some View {
-        LazyImage(request: self.globalViewModel.getThumbnailRequest(for: image)) { state in
-            if let image = state.image {
-                image
-                    .animatedImageRenderingEnabled(false)
-                    .videoRenderingEnabled(false)
-                    .resizingMode(.aspectFill)
-            } else if state.error != nil {
-                Image(systemName: "exclamationmark.octagon")
-            } else {
-                Rectangle()
-                    .redacted(reason: .placeholder)
-            }
-        }
-    }
+//    private func collectionImageView(for image: IamagesImage) -> some View {
+//        LazyImage(request: self.globalViewModel.getThumbnailRequest(for: image)) { state in
+//            if let image = state.image {
+//                image
+//                    .animatedImageRenderingEnabled(false)
+//                    .videoRenderingEnabled(false)
+//                    .resizingMode(.aspectFill)
+//            } else if state.error != nil {
+//                Image(systemName: "exclamationmark.octagon")
+//            } else {
+//                Rectangle()
+//                    .redacted(reason: .placeholder)
+//            }
+//        }
+//    }
     
     private let roundedRectangle = RoundedRectangle(cornerRadius: 8)
 
@@ -56,7 +56,7 @@ struct NavigableCollectionView: View {
                             if image.lock.isLocked {
                                 Image(systemName: "lock.doc")
                             } else {
-                                self.collectionImageView(for: image)
+                                CollectionImageThumbnailView(image: image)
                             }
                         }
                         if self.images.count < 4 {

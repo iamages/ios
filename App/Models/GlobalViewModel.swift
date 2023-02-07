@@ -56,8 +56,8 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         
         self.jsone.dateEncodingStrategy = .iso8601
         self.jsond.dateDecodingStrategy = .iso8601
-        
-        ImagePipeline.shared = ImagePipeline(configuration: .withDataCache(sizeLimit: 512))
+
+        (ImagePipeline.shared.configuration.dataLoader as? DataLoader)?.delegate = self
         
         do {
             if let userInformation = try self.keychain.getDataWithKey(.userInformation) {
@@ -335,15 +335,16 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         )
     }
     
-    func getThumbnailRequest(for image: IamagesImage) -> ImageRequest {
-        let path = "/thumbnails/\(image.id)\(image.file.typeExtension)"
-        return ImageRequest(id: path, data: {
-            try await self.fetchData(
-                path,
-                method: .get,
-                authStrategy: image.isPrivate ? .required : .none
-            ).0
-        }, processors: [.resize(width: 64)])
+    func getThumbnailRequest(for image: IamagesImage) async -> ImageRequest {
+        var request = URLRequest(url: .apiRootUrl.appending(path: "/thumbnails/\(image.id)\(image.file.typeExtension)"))
+        if image.isPrivate {
+            do {
+                try await self.addUserTokenToRequest(to: &request)
+            } catch {
+                print(error)
+            }
+        }
+        return ImageRequest(urlRequest: request, processors: [.resize(width: 64)])
     }
     
     func getImageRequest(for image: IamagesImage, key: String? = nil) -> ImageRequest {
@@ -376,9 +377,9 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         )
     }
     
-    func removeImageFromCache(for image: IamagesImage) {
+    func removeImageFromCache(for image: IamagesImage) async {
         ImagePipeline.shared.cache.removeCachedImage(for: self.getImageRequest(for: image))
-        ImagePipeline.shared.cache.removeCachedImage(for: self.getThumbnailRequest(for: image))
+        ImagePipeline.shared.cache.removeCachedImage(for: await self.getThumbnailRequest(for: image))
     }
     
     // MARK: Collections

@@ -178,7 +178,7 @@ struct CollectionsListView: View {
             switch self.viewMode {
             case .normal:
                 if let i = self.collections.firstIndex(where: { $0.id == id }),
-                   let collection = self.$collections[i]
+                   let collection = self.$collections[safe: i]
                 {
                     CollectionImagesListView(collection: collection)
                         .environmentObject(self.splitViewModel)

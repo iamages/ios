@@ -6,12 +6,15 @@ struct ImageThumbnailView: View {
     
     let image: IamagesImage
     
+    @State private var isFirstAppearance: Bool = true
+    @State private var request: ImageRequest?
+    
     var body: some View {
         if self.image.lock.isLocked {
             Image(systemName: "lock.doc.fill")
                 .font(.title2)
         } else {
-            LazyImage(request: self.globalViewModel.getThumbnailRequest(for: self.image)) { state in
+            LazyImage(request: self.request) { state in
                 if let image = state.image {
                     image
                         .resizingMode(.aspectFill)
@@ -24,6 +27,12 @@ struct ImageThumbnailView: View {
                             .frame(width: geo.size.width, height: geo.size.height)
                             .redacted(reason: .placeholder)
                     }
+                }
+            }
+            .task {
+                if self.isFirstAppearance {
+                    self.isFirstAppearance = false
+                    self.request = await self.globalViewModel.getThumbnailRequest(for: self.image)
                 }
             }
         }

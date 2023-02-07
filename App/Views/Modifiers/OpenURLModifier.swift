@@ -31,7 +31,7 @@ struct OpenURLModifier: ViewModifier {
             NavigationStack {
                 if let id = self.splitViewModel.selectedImage,
                    let i = self.splitViewModel.images.firstIndex(where: { $0.id == id }),
-                   let imageAndMetadata = self.$splitViewModel.images[i]
+                   let imageAndMetadata = self.$splitViewModel.images[safe: i]
                 {
                     ImageDetailView(imageAndMetadata: imageAndMetadata)
                         .environmentObject(self.globalViewModel)
@@ -59,7 +59,7 @@ struct OpenURLModifier: ViewModifier {
             NavigationSplitView {
                 if let id = self.selectedCollection,
                    let i = self.collections.firstIndex(where: { $0.id == id }),
-                   let collection = self.$collections[i]
+                   let collection = self.$collections[safe: i]
                 {
                     CollectionImagesListView(collection: collection)
                         .environmentObject(self.globalViewModel)

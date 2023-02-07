@@ -40,6 +40,7 @@
 		2E1F8F96293486DC00D6AC49 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 2E1F8F95293486DC00D6AC49 /* Nuke */; };
 		2E1F8F98293486DC00D6AC49 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 2E1F8F97293486DC00D6AC49 /* NukeUI */; };
 		2E1F8F9A2935C67600D6AC49 /* SplitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1F8F992935C67600D6AC49 /* SplitViewModel.swift */; };
+		2E2257B229911E0A0030D2C6 /* CollectionImageThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2257B129911E0A0030D2C6 /* CollectionImageThumbnailView.swift */; };
 		2E29D1F2293785C7009CE522 /* AppWelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E29D1F1293785C7009CE522 /* AppWelcomeSheet.swift */; };
 		2E29D1F429378D4B009CE522 /* AboutLinksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E29D1F329378D4B009CE522 /* AboutLinksView.swift */; };
 		2E29D1F82938643D009CE522 /* CREDITS.md in Resources */ = {isa = PBXBuildFile; fileRef = 2E29D1F72938643D009CE522 /* CREDITS.md */; };
@@ -209,6 +210,7 @@
 		2E16133E293E0FF400FC2CC8 /* Images.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
 		2E161348293E21AA00FC2CC8 /* Users.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Users.swift; sourceTree = "<group>"; };
 		2E1F8F992935C67600D6AC49 /* SplitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewModel.swift; sourceTree = "<group>"; };
+		2E2257B129911E0A0030D2C6 /* CollectionImageThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionImageThumbnailView.swift; sourceTree = "<group>"; };
 		2E29D1F1293785C7009CE522 /* AppWelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWelcomeSheet.swift; sourceTree = "<group>"; };
 		2E29D1F329378D4B009CE522 /* AboutLinksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLinksView.swift; sourceTree = "<group>"; };
 		2E29D1F72938643D009CE522 /* CREDITS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CREDITS.md; sourceTree = "<group>"; };
@@ -644,6 +646,7 @@
 				2E38DDFA29502D3A00ACB068 /* AddToCollectionView.swift */,
 				2E38DE4E2959B57600ACB068 /* NewCollectionView.swift */,
 				2E38DE55295D23DA00ACB068 /* CollectionShareLinkView.swift */,
+				2E2257B129911E0A0030D2C6 /* CollectionImageThumbnailView.swift */,
 			);
 			path = Collections;
 			sourceTree = "<group>";
@@ -888,6 +891,7 @@
 				2E38DDF3294DEB5F00ACB068 /* NotLoggedInView.swift in Sources */,
 				2E00889F28FD6D0900607E0B /* UploadEditorView.swift in Sources */,
 				2E38DE342955330000ACB068 /* QuerySuggestionsView.swift in Sources */,
+				2E2257B229911E0A0030D2C6 /* CollectionImageThumbnailView.swift in Sources */,
 				2E38DE93296598C400ACB068 /* UploadViewModel.swift in Sources */,
 				2E0424D228DAACD50023CE41 /* LoginSheetView.swift in Sources */,
 				2E38DDFD2951F4A300ACB068 /* Pagination.swift in Sources */,
@@ -965,7 +969,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widgets/Info.plist;
@@ -999,7 +1003,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widgets/Info.plist;
@@ -1032,7 +1036,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -1064,7 +1068,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -1211,7 +1215,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 23;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
@@ -1260,7 +1264,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 23;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
