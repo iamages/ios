@@ -26,6 +26,7 @@ struct PendingUploadView: View {
         HStack {
             UniversalDataImage(data: uploadContainer.file.data)
                 .frame(width: 64, height: 64)
+                .scaledToFit()
                 .clipShape(self.roundedRectangle)
                 .overlay {
                     self.roundedRectangle
@@ -53,6 +54,17 @@ struct PendingUploadView: View {
             }
             .padding(.leading, 4)
             .padding(.trailing, 4)
+            Spacer()
+            if self.model.error != nil {
+                Button {
+                    Task {
+                        await self.upload()
+                    }
+                } label: {
+                    Label("Retry", systemImage: "arrow.clockwise")
+                        .labelStyle(.iconOnly)
+                }
+            }
         }
         .task {
             self.model.viewContext = self.viewContext
@@ -64,13 +76,19 @@ struct PendingUploadView: View {
             }
         }
         .contextMenu {
-            if self.model.error != nil {
+            if let error = self.model.error {
                 Button(action: {
                     Task {
                         await self.upload()
                     }
                 }) {
-                    Label("Retry upload", systemImage: "")
+                    Label("Retry upload", systemImage: "arrow.clockwise")
+                }
+                Divider()
+                Button {
+                    UIPasteboard.general.string = "Error: \(error.localizedDescription)\nRecovery: \(error.recoverySuggestion ?? "None")"
+                } label: {
+                    Label("Copy error", systemImage: "doc.on.doc")
                 }
             }
         }

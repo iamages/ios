@@ -53,8 +53,8 @@ struct AboutSettingsView: View {
         Section {
             HStack {
                 Group {
-                    if let icon: UIImage = UIImage(named: "AppIcon") {
-                        Image(uiImage: icon)
+                    if let uiImage = UIImage(named: "AboutAppIcon") {
+                        Image(uiImage: uiImage)
                             .resizable()
                             
                     } else {
