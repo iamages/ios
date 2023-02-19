@@ -16,6 +16,7 @@ struct EditCollectionInformationView: View {
     
     private func edit() async {
         self.isBusy = true
+        self.isDescriptionFieldFocused = false
         var edits: [IamagesCollectionEdit] = []
         do {
             if self.description != self.collection.description {
@@ -54,6 +55,7 @@ struct EditCollectionInformationView: View {
             self.dismiss()
         } catch {
             self.isBusy = false
+            self.isDescriptionFieldFocused = true
             self.error = LocalizedAlertError(error: error)
         }
     }

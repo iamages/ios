@@ -3,28 +3,41 @@ import SwiftUI
 struct NewCollectionView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @Environment(\.dismiss) private var dismiss
-    
-    @State private var newCollection: NewIamagesCollection = NewIamagesCollection(
+
+    var notificationID: UUID? = nil
+    @State private var newCollection = NewIamagesCollection(
         isPrivate: false,
         description: ""
     )
     @State private var error: LocalizedAlertError?
     
     @FocusState private var isDescriptionFieldFocused: Bool
-    @State private var isBusy: Bool = false
-    @State private var isSuccessPresented: Bool = false
+    @State private var isBusy = false
+    @State private var isSuccessPresented = false
     
     private func create() async {
+        self.isDescriptionFieldFocused = false
         do {
-            try await self.globalViewModel.fetchData(
-                "/collections/",
-                method: .post,
-                body: self.globalViewModel.jsone.encode(self.newCollection),
-                contentType: .json,
-                authStrategy: .required
+            let collection = try self.globalViewModel.jsond.decode(
+                IamagesCollection.self,
+                from: try await self.globalViewModel.fetchData(
+                    "/collections/",
+                    method: .post,
+                    body: self.globalViewModel.jsone.encode(self.newCollection),
+                    contentType: .json,
+                    authStrategy: .required
+                ).0
+            )
+            NotificationCenter.default.post(
+                name: .addCollection,
+                object: AddIamagesCollectionNotification(
+                    id: self.notificationID,
+                    collection: collection
+                )
             )
             self.isSuccessPresented = true
         } catch {
+            self.isDescriptionFieldFocused = true
             self.error = LocalizedAlertError(error: error)
         }
     }
@@ -49,7 +62,7 @@ struct NewCollectionView: View {
         NavigationStack {
             Form {
                 Section("Description") {
-                    TextField("Description", text: self.$newCollection.description)
+                    TextField("1-250 characters", text: self.$newCollection.description)
                         .focused(self.$isDescriptionFieldFocused)
                 }
                 Section("Ownership") {
@@ -66,14 +79,12 @@ struct NewCollectionView: View {
                 self.success
             }
             .toolbar {
-                #if !targetEnvironment(macCatalyst)
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .destructive) {
                         self.dismiss()
                     }
                     .keyboardShortcut(.escape)
                 }
-                #endif
                 ToolbarItem(placement: .primaryAction) {
                     Button("Create") {
                         Task {

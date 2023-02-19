@@ -5,7 +5,7 @@ struct CollectionsListView: View {
         case normal
         case picker
     }
-    
+
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @EnvironmentObject private var splitViewModel: SplitViewModel
     @Environment(\.dismiss) private var dismiss
@@ -59,6 +59,7 @@ struct CollectionsListView: View {
     
     private func startFeed() async {
         self.collections = []
+        self.isEndOfFeed = false
         await self.pageFeed()
     }
     
@@ -151,6 +152,11 @@ struct CollectionsListView: View {
                 globalViewModel: self.globalViewModel
             )
         )
+        .onReceive(NotificationCenter.default.publisher(for: .addCollection)) { output in
+            if let notification = output.object as? AddIamagesCollectionNotification {
+                self.collections.insert(notification.collection, at: 0)
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 if self.viewMode == .picker {
@@ -201,28 +207,37 @@ struct CollectionsListView: View {
     var body: some View {
         NavigationStack(path: self.$navigationPath) {
             Group {
-                if self.globalViewModel.userInformation == nil {
+                if !self.globalViewModel.isLoggedIn {
                     NotLoggedInView()
                 } else {
                     switch self.viewMode {
                     case .normal:
                         self.list
+                        #if !targetEnvironment(macCatalyst)
+                        .modifier(
+                            NewMenuModifier(
+                                globalViewModel: self.globalViewModel
+                            )
+                        )
+                        #endif
                     case .picker:
                         self.list
                             .navigationTitle("Select a collection")
                             .navigationBarTitleDisplayMode(.inline)
+                            .toolbar {
+                                ToolbarItem {
+                                    NewCollectionButton()
+                                }
+                            }
                     }
                 }
             }
             .navigationTitle("Collections")
-            .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
-                if isLoggedIn {
-                    self.isFirstAppearance = true
-                }
+        }
+        .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
+            if isLoggedIn {
+                self.isFirstAppearance = true
             }
-            #if !targetEnvironment(macCatalyst)
-            .modifier(NewMenuModifier(globalViewModel: self.globalViewModel))
-            #endif
         }
     }
 }

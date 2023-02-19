@@ -60,6 +60,7 @@ struct IamagesApp: App {
                     window?.windowScene?.sizeRestrictions?.maximumSize = size
                     window?.windowScene?.sizeRestrictions?.allowsFullScreen = false
                     window?.windowScene?.windowingBehaviors?.isMiniaturizable = false
+                    window?.windowScene?.windowingBehaviors?.isClosable = false
                 }
         }
         #endif

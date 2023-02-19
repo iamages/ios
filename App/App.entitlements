@@ -6,6 +6,7 @@
 	<array>
 		<string>applinks:iamages.jkelol111.me</string>
 		<string>webcredentials:iamages.jkelol111.me</string>
+		<string>activitycontinuation:iamages.jkelol111.me</string>
 	</array>
 	<key>com.apple.developer.shared-with-you</key>
 	<true/>

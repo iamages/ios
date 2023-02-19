@@ -1,6 +1,7 @@
 import SwiftUI
 import StoreKit
 import SPConfetti
+import AlertToast
 
 struct TipJarSettingsView: View {
     private struct IAPCancelledError: LocalizedError {
@@ -71,11 +72,14 @@ struct TipJarSettingsView: View {
                     self.isBusy = true
                     if self.iaps.count != 3 {
                         do {
-                            self.iaps = try await Product.products(for: [
+                            let products = try await Product.products(for: [
                                 "me.jkelol111.Iamages.Tips.Large",
                                 "me.jkelol111.Iamages.Tips.Medium",
                                 "me.jkelol111.Iamages.Tips.Small"
                             ])
+                            withAnimation {
+                                self.iaps = products
+                            }
                         } catch {
                             self.error = LocalizedAlertError(error: error)
                         }
@@ -85,18 +89,19 @@ struct TipJarSettingsView: View {
             }
             .errorAlert(error: self.$error)
             .alert("Thank you!", isPresented: self.$isTipThanksAlertPresented) {
-                // OK button should be provided by default.
+                // Use provided OK button.
             } message: {
-                Text("Your tip will go into keep Iamages alive and well for everyone.")
+                Text("Your tip will go into keeping Iamages alive and well for everyone.")
             }
             // Carefully tweaked confetti!
             .confetti(
                 isPresented: self.$isTipThanksAlertPresented,
                 animation: .fullWidthToDown,
                 particles: [.heart, .star],
-                duration: 3
+                duration: .infinity
             )
             .confettiParticle(\.velocity, 600)
+            .navigationBarBackButtonHidden(self.isBusy)
             .toolbar {
                 ToolbarItem {
                     if self.isBusy {
@@ -104,24 +109,39 @@ struct TipJarSettingsView: View {
                     }
                 }
             }
-        ForEach(self.iaps) { iap in
-            Button(action: {
-                Task {
-                    await self.purchaseIAP(iap)
-                }
-            }) {
+        if self.iaps.isEmpty {
+            ForEach(1...3, id: \.self) { _ in
                 HStack {
                     VStack(alignment: .leading) {
-                        Text(iap.displayPrice)
-                            .bold()
-                        Text(iap.description)
+                        Text("$0.00")
+                        Text("Placeholder tip")
                     }
                     Spacer()
-                    Text(self.getIAPEmoji(productName: iap.displayName))
+                    Text("📈")
                         .font(.largeTitle)
                 }
+                .redacted(reason: .placeholder)
             }
-            .disabled(self.isBusy)
+        } else {
+            ForEach(self.iaps) { iap in
+                Button(action: {
+                    Task {
+                        await self.purchaseIAP(iap)
+                    }
+                }) {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(iap.displayPrice)
+                                .bold()
+                            Text(iap.description)
+                        }
+                        Spacer()
+                        Text(self.getIAPEmoji(productName: iap.displayName))
+                            .font(.largeTitle)
+                    }
+                }
+                .disabled(self.isBusy)
+            }
         }
     }
 }

@@ -80,6 +80,8 @@ struct ImageInformationView: View {
                 )
             })
         }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.hidden)
     }
 }
 

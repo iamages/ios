@@ -1,8 +1,14 @@
 import SwiftUI
 import NukeUI
 import WidgetKit
+import AlertToast
 
 struct ImageDetailView: View {
+    enum SaveTarget {
+        case file
+        case library
+    }
+    
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @EnvironmentObject private var splitViewModel: SplitViewModel
     @Environment(\.scenePhase) private var scenePhase
@@ -11,17 +17,21 @@ struct ImageDetailView: View {
     @Binding var imageAndMetadata: IamagesImageAndMetadataContainer
     
     @State private var previousIsLocked: Bool = false
-
+    
     @State private var request: ImageRequest?
     @State private var key: String = ""
     @State private var isKeyAlertPresented: Bool = false
     @State private var shouldAttemptUnlock: Bool = false
-
+    
     @State private var isInformationSheetPresented: Bool = false
     @State private var isEditInformationSheetPresented: Bool = false
     @State private var isCollectionPickerSheetPresented: Bool = false
-
+    
     @State private var isBusy: Bool = false
+    @State private var isDownloadingToastPresented: Bool = false
+    @State private var isFileExporterPresented = false
+    @State private var savableImageDocument: SavedImageDocument?
+    @State private var isDownloadSuccessAlertPresented: Bool = false
     @State private var error: LocalizedAlertError?
     
     private var selectedImageTitle: String {
@@ -49,7 +59,7 @@ struct ImageDetailView: View {
     // Fetches metadata and image key salt
     private func getMetadata() async {
         self.isBusy = true
-
+        
         do {
             let metadata = try await self.globalViewModel.getImagePrivateMetadata(
                 for: self.imageAndMetadata.image,
@@ -83,9 +93,42 @@ struct ImageDetailView: View {
         }
         WidgetCenter.shared.reloadTimelines(ofKind: WidgetKind.selected.rawValue)
     }
-
+    
+    private func resetView() {
+        self.key = ""
+        self.request = nil
+    }
+    
+    private func saveImage(to target: SaveTarget) async {
+        let data: Data
+        if let cachedData = ImagePipeline.shared.cache.cachedData(for: self.request!) {
+            data = cachedData
+        } else {
+            do {
+                self.isDownloadingToastPresented = true
+                data = try await self.globalViewModel.fetchData(
+                    "/images/\(self.imageAndMetadata.id)\(self.imageAndMetadata.image.file.typeExtension)",
+                    method: .get,
+                    authStrategy: self.imageAndMetadata.image.isPrivate ? .required : .none
+                ).0
+                self.isDownloadingToastPresented = false
+            } catch {
+                self.isDownloadingToastPresented = false
+                self.error = LocalizedAlertError(error: error)
+                return
+            }
+        }
+        switch target {
+        case .file:
+            self.savableImageDocument = SavedImageDocument(data: data)
+            self.isFileExporterPresented = true
+        case .library:
+            ImageSaver.writeToPhotoAlbum(data: data)
+        }
+    }
+    
     @ViewBuilder
-    private var lock: some View {
+    private var lockView: some View {
         IconAndInformationView(
             icon: "lock.doc.fill",
             heading: "Image is locked",
@@ -141,7 +184,7 @@ struct ImageDetailView: View {
                         Button("Retry") {
                             self.request = nil
                         }
-                        .buttonStyle(.borderedProminent)
+                            .buttonStyle(.borderedProminent)
                     )
                 )
             } else {
@@ -150,16 +193,11 @@ struct ImageDetailView: View {
         }
     }
     
-    private func resetView() {
-        self.key = ""
-        self.request = nil
-    }
-    
     var body: some View {
         Group {
             if self.request == nil {
                 if self.imageAndMetadata.image.lock.isLocked {
-                    self.lock
+                    self.lockView
                 } else {
                     ProgressView()
                         .onAppear {
@@ -175,11 +213,33 @@ struct ImageDetailView: View {
             }
         }
         .errorAlert(error: self.$error)
-        .navigationTitle(self.selectedImageTitle)
-        .navigationBarTitleDisplayMode(.inline)
-        #if targetEnvironment(macCatalyst)
-        .navigationSubtitle(self.selectedImageTitle)
-        #endif
+        .toast(isPresenting: self.$isDownloadingToastPresented) {
+            AlertToast(displayMode: .alert, type: .loading, title: "Downloading...")
+        }
+        .alert("Image downloaded", isPresented: self.$isDownloadSuccessAlertPresented) {
+            // Use default OK button.
+        } message: {
+            Text("The image bas been saved to your selected location")
+        }
+        .fileExporter(
+            isPresented: self.$isFileExporterPresented,
+            document: self.savableImageDocument,
+            contentType: self.imageAndMetadata.image.file.contentType,
+            defaultFilename: "\(self.imageAndMetadata.id)\(self.imageAndMetadata.image.file.typeExtension)"
+        ) { result in
+            switch result {
+            case .success(_):
+                self.isDownloadSuccessAlertPresented = true
+            case .failure(let error):
+                self.error = LocalizedAlertError(error: error)
+            }
+            self.savableImageDocument = nil
+        }
+        .onChange(of: self.isFileExporterPresented) { isPresented in
+            if !isPresented {
+                self.savableImageDocument = nil
+            }
+        }
         .onDisappear(perform: self.resetView)
         .onChange(of: self.splitViewModel.selectedImage) { _ in
             self.resetView()
@@ -200,51 +260,29 @@ struct ImageDetailView: View {
                 imageID: self.imageAndMetadata.image.id
             )
         }
+        .userActivity(
+            NSUserActivityTypeBrowsingWeb,
+            element: self.imageAndMetadata
+        ) { imageAndMetadata, activity in
+            activity.isEligibleForHandoff = true
+            activity.webpageURL = self.globalViewModel.getImageEmbedURL(id: imageAndMetadata.id)
+        }
+        .navigationTitle(self.selectedImageTitle)
+        .navigationBarTitleDisplayMode(.inline)
+        #if targetEnvironment(macCatalyst)
+        .navigationSubtitle(self.selectedImageTitle)
+        #endif
         .toolbarRole(.editor)
         .toolbar(id: "imageDetail") {
-            ToolbarTitleMenu {
-                if !self.imageAndMetadata.isLoading &&
-                    self.imageAndMetadata.metadataContainer == nil ||
-                    (self.imageAndMetadata.image.lock.isLocked && self.imageAndMetadata.image.file.salt == nil)
-                {
-                    Button(action: {
-                        Task {
-                            await self.getMetadata()
-                        }
-                    }) {
-                        Label("Retry loading metadata", systemImage: "arrow.clockwise")
-                    }
-                }
+            ToolbarItem(id: "share", placement: .primaryAction) {
+                ImageShareLinkView(image: self.imageAndMetadata.image)
             }
-            ToolbarItem(id: "information", placement: .primaryAction) {
+            ToolbarItem(id: "information", placement: .secondaryAction) {
                 Button(action: {
                     self.isInformationSheetPresented = true
                 }) {
                     Label("Information", systemImage: "info.circle")
                 }
-            }
-            ToolbarItem(id: "share", placement: .secondaryAction) {
-                ImageShareLinkView(image: self.imageAndMetadata.image)
-            }
-            ToolbarItem(id: "toggleWidgetImage", placement: .secondaryAction) {
-                Button(action: {
-                    self.toggleWidgetImage(id: self.imageAndMetadata.image.id)
-                }) {
-                    if self.selectedWidgetImageId == self.imageAndMetadata.image.id {
-                        Label("Unset widget image", systemImage: "rectangle.slash")
-                    } else {
-                        Label("Set widget image", systemImage: "rectangle")
-                    }
-                }
-                .disabled(self.imageAndMetadata.image.lock.isLocked)
-            }
-            ToolbarItem(id: "addToCollection", placement: .secondaryAction) {
-                Button(action: {
-                    self.isCollectionPickerSheetPresented = true
-                }) {
-                    Label("Add to collection", systemImage: "folder.badge.plus")
-                }
-                .disabled(!self.globalViewModel.isLoggedIn)
             }
             ToolbarItem(id: "edit", placement: .secondaryAction) {
                 Button(action: {
@@ -262,8 +300,49 @@ struct ImageDetailView: View {
                 }
                 .disabled(
                     !self.canPerformOwnerTasks &&
-                    imageAndMetadata.ownerlessKey == nil
+                    self.imageAndMetadata.ownerlessKey == nil
                 )
+            }
+            ToolbarItem(id: "save", placement: .secondaryAction) {
+                ControlGroup {
+                    Button {
+                        Task {
+                            await self.saveImage(to: .file)
+                        }
+                    } label: {
+                        Label("Save to file", systemImage: "arrow.down.doc")
+                    }
+                    Button {
+                        Task {
+                            await self.saveImage(to: .library)
+                        }
+                    } label: {
+                        Label("Save to photos library", systemImage: "photo.on.rectangle.angled")
+                    }
+                } label: {
+                    Label("Save", systemImage: "square.and.arrow.down")
+                }
+                .disabled(self.imageAndMetadata.image.lock.isLocked || self.isDownloadingToastPresented)
+            }
+            ToolbarItem(id: "addToCollection", placement: .secondaryAction) {
+                Button(action: {
+                    self.isCollectionPickerSheetPresented = true
+                }) {
+                    Label("Add to collection", systemImage: "folder.badge.plus")
+                }
+                .disabled(!self.globalViewModel.isLoggedIn)
+            }
+            ToolbarItem(id: "toggleWidgetImage", placement: .secondaryAction) {
+                Button(action: {
+                    self.toggleWidgetImage(id: self.imageAndMetadata.image.id)
+                }) {
+                    if self.selectedWidgetImageId == self.imageAndMetadata.image.id {
+                        Label("Unset widget image", systemImage: "rectangle.slash")
+                    } else {
+                        Label("Set widget image", systemImage: "rectangle")
+                    }
+                }
+                .disabled(self.imageAndMetadata.image.lock.isLocked)
             }
             ToolbarItem(id: "relock", placement: .secondaryAction) {
                 if self.imageAndMetadata.image.lock.isLocked {

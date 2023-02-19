@@ -185,24 +185,22 @@ struct CollectionImagesListView: View {
             )
         )
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                if self.collection.owner == self.globalViewModel.userInformation?.username {
-                    Button(action: {
-                        self.isEditSheetPresented = true
-                    }) {
-                        Label("Edit", systemImage: "pencil")
-                    }
+            ToolbarTitleMenu {
+                Button(action: {
+                    self.isEditSheetPresented = true
+                }) {
+                    Label("Edit", systemImage: "pencil")
                 }
-            }
-            ToolbarItem {
-                CollectionShareLinkView(collection: self.collection)
-            }
-            ToolbarItem {
+                .disabled(self.collection.owner != self.globalViewModel.userInformation?.username)
+                
                 Button(role: .destructive) {
                     self.collectionToDelete = self.collection
                 } label: {
                     Label("Delete collection", systemImage: "trash")
                 }
+            }
+            ToolbarItem(placement: .primaryAction) {
+                CollectionShareLinkView(collection: self.collection)
             }
             #if targetEnvironment(macCatalyst)
             ToolbarItem {

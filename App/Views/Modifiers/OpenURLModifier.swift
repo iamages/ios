@@ -110,6 +110,15 @@ struct OpenURLModifier: ViewModifier {
     @State private var isCollectionSheetPresented = false
     @State private var error: LocalizedAlertError?
     
+    private func validateURL(url: URL) -> Bool {
+        if (url.host() != "iamages.jkelol111.me" || url.scheme != "iamages") &&
+           (url.pathComponents.first != "api" || url.pathComponents.last != "embed")
+        {
+            return false
+        }
+        return true
+    }
+    
     func body(content: Content) -> some View {
         content
             .errorAlert(error: self.$error)
@@ -130,14 +139,15 @@ struct OpenURLModifier: ViewModifier {
                 .environmentObject(self.globalViewModel)
                 .environmentObject(self.splitViewModel)
             }
-            .onOpenURL { url in
-                if url.host() != "iamages.jkelol111.me" ||
-                   url.scheme != "iamages" ||
-                   url.pathComponents.first != "api",
-                   url.pathComponents.last != "embed"
-                {
+            .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                guard let url = activity.webpageURL else {
                     return
                 }
+                if !self.validateURL(url: url) { return }
+                UIApplication.shared.open(url, options: [.universalLinksOnly: true])
+            }
+            .onOpenURL { url in
+                if !self.validateURL(url: url) { return }
                 self.isCollectionSheetPresented = false
                 self.isImageSheetPresented = false
                 self.isLoadingToastPresented = true

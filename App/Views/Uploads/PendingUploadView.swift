@@ -5,6 +5,7 @@ struct PendingUploadView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     let uploadContainer: IamagesUploadContainer
+    var collectionID: String? = nil
     @Binding var completedUploads: [IamagesImage]
     
     @StateObject var model: UploadViewModel = UploadViewModel()
@@ -68,6 +69,7 @@ struct PendingUploadView: View {
         }
         .task {
             self.model.viewContext = self.viewContext
+            self.model.collectionID = self.collectionID
             self.model.information = self.uploadContainer.information
             self.model.file = self.uploadContainer.file
             

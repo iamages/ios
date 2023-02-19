@@ -57,8 +57,8 @@ struct AccountEmailChangeView: View {
                 LabeledContent("Current email", value: self.globalViewModel.userInformation?.email ?? "None")
                 LabeledContent("New email") {
                     TextField("Email", text: self.$newEmail)
+                        .textContentType(.emailAddress)
                         .multilineTextAlignment(.trailing)
-                        .keyboardType(.emailAddress)
                         .focused(self.$focusedField, equals: .newEmail)
                 }
                 Button("Change email") {

@@ -4,18 +4,16 @@ class UploadsViewModel: ObservableObject {
     @Published var selectedUploadContainer: UUID?
     @Published var uploadContainers: [IamagesUploadContainer] = []
     @Published var isBusy: Bool = false
+    @Published var collection: IamagesCollection?
     
     func deleteUpload(id: UUID) {
-        guard let i = self.uploadContainers.firstIndex(where: { $0.id == id }) else {
-            return
-        }
-        if self.selectedUploadContainer == id {
+        if let i = self.uploadContainers.firstIndex(where: { $0.id == id }) {
             withAnimation {
-                self.selectedUploadContainer = nil
+                if self.selectedUploadContainer == id {
+                    self.selectedUploadContainer = nil
+                }
+                self.uploadContainers.remove(at: i)
             }
-        }
-        withAnimation {
-            self.uploadContainers.remove(at: i)
         }
     }
 }

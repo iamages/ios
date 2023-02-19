@@ -68,7 +68,7 @@ struct UploadContainersListView: View {
                     guard let size: Int = meta.fileSize else {
                         throw FileImportErrors.noSize(url.lastPathComponent)
                     }
-                    if size > 10485760 {
+                    if size > self.globalViewModel.maxImageSize {
                         throw FileImportErrors.tooLarge(url.lastPathComponent, size)
                     }
 

@@ -1,7 +1,7 @@
 import SwiftUI
 import SharedWithYou
 
-struct SharedWithYouListView: View {
+struct SWListView: View {
     @EnvironmentObject private var globalViewModel: GlobalViewModel
     @EnvironmentObject private var splitViewModel: SplitViewModel
     
@@ -11,17 +11,57 @@ struct SharedWithYouListView: View {
     @State private var collectionToDelete: IamagesCollection?
     @State private var navigationPath: [String] = []
     
+    private func fetchHighlights(for highlights: [SWHighlight]) async {
+        for highlight in highlights {
+            if highlight.url.pathComponents.last != "embed" {
+                continue
+            }
+            do {
+                switch highlight.url.pathComponents[safe: 1] {
+                case "images":
+                    if let id = highlight.url.pathComponents[safe: 2] {
+                        let image = try await self.globalViewModel.getImagePublicMetadata(id: id)
+                        self.splitViewModel.images.insert(
+                            IamagesImageAndMetadataContainer(id: image.id, image: image),
+                            at: 0
+                        )
+                    }
+                    break
+                case "collections":
+                    if let id = highlight.url.pathComponents[safe: 2] {
+                        self.collections.insert(
+                            try await self.globalViewModel.getCollectionInformation(id: id),
+                            at: 0
+                        )
+                    }
+                    break
+                default:
+                    continue
+                }
+            } catch {
+                print(error)
+                continue
+            }
+        }
+    }
+    
     @ViewBuilder
     private var list: some View {
         List {
             Section("Images") {
                 ForEach(self.$splitViewModel.images) { imageAndMetadata in
-                    NavigableImageView(imageAndMetadata: imageAndMetadata)
+                    SWImageWrapperView(
+                        imageAndMetadata: imageAndMetadata,
+                        swViewModel: self.swViewModel
+                    )
                 }
             }
             Section("Collections") {
                 ForEach(self.collections) { collection in
-                    NavigableCollectionView(collection: collection)
+                    SWCollectionWrapperView(
+                        collection: collection,
+                        swViewModel: self.swViewModel
+                    )
                 }
             }
         }
@@ -48,13 +88,14 @@ struct SharedWithYouListView: View {
             }
         }
         .task {
-            for highlight in self.swViewModel.highlightCenter.highlights {
-                
-            }
+            print(self.swViewModel.highlightCenter.highlights)
+            await self.fetchHighlights(for: self.swViewModel.highlightCenter.highlights)
         }
         .onReceive(NotificationCenter.default.publisher(for: .newSWHighlights)) { output in
-            guard let highlights = output.object as? [SWHighlight] else {
-                return
+            if let highlights = output.object as? [SWHighlight] {
+                Task {
+                    await self.fetchHighlights(for: highlights)
+                }
             }
         }
     }
@@ -77,9 +118,9 @@ struct SharedWithYouListView: View {
     }
 }
 
-struct SharedWithYouListView_Previews: PreviewProvider {
+struct SWistView_Previews: PreviewProvider {
     static var previews: some View {
-        SharedWithYouListView()
+        SWListView()
             .environmentObject(SplitViewModel())
     }
 }

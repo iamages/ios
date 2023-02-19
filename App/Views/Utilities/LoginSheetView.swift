@@ -67,11 +67,14 @@ struct LoginSheetView: View {
         NavigationStack {
             Form {
                 TextField("Username", text: self.$usernameInput)
+                    .textContentType(.username)
                     .focused(self.$focusedField, equals: .username)
                 SecureField("Password", text: self.$passwordInput)
+                    .textContentType(self.isSigningUp ? .newPassword : .password)
                     .focused(self.$focusedField, equals: .password)
                 if self.isSigningUp {
                     TextField("Email (optional)", text: self.$emailInput)
+                        .textContentType(.emailAddress)
                         .focused(self.$focusedField, equals: .email)
                 }
                 Toggle("I want to make a new account", isOn: self.$isSigningUp)

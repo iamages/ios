@@ -6,6 +6,12 @@ struct NewMenuModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
+            .sheet(isPresented: self.$globalViewModel.isNewCollectionPresented) {
+                NewCollectionView()
+            }
+            .fullScreenCover(isPresented: self.$globalViewModel.isUploadsPresented) {
+                UploadsView()
+            }
             .toolbar {
                 ToolbarItem {
                     Menu {
@@ -15,12 +21,7 @@ struct NewMenuModifier: ViewModifier {
                             Label("Uploads", systemImage: "arrow.up.doc")
                         }
                         .disabled(self.globalViewModel.isNewCollectionPresented)
-                        Button(action: {
-                            self.globalViewModel.isNewCollectionPresented = true
-                        }) {
-                            Label(self.globalViewModel.isLoggedIn ? "Collection" : "Log in to upload into collection", systemImage: "folder.badge.plus")
-                        }
-                        .disabled(!self.globalViewModel.isLoggedIn || self.globalViewModel.isUploadsPresented)
+                        NewCollectionButton()
                     } label: {
                         Label("New", systemImage: "plus")
                     }

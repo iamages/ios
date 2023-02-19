@@ -25,22 +25,6 @@ struct NavigableCollectionView: View {
         }
     }
     
-//    private func collectionImageView(for image: IamagesImage) -> some View {
-//        LazyImage(request: self.globalViewModel.getThumbnailRequest(for: image)) { state in
-//            if let image = state.image {
-//                image
-//                    .animatedImageRenderingEnabled(false)
-//                    .videoRenderingEnabled(false)
-//                    .resizingMode(.aspectFill)
-//            } else if state.error != nil {
-//                Image(systemName: "exclamationmark.octagon")
-//            } else {
-//                Rectangle()
-//                    .redacted(reason: .placeholder)
-//            }
-//        }
-//    }
-    
     private let roundedRectangle = RoundedRectangle(cornerRadius: 8)
 
     var body: some View {

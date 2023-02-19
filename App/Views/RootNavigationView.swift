@@ -25,9 +25,7 @@ struct RootNavigationView: View {
                 case .collections:
                     CollectionsListView(viewMode: .normal)
                 case .sharedWithYou:
-                    // SharedWithYouListView() TODO: Complete Shared with You
-                    IconAndInformationView(icon: "box.truck", heading: "Coming soon", subheading: "We're getting this ready. Check back soon!")
-                        .navigationTitle("Shared with You")
+                     SWListView()
                 case .anonymousUploads:
                     AnonymousUploadsListView()
                 }
@@ -152,12 +150,6 @@ struct RootNavigationView: View {
                 self.requestReview()
                 self.openedSinceLastReviewCount = 0
             }
-        }
-        .sheet(isPresented: self.$globalViewModel.isNewCollectionPresented) {
-            NewCollectionView()
-        }
-        .fullScreenCover(isPresented: self.$globalViewModel.isUploadsPresented) {
-            UploadsView()
         }
         .fullScreenCover(isPresented: self.$globalViewModel.isSettingsPresented) {
             SettingsView()

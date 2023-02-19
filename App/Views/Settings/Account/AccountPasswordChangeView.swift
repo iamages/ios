@@ -39,8 +39,10 @@ struct AccountPasswordChangeView: View {
         Form {
             Section {
                 SecureField("New password", text: self.$newPassword1)
+                    .textContentType(.newPassword)
                     .focused(self.$focusedField, equals: .newPassword1)
                 SecureField("New password, again", text: self.$newPassword2)
+                    .textContentType(.newPassword)
                     .focused(self.$focusedField, equals: .newPassword2)
                 Button("Change password", role: .destructive) {
                     Task {

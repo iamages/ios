@@ -7,17 +7,15 @@ struct DeleteImageListenerModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onReceive(NotificationCenter.default.publisher(for: .deleteImage)) { output in
-                guard let id = output.object as? String,
-                      let i = self.splitViewModel.images.firstIndex(where: { $0.id == id }) else {
-                    return
-                }
-                if self.splitViewModel.selectedImage == id {
+                if let id = output.object as? String,
+                      let i = self.splitViewModel.images.firstIndex(where: { $0.id == id })
+                {
                     withAnimation {
-                        self.splitViewModel.selectedImage = nil
+                        if self.splitViewModel.selectedImage == id {
+                            self.splitViewModel.selectedImage = nil
+                        }
+                        self.splitViewModel.images.remove(at: i)
                     }
-                }
-                withAnimation {
-                    self.splitViewModel.images.remove(at: i)
                 }
             }
     }

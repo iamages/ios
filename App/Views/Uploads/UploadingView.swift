@@ -14,7 +14,17 @@ struct UploadingView: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(alignment: .leading) {
-                    Text("Completed")
+                    if let collection = self.uploadsViewModel.collection {
+                        Text("Collection")
+                            .bold()
+                            .foregroundColor(.gray)
+                        UploadCollectionView(
+                            collection: collection,
+                            completedUploads: self.completedUploads
+                        )
+                        Divider()
+                    }
+                    Text("Uploaded")
                         .bold()
                         .foregroundColor(.gray)
                     ScrollView(.horizontal) {
@@ -41,6 +51,7 @@ struct UploadingView: View {
                         ForEach(self.uploadsViewModel.uploadContainers) { uploadContainer in
                             PendingUploadView(
                                 uploadContainer: uploadContainer,
+                                collectionID: self.uploadsViewModel.collection?.id,
                                 completedUploads: self.$completedUploads
                             )
                         }
@@ -50,6 +61,11 @@ struct UploadingView: View {
             }
             .navigationTitle("Uploading")
             .navigationBarTitleDisplayMode(.inline)
+            #if targetEnvironment(macCatalyst)
+            .withHostingWindow { window in
+                window?.windowScene?.windowingBehaviors?.isClosable = false
+            }
+            #endif
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {

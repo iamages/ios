@@ -127,8 +127,8 @@ struct ImagesListView: View {
                 at: 0
             )
         }
+        #if targetEnvironment(macCatalyst)
         .toolbar {
-            #if targetEnvironment(macCatalyst)
             ToolbarItem {
                 Button(action: {
                     Task {
@@ -140,27 +140,27 @@ struct ImagesListView: View {
                 .keyboardShortcut("r")
                 .disabled(self.isBusy)
             }
-            #endif
         }
+        #endif
     }
     
     var body: some View {
         Group {
-            if self.globalViewModel.userInformation == nil {
+            if !self.globalViewModel.isLoggedIn {
                 NotLoggedInView()
             } else {
                 self.list
-            }
-        }
-        .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
-            if isLoggedIn {
-                self.isFirstAppearance = true
             }
         }
         .navigationTitle("Images")
         #if !targetEnvironment(macCatalyst)
         .modifier(NewMenuModifier(globalViewModel: self.globalViewModel))
         #endif
+        .onChange(of: self.globalViewModel.isLoggedIn) { isLoggedIn in
+            if isLoggedIn {
+                self.isFirstAppearance = true
+            }
+        }
     }
 }
 

@@ -145,6 +145,13 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     private func addUserTokenToRequest(to request: inout URLRequest) async throws {
         if self.lastUserToken == nil || Date.now.timeIntervalSince(self.lastUserToken!.date) > 1800 {
             try await self.fetchUserToken()
+            // Only fetch new user information when the request is not fetching user
+            // information itself.
+            if request.url?.pathComponents.first != "users" &&
+               request.httpMethod != HTTPMethod.get.rawValue
+            {
+                try await self.getUserInformation()
+            }
         }
         request.addValue("\(self.lastUserToken!.token.tokenType) \(self.lastUserToken!.token.accessToken)", forHTTPHeaderField: "Authorization")
     }
@@ -172,7 +179,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     }
     
     func getUserInformation() async throws {
-        let userInformation: IamagesUser = try self.jsond.decode(
+        self.userInformation = try self.jsond.decode(
             IamagesUser.self,
             from: try await self.fetchData(
                 "/users/",
@@ -180,8 +187,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
                 authStrategy: .required
             ).0
         )
-        self.userInformation = userInformation
-        try self.keychain.setDataWithKey(self.jsone.encode(userInformation), key: .userInformation)
+        try self.keychain.setDataWithKey(self.jsone.encode(self.userInformation), key: .userInformation)
     }
     
     func editUserInformation(using userEdit: IamagesUserEdit) async throws {
@@ -197,9 +203,7 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             try self.keychain.setStringWithKey(userEdit.to!, key: .password)
         case .email:
             self.userInformation?.email = userEdit.to
-            if let userInformation {
-                try self.keychain.setDataWithKey(try self.jsone.encode(userInformation), key: .userInformation)
-            }
+            try self.keychain.setDataWithKey(try self.jsone.encode(self.userInformation), key: .userInformation)
         }
     }
     
@@ -382,9 +386,19 @@ final class GlobalViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
         ImagePipeline.shared.cache.removeCachedImage(for: await self.getThumbnailRequest(for: image))
     }
     
+    func getImageEmbedURL(id: String) -> URL {
+        return .apiRootUrl.appending(path: "/images/\(id)/embed")
+    }
+    
     // MARK: Collections
-    func getCollectionInformation(id: String) async throws {
-        
+    func getCollectionInformation(id: String) async throws -> IamagesCollection {
+        return try self.jsond.decode(
+            IamagesCollection.self,
+            from: try await self.fetchData(
+                "/collections/\(id)",
+                method: .get
+            ).0
+        )
     }
     
     // Makes sure username and password meets standards.

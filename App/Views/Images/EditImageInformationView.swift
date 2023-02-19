@@ -43,6 +43,7 @@ struct EditImageInformationView: View {
     private func applyEdits() async {
         self.edits = []
         self.isBusy = true
+        self.focusedField = nil
         do {
             if self.isPrivate != self.imageAndMetadata.image.isPrivate {
                 self.edits.append(
@@ -133,8 +134,9 @@ struct EditImageInformationView: View {
             }
             self.dismiss()
         } catch {
-            self.error = LocalizedAlertError(error: error)
             self.isBusy = false
+            self.focusedField = .description
+            self.error = LocalizedAlertError(error: error)
         }
     }
     
@@ -208,6 +210,7 @@ struct EditImageInformationView: View {
             .errorAlert(error: self.$error)
             .navigationTitle("Edit image information")
             .navigationBarTitleDisplayMode(.inline)
+            .interactiveDismissDisabled()
             .onAppear {
                 self.focusedField = .description
             }

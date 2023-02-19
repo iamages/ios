@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct UploadedView: View {
-    @EnvironmentObject private var globalViewModel: GlobalViewModel
-    
     let uploaded: IamagesImage
     
     var body: some View {

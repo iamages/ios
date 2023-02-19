@@ -89,11 +89,16 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     @Published var error: LocalizedAlertError?
     
     var viewContext: NSManagedObjectContext?
+    var collectionID: String?
     
-    init(viewContext: NSManagedObjectContext? = nil) {
+    init(
+        viewContext: NSManagedObjectContext? = nil,
+        collectionID: String? = nil
+    ) {
         self.jsond.dateDecodingStrategy = .iso8601
         self.jsone.dateEncodingStrategy = .iso8601
         self.viewContext = viewContext
+        self.collectionID = collectionID
         super.init()
     }
     
@@ -106,6 +111,51 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
     ) {
         DispatchQueue.main.async {
             self.progress = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
+        }
+    }
+    
+    private func checkResponseStatus(for response: URLResponse, body: Data) throws {
+        guard let response = response as? HTTPURLResponse else {
+            throw APICommunicationErrors.invalidResponse(response.url)
+        }
+        if response.statusCode < 200 || response.statusCode > 299 {
+            let detail: String
+            do {
+                detail = try self.jsond.decode(APIErrorDetails.self, from: body).detail
+            } catch {
+                detail = String(decoding: body, as: UTF8.self)
+            }
+            throw APICommunicationErrors.badResponse(response.statusCode, detail)
+        }
+    }
+    
+    private func setAuthorizationHeader(for request: inout URLRequest) async throws {
+        var lastUserToken: LastIamagesUserToken?
+        if let tokenData = try self.keychain.getDataWithKey(.lastUserToken) {
+            lastUserToken = try self.jsond.decode(LastIamagesUserToken.self, from: tokenData)
+            if Date.now.timeIntervalSince(lastUserToken!.date) > 1800 {
+                guard let username = try self.keychain.getStringWithKey(.username),
+                      let password = try self.keychain.getStringWithKey(.password) else {
+                    throw APICommunicationErrors.notLoggedIn
+                }
+                var tokenRequest = URLRequest(url: .apiRootUrl.appending(path: "/users/token"))
+                tokenRequest.httpMethod = HTTPMethod.post.rawValue
+                tokenRequest.httpBody = "username=\(username)&password=\(password)&grant_type=password"
+                    .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?
+                    .data(using: .utf8)
+                tokenRequest.addValue(HTTPContentType.encodedForm.rawValue, forHTTPHeaderField: "Content-Type")
+                lastUserToken = LastIamagesUserToken(
+                    token: try self.jsond.decode(
+                        IamagesUserToken.self,
+                        from: try await URLSession.shared.data(for: tokenRequest).0
+                    ),
+                    date: .now
+                )
+                try self.keychain.setDataWithKey(self.jsone.encode(lastUserToken), key: .lastUserToken)
+            }
+        }
+        if let lastUserToken {
+            request.addValue("\(lastUserToken.token.tokenType) \(lastUserToken.token.accessToken)", forHTTPHeaderField: "Authorization")
         }
     }
     
@@ -135,39 +185,12 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             self.isUploading = false
             return
         }
-
-        var uploadRequest = URLRequest(url: .apiRootUrl.appending(path: "/images", directoryHint: .isDirectory))
-        uploadRequest.httpMethod = HTTPMethod.post.rawValue
-        uploadRequest.addValue(HTTPContentType.multipart.rawValue, forHTTPHeaderField: "Content-Type")
         
         do {
-            var lastUserToken: LastIamagesUserToken?
-            if let tokenData = try self.keychain.getDataWithKey(.lastUserToken) {
-                lastUserToken = try self.jsond.decode(LastIamagesUserToken.self, from: tokenData)
-                if Date.now.timeIntervalSince(lastUserToken!.date) > 1800 {
-                    guard let username = try self.keychain.getStringWithKey(.username),
-                          let password = try self.keychain.getStringWithKey(.password) else {
-                        throw APICommunicationErrors.notLoggedIn
-                    }
-                    var tokenRequest = URLRequest(url: .apiRootUrl.appending(path: "/users/token"))
-                    tokenRequest.httpMethod = HTTPMethod.post.rawValue
-                    tokenRequest.httpBody = "username=\(username)&password=\(password)&grant_type=password"
-                        .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)?
-                        .data(using: .utf8)
-                    tokenRequest.addValue(HTTPContentType.encodedForm.rawValue, forHTTPHeaderField: "Content-Type")
-                    lastUserToken = LastIamagesUserToken(
-                        token: try self.jsond.decode(
-                            IamagesUserToken.self,
-                            from: try await URLSession.shared.data(for: tokenRequest).0
-                        ),
-                        date: .now
-                    )
-                    try self.keychain.setDataWithKey(self.jsone.encode(lastUserToken), key: .lastUserToken)
-                }
-            }
-            if let lastUserToken {
-                uploadRequest.addValue("\(lastUserToken.token.tokenType) \(lastUserToken.token.accessToken)", forHTTPHeaderField: "Authorization")
-            }
+            var uploadRequest = URLRequest(url: .apiRootUrl.appending(path: "/images", directoryHint: .isDirectory))
+            try await self.setAuthorizationHeader(for: &uploadRequest)
+            uploadRequest.httpMethod = HTTPMethod.post.rawValue
+            uploadRequest.addValue(HTTPContentType.multipart.rawValue, forHTTPHeaderField: "Content-Type")
 
             let mimeType = self.file!.type.components(separatedBy: "/")
             
@@ -191,23 +214,12 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
             uploadRequest.httpBody = form.httpBody
             
             let (data, response) = try await URLSession.shared.data(for: uploadRequest, delegate: self)
-            guard let response = response as? HTTPURLResponse else {
-                throw APICommunicationErrors.invalidResponse(uploadRequest.url)
-            }
-            if response.statusCode < 200 || response.statusCode > 299 {
-                let detail: String
-                do {
-                    detail = try self.jsond.decode(APIErrorDetails.self, from: data).detail
-                } catch {
-                    detail = String(decoding: data, as: UTF8.self)
-                }
-                throw APICommunicationErrors.badResponse(response.statusCode, detail)
-            }
+            try self.checkResponseStatus(for: response, body: data)
             self.uploadedImage = try self.jsond.decode(IamagesImage.self, from: data)
-            if lastUserToken == nil,
+            if uploadRequest.value(forHTTPHeaderField: "Authorization") == nil,
                let viewContext,
                let uploadedImage,
-               let ownerlessKeyString = response.value(forHTTPHeaderField: "X-Iamages-Ownerless-Key"),
+               let ownerlessKeyString = (response as? HTTPURLResponse)?.value(forHTTPHeaderField: "X-Iamages-Ownerless-Key"),
                let ownerlessKey = UUID(uuidString: ownerlessKeyString)
             {
                 let anonymousUpload = AnonymousUpload(context: viewContext)
@@ -216,6 +228,22 @@ final class UploadViewModel: NSObject, ObservableObject, URLSessionTaskDelegate 
                 try await viewContext.perform {
                     try viewContext.save()
                 }
+            }
+            if let collectionID,
+               let uploadedImage
+            {
+                var patchCollectionRequest = URLRequest(url: .apiRootUrl.appending(path: "/collections/\(collectionID)"))
+                try await self.setAuthorizationHeader(for: &patchCollectionRequest)
+                patchCollectionRequest.httpMethod = "PATCH"
+                patchCollectionRequest.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+                patchCollectionRequest.httpBody = try self.jsone.encode(
+                    IamagesCollectionEdit(
+                        change: .addImages,
+                        to: .stringArray([uploadedImage.id])
+                    )
+                )
+                let (data, response) = try await URLSession.shared.data(for: patchCollectionRequest)
+                try self.checkResponseStatus(for: response, body: data)
             }
         } catch {
             self.error = LocalizedAlertError(error: error)

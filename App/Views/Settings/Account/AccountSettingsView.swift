@@ -54,7 +54,6 @@ struct AccountSettingsView: View {
                     } label: {
                         LabeledContent("Email", value: userInformation.email ?? "Set new...")
                     }
-                    
                     .toolbar {
                         ToolbarItem {
                             if self.globalViewModel.isLoggedIn {

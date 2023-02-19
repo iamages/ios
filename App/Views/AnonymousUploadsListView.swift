@@ -150,12 +150,10 @@ struct AnonymousUploadsListView: View {
                         self.loadingErrors.remove(at: i)
                     }
                     if let i = self.splitViewModel.images.firstIndex(where: { $0.id == anonymousUpload.id }) {
-                        if self.splitViewModel.selectedImage == anonymousUpload.id {
-                            withAnimation {
+                        withAnimation {
+                            if self.splitViewModel.selectedImage == anonymousUpload.id {
                                 self.splitViewModel.selectedImage = nil
                             }
-                        }
-                        withAnimation {
                             self.splitViewModel.images.remove(at: i)
                         }
                     }

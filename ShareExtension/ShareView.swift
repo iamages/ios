@@ -57,7 +57,7 @@ struct ShareView: View {
                 Section {
                     Toggle("Private", isOn: self.$uploadModel.information.isPrivate)
                         .disabled(!self.isLoggedIn)
-                    Toggle("Locked", isOn: self.$uploadModel.information.isLocked)
+                    Toggle("Lock (Beta)", isOn: self.$uploadModel.information.isLocked)
                     if self.uploadModel.information.isLocked {
                         SecureField("Lock key", text: self.$uploadModel.information.lockKey)
                             .focused(self.$focusedField, equals: .lockKey)

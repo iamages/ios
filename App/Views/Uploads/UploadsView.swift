@@ -6,9 +6,12 @@ struct UploadsView: View {
     #if !targetEnvironment(macCatalyst)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dismiss) private var dismiss
+    #else
+    @State private var windowFinderID = UUID()
     #endif
     
     @StateObject private var uploadsViewModel = UploadsViewModel()
+    private let notificationID = UUID()
 
     @State private var isNewCollectionSheetPresented: Bool = false
     @State private var isUploadingCoverPresented: Bool = false
@@ -86,7 +89,7 @@ struct UploadsView: View {
             Group {
                 if let id = self.uploadsViewModel.selectedUploadContainer,
                    let i = self.uploadsViewModel.uploadContainers.firstIndex(where: { $0.id == id }),
-                   let uploadContainer = self.$uploadsViewModel.uploadContainers[i]
+                   let uploadContainer = self.$uploadsViewModel.uploadContainers[safe: i]
                 {
                     UploadEditorView(
                         uploadContainer: uploadContainer
@@ -115,16 +118,32 @@ struct UploadsView: View {
         .navigationTitle("Uploads")
         #if targetEnvironment(macCatalyst)
         .navigationSubtitle("\(self.uploadsViewModel.uploadContainers.count) image\(self.uploadsViewModel.uploadContainers.count > 1 || self.uploadsViewModel.uploadContainers.isEmpty ? "s" : "")")
+        .background {
+            HostingWindowFinder(callback: { window in
+                window?.windowScene?.windowingBehaviors?.isClosable = true
+            })
+            .id(self.windowFinderID)
+        }
         #endif
         .errorAlert(error: self.$error)
-        .fullScreenCover(isPresented: self.$isUploadingCoverPresented) {
+        .fullScreenCover(isPresented: self.$isUploadingCoverPresented, onDismiss: {
+            #if targetEnvironment(macCatalyst)
+            self.windowFinderID = UUID()
+            #endif
+        }) {
             UploadingView()
                 .environmentObject(self.uploadsViewModel)
         }
         .sheet(isPresented: self.$isNewCollectionSheetPresented, onDismiss: {
             self.isUploadingCoverPresented = true
         }) {
-            NewCollectionView()
+            NewCollectionView(notificationID: self.notificationID)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .addCollection)) { output in
+            if let notification = output.object as? AddIamagesCollectionNotification,
+               notification.id == self.notificationID {
+                self.uploadsViewModel.collection = notification.collection
+            }
         }
     }
 }

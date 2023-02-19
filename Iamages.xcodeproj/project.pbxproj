@@ -41,12 +41,18 @@
 		2E1F8F98293486DC00D6AC49 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 2E1F8F97293486DC00D6AC49 /* NukeUI */; };
 		2E1F8F9A2935C67600D6AC49 /* SplitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1F8F992935C67600D6AC49 /* SplitViewModel.swift */; };
 		2E2257B229911E0A0030D2C6 /* CollectionImageThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2257B129911E0A0030D2C6 /* CollectionImageThumbnailView.swift */; };
+		2E2257B52995F5960030D2C6 /* SWImageWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2257B42995F5960030D2C6 /* SWImageWrapperView.swift */; };
+		2E2257B7299649E30030D2C6 /* SWCollectionWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2257B6299649E30030D2C6 /* SWCollectionWrapperView.swift */; };
 		2E29D1F2293785C7009CE522 /* AppWelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E29D1F1293785C7009CE522 /* AppWelcomeSheet.swift */; };
 		2E29D1F429378D4B009CE522 /* AboutLinksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E29D1F329378D4B009CE522 /* AboutLinksView.swift */; };
 		2E29D1F82938643D009CE522 /* CREDITS.md in Resources */ = {isa = PBXBuildFile; fileRef = 2E29D1F72938643D009CE522 /* CREDITS.md */; };
 		2E29D1FA293868DA009CE522 /* Notification.Name+Iamages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E29D1F9293868DA009CE522 /* Notification.Name+Iamages.swift */; };
 		2E29D1FC29386938009CE522 /* URL+Iamages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E29D1FB29386938009CE522 /* URL+Iamages.swift */; };
 		2E29D1FF2938DB56009CE522 /* SPConfetti in Frameworks */ = {isa = PBXBuildFile; productRef = 2E29D1FE2938DB56009CE522 /* SPConfetti */; };
+		2E2E665129A0C5C1008C02AF /* UploadCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2E665029A0C5C1008C02AF /* UploadCollectionView.swift */; };
+		2E2E665329A0D810008C02AF /* IamagesCollectionEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2E665229A0D810008C02AF /* IamagesCollectionEdit.swift */; };
+		2E2E665429A0D810008C02AF /* IamagesCollectionEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2E665229A0D810008C02AF /* IamagesCollectionEdit.swift */; };
+		2E2E665529A0D8E4008C02AF /* BoolOrString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DDF6294ECD9100ACB068 /* BoolOrString.swift */; };
 		2E36351B29758F04009CE352 /* UploadOwnershipFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E36351A29758F04009CE352 /* UploadOwnershipFooter.swift */; };
 		2E36351C29758F04009CE352 /* UploadOwnershipFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E36351A29758F04009CE352 /* UploadOwnershipFooter.swift */; };
 		2E36351E297634B5009CE352 /* ImageThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E36351D297634B5009CE352 /* ImageThumbnailView.swift */; };
@@ -104,7 +110,7 @@
 		2E38DEBB2972CCA300ACB068 /* IamagesImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEB92972CC8500ACB068 /* IamagesImage.swift */; };
 		2E38DEBC2972CCEB00ACB068 /* CoreDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEB62972C84B00ACB068 /* CoreDataModel.swift */; };
 		2E38DEBE2972E50800ACB068 /* SWViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEBD2972E50800ACB068 /* SWViewModel.swift */; };
-		2E38DEC129736C7800ACB068 /* SharedWithYouListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEC029736C7800ACB068 /* SharedWithYouListView.swift */; };
+		2E38DEC129736C7800ACB068 /* SWListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E38DEC029736C7800ACB068 /* SWListView.swift */; };
 		2E4F8466290FF7F900629C27 /* AppNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4F8465290FF7F900629C27 /* AppNavigation.swift */; };
 		2E4F8468290FF94D00629C27 /* Collections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4F8467290FF94D00629C27 /* Collections.swift */; };
 		2E509E7728EEE98800ABC072 /* View+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E509E7628EEE98800ABC072 /* View+Utils.swift */; };
@@ -143,6 +149,8 @@
 		2EA89AE42921FA2400350F38 /* EditImageInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA89AE32921FA2400350F38 /* EditImageInformationView.swift */; };
 		2EAA3600290E2CA600861C03 /* ZoomableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAA35FF290E2CA600861C03 /* ZoomableScrollView.swift */; };
 		2EAA360A290E55D200861C03 /* IconAndInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EAA3609290E55D200861C03 /* IconAndInformationView.swift */; };
+		2EC69A17299F365F006F959F /* NewCollectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC69A16299F365F006F959F /* NewCollectionButton.swift */; };
+		2EDCD828299CF7DE00AAAC7B /* ImageSaving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDCD827299CF7DE00AAAC7B /* ImageSaving.swift */; };
 		2EEA8F48290249CF0007FE6B /* MultipartFormData in Frameworks */ = {isa = PBXBuildFile; productRef = 2EEA8F47290249CF0007FE6B /* MultipartFormData */; };
 		2EEA8F4A2904476D0007FE6B /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EEA8F492904476D0007FE6B /* PreviewData.swift */; };
 		2EEBADF0297AC452002FC915 /* PasswordResetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EEBADEF297AC452002FC915 /* PasswordResetView.swift */; };
@@ -211,11 +219,15 @@
 		2E161348293E21AA00FC2CC8 /* Users.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Users.swift; sourceTree = "<group>"; };
 		2E1F8F992935C67600D6AC49 /* SplitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewModel.swift; sourceTree = "<group>"; };
 		2E2257B129911E0A0030D2C6 /* CollectionImageThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionImageThumbnailView.swift; sourceTree = "<group>"; };
+		2E2257B42995F5960030D2C6 /* SWImageWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWImageWrapperView.swift; sourceTree = "<group>"; };
+		2E2257B6299649E30030D2C6 /* SWCollectionWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWCollectionWrapperView.swift; sourceTree = "<group>"; };
 		2E29D1F1293785C7009CE522 /* AppWelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWelcomeSheet.swift; sourceTree = "<group>"; };
 		2E29D1F329378D4B009CE522 /* AboutLinksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLinksView.swift; sourceTree = "<group>"; };
 		2E29D1F72938643D009CE522 /* CREDITS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CREDITS.md; sourceTree = "<group>"; };
 		2E29D1F9293868DA009CE522 /* Notification.Name+Iamages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification.Name+Iamages.swift"; sourceTree = "<group>"; };
 		2E29D1FB29386938009CE522 /* URL+Iamages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Iamages.swift"; sourceTree = "<group>"; };
+		2E2E665029A0C5C1008C02AF /* UploadCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadCollectionView.swift; sourceTree = "<group>"; };
+		2E2E665229A0D810008C02AF /* IamagesCollectionEdit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IamagesCollectionEdit.swift; sourceTree = "<group>"; };
 		2E36351A29758F04009CE352 /* UploadOwnershipFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadOwnershipFooter.swift; sourceTree = "<group>"; };
 		2E36351D297634B5009CE352 /* ImageThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageThumbnailView.swift; sourceTree = "<group>"; };
 		2E36351F29763573009CE352 /* CompletedUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedUploadView.swift; sourceTree = "<group>"; };
@@ -257,7 +269,7 @@
 		2E38DEB62972C84B00ACB068 /* CoreDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataModel.swift; sourceTree = "<group>"; };
 		2E38DEB92972CC8500ACB068 /* IamagesImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IamagesImage.swift; sourceTree = "<group>"; };
 		2E38DEBD2972E50800ACB068 /* SWViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWViewModel.swift; sourceTree = "<group>"; };
-		2E38DEC029736C7800ACB068 /* SharedWithYouListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedWithYouListView.swift; sourceTree = "<group>"; };
+		2E38DEC029736C7800ACB068 /* SWListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SWListView.swift; sourceTree = "<group>"; };
 		2E4F8465290FF7F900629C27 /* AppNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigation.swift; sourceTree = "<group>"; };
 		2E4F8467290FF94D00629C27 /* Collections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collections.swift; sourceTree = "<group>"; };
 		2E509E7628EEE98800ABC072 /* View+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Utils.swift"; sourceTree = "<group>"; };
@@ -294,6 +306,8 @@
 		2EA89AE32921FA2400350F38 /* EditImageInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditImageInformationView.swift; sourceTree = "<group>"; };
 		2EAA35FF290E2CA600861C03 /* ZoomableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableScrollView.swift; sourceTree = "<group>"; };
 		2EAA3609290E55D200861C03 /* IconAndInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndInformationView.swift; sourceTree = "<group>"; };
+		2EC69A16299F365F006F959F /* NewCollectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCollectionButton.swift; sourceTree = "<group>"; };
+		2EDCD827299CF7DE00AAAC7B /* ImageSaving.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSaving.swift; sourceTree = "<group>"; };
 		2EEA8F492904476D0007FE6B /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
 		2EEA8F4B29044BE10007FE6B /* Iamages.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Iamages.storekit; sourceTree = "<group>"; };
 		2EEBADEF297AC452002FC915 /* PasswordResetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordResetView.swift; sourceTree = "<group>"; };
@@ -348,6 +362,7 @@
 				2E38DEA0296916C900ACB068 /* PendingUploadView.swift */,
 				2E38DEA22969174B00ACB068 /* UploadedView.swift */,
 				2E36351F29763573009CE352 /* CompletedUploadView.swift */,
+				2E2E665029A0C5C1008C02AF /* UploadCollectionView.swift */,
 			);
 			path = Uploads;
 			sourceTree = "<group>";
@@ -451,6 +466,16 @@
 				2E38DE5D295DD0C000ACB068 /* View+Alerts.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		2E2257B32995F57E0030D2C6 /* SharedWithYou */ = {
+			isa = PBXGroup;
+			children = (
+				2E38DEC029736C7800ACB068 /* SWListView.swift */,
+				2E2257B42995F5960030D2C6 /* SWImageWrapperView.swift */,
+				2E2257B6299649E30030D2C6 /* SWCollectionWrapperView.swift */,
+			);
+			path = SharedWithYou;
 			sourceTree = "<group>";
 		};
 		2E36351929758ED8009CE352 /* Views */ = {
@@ -574,6 +599,8 @@
 				2E38DE9C2967034700ACB068 /* HTTPShortcuts.swift */,
 				2E38DEB62972C84B00ACB068 /* CoreDataModel.swift */,
 				2E38DEB92972CC8500ACB068 /* IamagesImage.swift */,
+				2E2E665229A0D810008C02AF /* IamagesCollectionEdit.swift */,
+				2E38DDF6294ECD9100ACB068 /* BoolOrString.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -586,8 +613,8 @@
 				2E00889D28FD6CEF00607E0B /* Uploads */,
 				2E0088A428FE570D00607E0B /* Images */,
 				2EA89ADA291F5B2B00350F38 /* Collections */,
+				2E2257B32995F57E0030D2C6 /* SharedWithYou */,
 				2E91365029399FC700B220FB /* Settings */,
-				2E38DEC029736C7800ACB068 /* SharedWithYouListView.swift */,
 				2E38DEB129724E7C00ACB068 /* AnonymousUploadsListView.swift */,
 				2E8B2FAF28B72D7F0071780B /* RootNavigationView.swift */,
 			);
@@ -609,7 +636,6 @@
 		2E8B2FA528B5D4BB0071780B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				2E38DDF6294ECD9100ACB068 /* BoolOrString.swift */,
 				2E8B2FA628B5D4D20071780B /* Images.swift */,
 				2E4F8467290FF94D00629C27 /* Collections.swift */,
 				2E8B2FAD28B5E1520071780B /* Users.swift */,
@@ -619,6 +645,7 @@
 				2E1F8F992935C67600D6AC49 /* SplitViewModel.swift */,
 				2E082F612984D07E00D13F37 /* UploadsViewModel.swift */,
 				2E38DEBD2972E50800ACB068 /* SWViewModel.swift */,
+				2EDCD827299CF7DE00AAAC7B /* ImageSaving.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -647,6 +674,7 @@
 				2E38DE4E2959B57600ACB068 /* NewCollectionView.swift */,
 				2E38DE55295D23DA00ACB068 /* CollectionShareLinkView.swift */,
 				2E2257B129911E0A0030D2C6 /* CollectionImageThumbnailView.swift */,
+				2EC69A16299F365F006F959F /* NewCollectionButton.swift */,
 			);
 			path = Collections;
 			sourceTree = "<group>";
@@ -831,6 +859,7 @@
 			files = (
 				2E082F6F29878D7100D13F37 /* UserDefaults+Iamages.swift in Sources */,
 				2E38DE58295D33C100ACB068 /* EnvironmentValues+NSExtensionContext.swift in Sources */,
+				2E2E665529A0D8E4008C02AF /* BoolOrString.swift in Sources */,
 				2E38DE982965ACAD00ACB068 /* Keychain+Iamages.swift in Sources */,
 				2E36351C29758F04009CE352 /* UploadOwnershipFooter.swift in Sources */,
 				2E38DE8B2965523300ACB068 /* APIErrors.swift in Sources */,
@@ -840,6 +869,7 @@
 				2E38DE9F2967034700ACB068 /* HTTPShortcuts.swift in Sources */,
 				2E38DEBB2972CCA300ACB068 /* IamagesImage.swift in Sources */,
 				2E38DE5F295DD0C000ACB068 /* View+Alerts.swift in Sources */,
+				2E2E665429A0D810008C02AF /* IamagesCollectionEdit.swift in Sources */,
 				2E38DEBC2972CCEB00ACB068 /* CoreDataModel.swift in Sources */,
 				2E38DE402959639500ACB068 /* ShareViewController.swift in Sources */,
 				2E38DE62295DDE1800ACB068 /* LocalizedAlertError.swift in Sources */,
@@ -881,8 +911,9 @@
 				2E8B2FAC28B5E1150071780B /* GlobalViewModel.swift in Sources */,
 				2E38DDF7294ECD9100ACB068 /* BoolOrString.swift in Sources */,
 				2E29D1FC29386938009CE522 /* URL+Iamages.swift in Sources */,
+				2E2257B7299649E30030D2C6 /* SWCollectionWrapperView.swift in Sources */,
 				2E29D1F429378D4B009CE522 /* AboutLinksView.swift in Sources */,
-				2E38DEC129736C7800ACB068 /* SharedWithYouListView.swift in Sources */,
+				2E38DEC129736C7800ACB068 /* SWListView.swift in Sources */,
 				2E4F8466290FF7F900629C27 /* AppNavigation.swift in Sources */,
 				2E082F6829854C4700D13F37 /* Collection+SafeIndex.swift in Sources */,
 				2E9136582939A20F00B220FB /* UploadDefaultsSettingsView.swift in Sources */,
@@ -898,10 +929,12 @@
 				2E082F56297E102E00D13F37 /* Commands.swift in Sources */,
 				2E38DEA1296916C900ACB068 /* PendingUploadView.swift in Sources */,
 				2E38DDFB29502D3A00ACB068 /* AddToCollectionView.swift in Sources */,
+				2E2257B52995F5960030D2C6 /* SWImageWrapperView.swift in Sources */,
 				2E082F6B29854E2F00D13F37 /* OpenURLModifier.swift in Sources */,
 				2E38DE52295D1E1200ACB068 /* AppIntents.swift in Sources */,
 				2E0424DC28DF4B430023CE41 /* NavigableImageView.swift in Sources */,
 				2E74ED302944554B00E30A5A /* UploadContainersListView.swift in Sources */,
+				2EC69A17299F365F006F959F /* NewCollectionButton.swift in Sources */,
 				2E38DDEC294AED1200ACB068 /* CollectionImagesListView.swift in Sources */,
 				2E0088A328FD8B1F00607E0B /* NavigableUploadContainerView.swift in Sources */,
 				2E38DE8F2965948100ACB068 /* UserToken.swift in Sources */,
@@ -915,8 +948,10 @@
 				2E38DEB229724E7C00ACB068 /* AnonymousUploadsListView.swift in Sources */,
 				2E1F8F9A2935C67600D6AC49 /* SplitViewModel.swift in Sources */,
 				2E38DE5E295DD0C000ACB068 /* View+Alerts.swift in Sources */,
+				2E2E665129A0C5C1008C02AF /* UploadCollectionView.swift in Sources */,
 				2E29D1F2293785C7009CE522 /* AppWelcomeSheet.swift in Sources */,
 				2E91365A2939A23F00B220FB /* AccountSettingsView.swift in Sources */,
+				2E2E665329A0D810008C02AF /* IamagesCollectionEdit.swift in Sources */,
 				2E38DE9D2967034700ACB068 /* HTTPShortcuts.swift in Sources */,
 				2E38DEB72972C84B00ACB068 /* CoreDataModel.swift in Sources */,
 				2E082F5C2980BDF900D13F37 /* DeleteCollectionModifiers.swift in Sources */,
@@ -927,6 +962,7 @@
 				2E0424D628DB469B0023CE41 /* ImagesListView.swift in Sources */,
 				2E38DE382955C91800ACB068 /* SWAttributionViewSwiftUI.swift in Sources */,
 				2EEBADF0297AC452002FC915 /* PasswordResetView.swift in Sources */,
+				2EDCD828299CF7DE00AAAC7B /* ImageSaving.swift in Sources */,
 				2E509E7928EEE9BE00ABC072 /* AppErrors.swift in Sources */,
 				2E38DEA32969174B00ACB068 /* UploadedView.swift in Sources */,
 				2E8B2FB028B72D7F0071780B /* RootNavigationView.swift in Sources */,
@@ -969,7 +1005,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 25;
+				CURRENT_PROJECT_VERSION = 27;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widgets/Info.plist;
@@ -981,7 +1017,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 4.0.2;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1003,7 +1039,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 25;
+				CURRENT_PROJECT_VERSION = 27;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widgets/Info.plist;
@@ -1015,7 +1051,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 4.0.2;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1036,7 +1072,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 25;
+				CURRENT_PROJECT_VERSION = 27;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -1048,7 +1084,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 4.0.2;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1068,7 +1104,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 25;
+				CURRENT_PROJECT_VERSION = 27;
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -1080,7 +1116,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 4.0.2;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1215,7 +1251,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 25;
+				CURRENT_PROJECT_VERSION = 27;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
@@ -1226,6 +1262,7 @@
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2022-present Nam Thanh Nguyen (jkelol111) et al.\nLicensed under the GPLv3 license.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This is used to save photos to your library.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -1240,7 +1277,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 4.0.2;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -1264,7 +1301,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 25;
+				CURRENT_PROJECT_VERSION = 27;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"App/Preview Content\"";
 				DEVELOPMENT_TEAM = 2VZNUT7D2E;
@@ -1275,6 +1312,7 @@
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2022-present Nam Thanh Nguyen (jkelol111) et al.\nLicensed under the GPLv3 license.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This is used to save photos to your library.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -1289,7 +1327,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 4.0.2;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.jkelol111.Iamages;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;

@@ -34,9 +34,7 @@ struct PasswordResetView: View {
                 body: self.email.data(using: .utf8),
                 contentType: .text
             )
-            withAnimation {
-                self.path.append(.reset)
-            }
+            self.path.append(.reset)
         } catch {
             self.error = LocalizedAlertError(error: error)
         }
@@ -62,9 +60,7 @@ struct PasswordResetView: View {
                 ),
                 contentType: .json
             )
-            withAnimation {
-                self.path.append(.done)
-            }
+            self.path.append(.done)
         } catch {
             self.error = LocalizedAlertError(error: error)
         }
@@ -133,8 +129,11 @@ struct PasswordResetView: View {
                             self.code = filtered
                         }
                     }
-                SecureField("New password", text: self.$newPassword1)
-                SecureField("New password, again", text: self.$newPassword2)
+                Group {
+                    SecureField("New password", text: self.$newPassword1)
+                    SecureField("New password, again", text: self.$newPassword2)
+                }
+                .textContentType(.newPassword)
             }
             .textFieldStyle(.roundedBorder)
             .font(.title3)
