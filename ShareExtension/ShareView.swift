@@ -29,6 +29,7 @@ struct ShareView: View {
     }
     
     private func upload() async {
+        self.focusedField = nil
         await self.uploadModel.upload()
         if self.uploadModel.error == nil {
             self.dismiss()
@@ -97,7 +98,7 @@ struct ShareView: View {
                             self.dismiss()
                         }
                     } message: {
-                        Text("This image will not be uploaded")
+                        Text("This image will not be uploaded.")
                     }
                 }
                 ToolbarItem(placement: .primaryAction) {

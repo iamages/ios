@@ -155,7 +155,6 @@ struct OpenURLModifier: ViewModifier {
                 switch url.pathComponents[safe: 2] {
                 case "images":
                     if let id = url.pathComponents[safe: 3] {
-                        print(id)
                         Task {
                             do {
                                 let image = try await self.globalViewModel.getImagePublicMetadata(id: id)
