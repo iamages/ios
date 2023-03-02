@@ -45,8 +45,21 @@ struct ImageInformationView: View {
                     }
                     Toggle("Private", isOn: .constant(self.imageAndMetadata.image.isPrivate))
                         .disabled(true)
+                }
+                Section {
                     Toggle("Locked", isOn: .constant(self.imageAndMetadata.image.lock.isLocked))
                         .disabled(true)
+                    if self.imageAndMetadata.image.lock.isLocked,
+                       let friendlyName = self.imageAndMetadata.image.lock.version?.friendlyName
+                    {
+                        LabeledContent("Version", value: friendlyName)
+                    }
+                } header: {
+                    Text("Lock")
+                } footer: {
+                    if self.imageAndMetadata.image.lock.upgradable == true {
+                        Text("New lock version available.\nUpgrade by editing this image.")
+                    }
                 }
                 Section("ID") {
                     Button(action: self.copyID) {

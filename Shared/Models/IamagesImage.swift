@@ -5,6 +5,13 @@ struct IamagesImage: Codable, Identifiable, Hashable {
     struct Lock: Codable, Hashable {
         enum Version: Int, Codable {
             case aes128gcm_argon2 = 1
+            
+            var friendlyName: String {
+                switch self {
+                case .aes128gcm_argon2:
+                    return NSLocalizedString("AES-128 GCM with Argon2 derived key (\(self.rawValue))", comment: "")
+                }
+            }
         }
 
         var isLocked: Bool

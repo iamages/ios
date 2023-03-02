@@ -111,6 +111,7 @@ struct ImageDetailView: View {
                     method: .get,
                     authStrategy: self.imageAndMetadata.image.isPrivate ? .required : .none
                 ).0
+                ImagePipeline.shared.cache.storeCachedData(data, for: self.request!)
                 self.isDownloadingToastPresented = false
             } catch {
                 self.isDownloadingToastPresented = false

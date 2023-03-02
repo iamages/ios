@@ -3,6 +3,10 @@ import SwiftUI
 class ShareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Prevent share sheet dismissal.
+        self.isModalInPresentation = true
+        
         let shareView = ShareView()
             .environment(\.extensionContext, self.extensionContext)
 
@@ -11,6 +15,7 @@ class ShareViewController: UIViewController {
         self.addChild(hostingController)
         self.view.addSubview(hostingController.view)
 
+        // Expand hosted SwiftUI VC to sheet size.
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             hostingController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),

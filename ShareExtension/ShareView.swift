@@ -21,6 +21,7 @@ struct ShareView: View {
 
     @FocusState private var focusedField: Field?
     @State private var isLoggedIn: Bool = false
+    @State private var isCancelAlertPresented = false
     @State private var isBusy: Bool = true
     
     private func dismiss() {
@@ -75,10 +76,29 @@ struct ShareView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: self.dismiss)
-                        .keyboardShortcut(.escape)
-                        .disabled(self.uploadModel.isUploading || self.isBusy)
-                        .tint(self.uploadModel.information.description.isEmpty ? .none : .red)
+                    Button("Cancel") {
+                        if !self.uploadModel.information.description.isEmpty ||
+                            self.uploadModel.information.isPrivate ||
+                            self.uploadModel.information.isLocked
+                        {
+                            self.isCancelAlertPresented = true
+                        } else {
+                            self.dismiss()
+                        }
+                    }
+                    .keyboardShortcut(.escape)
+                    .disabled(self.uploadModel.isUploading || self.isBusy)
+                    .confirmationDialog(
+                        "Leave without uploading?",
+                        isPresented: self.$isCancelAlertPresented,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Leave", role: .destructive) {
+                            self.dismiss()
+                        }
+                    } message: {
+                        Text("This image will not be uploaded")
+                    }
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button("Upload") {
@@ -98,6 +118,7 @@ struct ShareView: View {
             }
         }
         .tint(.orange)
+        .interactiveDismissDisabled()
         .errorAlert(error: self.$uploadModel.error)
         .onChange(of: self.uploadModel.information.isLocked) { isLocked in
             self.uploadModel.information.lockKey = ""

@@ -111,12 +111,12 @@ struct OpenURLModifier: ViewModifier {
     @State private var error: LocalizedAlertError?
     
     private func validateURL(url: URL) -> Bool {
-        if (url.host() != "iamages.jkelol111.me" || url.scheme != "iamages") &&
-           (url.pathComponents.first != "api" || url.pathComponents.last != "embed")
+        if (url.host() == "iamages.jkelol111.me" || url.scheme == "iamages") &&
+           (url.pathComponents[safe: 1] == "api" && url.pathComponents.last == "embed")
         {
-            return false
+            return true
         }
-        return true
+        return false
     }
     
     func body(content: Content) -> some View {
@@ -152,9 +152,10 @@ struct OpenURLModifier: ViewModifier {
                 self.isImageSheetPresented = false
                 self.isLoadingToastPresented = true
                 
-                switch url.pathComponents[safe: 1] {
+                switch url.pathComponents[safe: 2] {
                 case "images":
-                    if let id = url.pathComponents[safe: 2] {
+                    if let id = url.pathComponents[safe: 3] {
+                        print(id)
                         Task {
                             do {
                                 let image = try await self.globalViewModel.getImagePublicMetadata(id: id)
@@ -175,7 +176,7 @@ struct OpenURLModifier: ViewModifier {
                         }
                     }
                 case "collections":
-                    if let id = url.pathComponents[safe: 2] {
+                    if let id = url.pathComponents[safe: 3] {
                         Task {
                             do {
                                 let collection = try self.globalViewModel.jsond.decode(
